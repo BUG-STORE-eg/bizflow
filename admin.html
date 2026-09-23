@@ -309,11 +309,13 @@
 
         .modal {
             width: min(520px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
             background: #111827;
             border: 1px solid #334155;
             border-radius: 16px;
             box-shadow: 0 25px 80px rgba(0, 0, 0, .45);
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .modal-header {
@@ -394,7 +396,34 @@
             gap: 10px;
         }
 
+        .duration-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .subscription-info {
+            background: #0b1220;
+            border: 1px solid #263244;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 18px;
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .subscription-info strong {
+            color: #38bdf8;
+        }
+
         .danger-zone {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #263244;
+        }
+
+        .activation-zone {
             margin-top: 22px;
             padding-top: 18px;
             border-top: 1px solid #263244;
@@ -446,7 +475,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .duration-row {
+            .duration-row,
+            .duration-actions {
                 grid-template-columns: 1fr;
             }
 
@@ -827,6 +857,19 @@
                 <div>
 
                     <span class="label">
+                        الحالة:
+                    </span>
+
+                    <strong id="modalStatus">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span class="label">
                         الانتهاء:
                     </span>
 
@@ -838,6 +881,25 @@
 
             </div>
 
+
+            <!-- CURRENT TIME -->
+
+            <div class="subscription-info">
+
+                المدة الحالية:
+                <strong id="modalRemaining">
+                    -
+                </strong>
+
+                <br>
+
+                ملاحظة: إضافة المدة تضيف على تاريخ الانتهاء الحالي،
+                بينما تفعيل الاشتراك يبدأ 30 يومًا جديدة من وقت التفعيل.
+
+            </div>
+
+
+            <!-- EXTEND -->
 
             <div class="form-group">
 
@@ -872,6 +934,7 @@
 
             <button
                 class="btn-green"
+                id="extendButton"
                 style="width:100%;"
                 onclick="extendSubscription()">
 
@@ -879,6 +942,54 @@
 
             </button>
 
+
+            <!-- REDUCE -->
+
+            <div
+                class="form-group"
+                style="margin-top:20px;">
+
+                <label>
+                    إنقاص مدة من الاشتراك
+                </label>
+
+                <div class="duration-row">
+
+                    <input
+                        type="number"
+                        id="reduceAmount"
+                        min="1"
+                        placeholder="مثال: 5">
+
+                    <select id="reduceUnit">
+
+                        <option value="days">
+                            أيام
+                        </option>
+
+                        <option value="minutes">
+                            دقائق
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="btn-orange"
+                id="reduceButton"
+                style="width:100%;"
+                onclick="reduceSubscription()">
+
+                ➖ إنقاص المدة
+
+            </button>
+
+
+            <!-- CHANGE PLAN -->
 
             <div
                 class="form-group"
@@ -909,6 +1020,7 @@
 
             <button
                 class="btn-blue"
+                id="changePlanButton"
                 style="width:100%;"
                 onclick="changePlan()">
 
@@ -917,14 +1029,38 @@
             </button>
 
 
-            <div class="danger-zone">
+            <!-- ACTIVE -->
+
+            <div
+                class="danger-zone"
+                id="cancelZone">
 
                 <button
                     class="btn-red"
+                    id="cancelButton"
                     style="width:100%;"
                     onclick="cancelSubscription()">
 
                     ❌ إلغاء الاشتراك
+
+                </button>
+
+            </div>
+
+
+            <!-- CANCELLED / EXPIRED -->
+
+            <div
+                class="activation-zone"
+                id="activateZone"
+                style="display:none;">
+
+                <button
+                    class="btn-green"
+                    style="width:100%;"
+                    onclick="activateSubscription()">
+
+                    ▶️ تفعيل الاشتراك لمدة 30 يوم
 
                 </button>
 
@@ -1817,8 +1953,6 @@ async function renderPayments() {
                     let actions = "-";
 
 
-                    /* الطلب المعلق */
-
                     if (
                         payment.status ===
                         "pending"
@@ -1844,8 +1978,6 @@ async function renderPayments() {
                     }
 
 
-                    /* الطلب المرفوض */
-
                     else if (
                         payment.status ===
                         "rejected"
@@ -1864,8 +1996,6 @@ async function renderPayments() {
                         `;
                     }
 
-
-                    /* الطلب المقبول */
 
                     else if (
                         payment.status ===
@@ -2144,22 +2274,12 @@ async function deletePaymentRequest(
         }
 
 
-        console.log(
-            "DELETE PAYMENT RESULT:",
-            data
-        );
-
-
-        /* إزالة الطلب من البيانات الحالية */
-
         allPayments =
             allPayments.filter(
                 payment =>
                     payment.id !== id
             );
 
-
-        /* إعادة رسم الجدول */
 
         await renderPayments();
 
@@ -2528,10 +2648,28 @@ function openSubscriptionModal(
         sub.plan;
 
 
+    const status =
+        subscriptionStatus(sub);
+
+
+    document.getElementById(
+        "modalStatus"
+    ).textContent =
+        status.text;
+
+
     document.getElementById(
         "modalExpiry"
     ).textContent =
         formatDate(
+            sub.expires_at
+        );
+
+
+    document.getElementById(
+        "modalRemaining"
+    ).textContent =
+        remainingTime(
             sub.expires_at
         );
 
@@ -2542,9 +2680,56 @@ function openSubscriptionModal(
 
 
     document.getElementById(
+        "reduceAmount"
+    ).value = "";
+
+
+    document.getElementById(
         "newPlan"
     ).value =
         sub.plan;
+
+
+    const isActive =
+        sub.status === "active" &&
+        sub.expires_at &&
+        new Date(
+            sub.expires_at
+        ) > new Date();
+
+
+    document.getElementById(
+        "cancelZone"
+    ).style.display =
+        isActive
+            ? "block"
+            : "none";
+
+
+    document.getElementById(
+        "activateZone"
+    ).style.display =
+        isActive
+            ? "none"
+            : "block";
+
+
+    document.getElementById(
+        "extendButton"
+    ).disabled =
+        !isActive;
+
+
+    document.getElementById(
+        "reduceButton"
+    ).disabled =
+        !isActive;
+
+
+    document.getElementById(
+        "changePlanButton"
+    ).disabled =
+        !isActive;
 
 
     document.getElementById(
@@ -2605,6 +2790,25 @@ async function extendSubscription() {
 
         showMessage(
             "اكتب مدة صحيحة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const isActive =
+        currentSubscription.status === "active" &&
+        currentSubscription.expires_at &&
+        new Date(
+            currentSubscription.expires_at
+        ) > new Date();
+
+
+    if (!isActive) {
+
+        showMessage(
+            "فعّل الاشتراك أولًا قبل إضافة مدة",
             "error"
         );
 
@@ -2685,6 +2889,208 @@ async function extendSubscription() {
 
 
 /* =========================================================
+   REDUCE SUBSCRIPTION
+========================================================= */
+
+async function reduceSubscription() {
+
+    if (!currentSubscription) {
+        return;
+    }
+
+
+    const amount =
+        parseInt(
+            document.getElementById(
+                "reduceAmount"
+            ).value,
+            10
+        );
+
+
+    const unit =
+        document.getElementById(
+            "reduceUnit"
+        ).value;
+
+
+    if (
+        !amount ||
+        amount <= 0
+    ) {
+
+        showMessage(
+            "اكتب مدة صحيحة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const isActive =
+        currentSubscription.status === "active" &&
+        currentSubscription.expires_at &&
+        new Date(
+            currentSubscription.expires_at
+        ) > new Date();
+
+
+    if (!isActive) {
+
+        showMessage(
+            "لا يمكن إنقاص مدة اشتراك غير نشط",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const unitText =
+        unit === "days"
+            ? "يوم"
+            : "دقيقة";
+
+
+    if (
+        !confirm(
+            `هل تريد إنقاص ${amount} ${unitText} من الاشتراك؟`
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "admin_reduce_subscription",
+                {
+                    subscription_id:
+                        currentSubscription.id,
+
+                    amount:
+                        amount,
+
+                    unit:
+                        unit
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "REDUCE ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء إنقاص المدة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "REDUCE RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تم إنقاص المدة بنجاح"
+    );
+
+
+    closeSubscriptionModal();
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   ACTIVATE SUBSCRIPTION
+========================================================= */
+
+async function activateSubscription() {
+
+    if (!currentSubscription) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            "هل تريد تفعيل الاشتراك لمدة 30 يوم من الآن؟"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "admin_activate_subscription",
+                {
+                    subscription_id:
+                        currentSubscription.id
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "ACTIVATE ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء تفعيل الاشتراك",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "ACTIVATE RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تم تفعيل الاشتراك لمدة 30 يوم بنجاح"
+    );
+
+
+    closeSubscriptionModal();
+
+    await loadAll();
+}
+
+
+/* =========================================================
    CHANGE PLAN
 ========================================================= */
 
@@ -2708,6 +3114,25 @@ async function changePlan() {
 
         showMessage(
             "الباقة الحالية هي بالفعل نفس الباقة المحددة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const isActive =
+        currentSubscription.status === "active" &&
+        currentSubscription.expires_at &&
+        new Date(
+            currentSubscription.expires_at
+        ) > new Date();
+
+
+    if (!isActive) {
+
+        showMessage(
+            "فعّل الاشتراك أولًا قبل تغيير الباقة",
             "error"
         );
 
