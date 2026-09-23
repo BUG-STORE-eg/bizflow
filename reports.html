@@ -108,6 +108,82 @@
             direction: ltr;
         }
 
+        /* =========================
+           الباقة
+        ========================= */
+
+        .plan-box {
+            background: #151923;
+            border: 1px solid #252a36;
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .plan-info small {
+            display: block;
+            color: #8f97a8;
+            margin-bottom: 7px;
+        }
+
+        .plan-info strong {
+            font-size: 21px;
+        }
+
+        .plan-features {
+            color: #aeb4c0;
+            font-size: 14px;
+        }
+
+        /* =========================
+           الأزرار
+        ========================= */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 17px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #4f8cff;
+        }
+
+        .btn-primary:hover {
+            background: #3b78e7;
+        }
+
+        .btn-secondary {
+            background: #272c38;
+        }
+
+        .btn-secondary:hover {
+            background: #333a4b;
+        }
+
+        .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* =========================
+           البطاقات
+        ========================= */
+
         .cards {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -132,16 +208,37 @@
             margin: 12px 0;
         }
 
+        .card small {
+            color: #8f97a8;
+        }
+
+        /* =========================
+           Panels
+        ========================= */
+
         .panel {
             background: #151923;
             border: 1px solid #252a36;
             border-radius: 16px;
             padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .panel h2 {
             margin-top: 0;
         }
+
+        /* =========================
+           التقرير الأساسي
+        ========================= */
 
         .report-row {
             margin: 25px 0;
@@ -168,6 +265,71 @@
             transition: width .4s;
         }
 
+        /* =========================
+           التقرير المتقدم
+        ========================= */
+
+        .advanced-section {
+            display: none;
+        }
+
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .advanced-card {
+            background: #10141d;
+            border: 1px solid #252a36;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .advanced-card span {
+            display: block;
+            color: #8f97a8;
+            margin-bottom: 10px;
+        }
+
+        .advanced-card strong {
+            font-size: 22px;
+        }
+
+        /* =========================
+           Basic locked
+        ========================= */
+
+        .locked-section {
+            display: none;
+        }
+
+        .locked-box {
+            background: #11151e;
+            border: 1px dashed #3b4252;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .locked-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .locked-box h3 {
+            margin: 8px 0;
+        }
+
+        .locked-box p {
+            color: #8f97a8;
+            margin-bottom: 0;
+        }
+
+        /* =========================
+           Error / Success
+        ========================= */
+
         .error {
             display: none;
             background: #3b2024;
@@ -177,15 +339,32 @@
             margin-bottom: 20px;
         }
 
-        @media(max-width:900px) {
+        .success {
+            display: none;
+            background: #123523;
+            color: #6ee7a1;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           Responsive
+        ========================= */
+
+        @media(max-width: 1100px) {
 
             .cards {
                 grid-template-columns: repeat(2, 1fr);
             }
 
+            .advanced-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
         }
 
-        @media(max-width:600px) {
+        @media(max-width: 900px) {
 
             .sidebar {
                 position: relative;
@@ -204,7 +383,20 @@
                 padding: 20px;
             }
 
+            .plan-box {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+        @media(max-width: 600px) {
+
             .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .advanced-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -214,13 +406,20 @@
                 gap: 15px;
             }
 
+            .panel-head {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
+
 
 <aside class="sidebar">
 
@@ -262,6 +461,7 @@
     <button
         class="logout"
         id="logoutBtn"
+        type="button"
     >
         تسجيل الخروج
     </button>
@@ -270,6 +470,7 @@
 
 
 <main class="main">
+
 
     <header class="topbar">
 
@@ -295,11 +496,63 @@
     </header>
 
 
+    <!-- =========================
+         الباقة الحالية
+    ========================= -->
+
+    <div class="plan-box">
+
+        <div class="plan-info">
+
+            <small>
+                الباقة الحالية
+            </small>
+
+            <strong id="planName">
+                جاري التحقق...
+            </strong>
+
+        </div>
+
+        <div
+            class="plan-features"
+            id="planFeatures"
+        >
+            جاري تحميل صلاحيات التقارير...
+        </div>
+
+        <div class="actions">
+
+            <button
+                id="exportBtn"
+                class="btn btn-primary"
+                type="button"
+                onclick="exportReport()"
+                disabled
+            >
+                📥 تصدير التقرير
+            </button>
+
+        </div>
+
+    </div>
+
+
     <div
         class="error"
         id="errorBox"
     ></div>
 
+
+    <div
+        class="success"
+        id="successBox"
+    ></div>
+
+
+    <!-- =========================
+         التقرير الأساسي
+    ========================= -->
 
     <section class="cards">
 
@@ -375,9 +628,13 @@
 
     <section class="panel">
 
-        <h2>
-            ملخص الحساب
-        </h2>
+        <div class="panel-head">
+
+            <h2>
+                ملخص الحساب
+            </h2>
+
+        </div>
 
 
         <div class="report-row">
@@ -433,16 +690,170 @@
 
     </section>
 
+
+    <!-- =========================
+         التقرير المتقدم
+    ========================= -->
+
+    <section
+        class="panel advanced-section"
+        id="advancedSection"
+    >
+
+        <div class="panel-head">
+
+            <div>
+
+                <h2>
+                    📈 التقرير المتقدم
+                </h2>
+
+                <div
+                    style="
+                        color:#8f97a8;
+                        font-size:14px;
+                    "
+                >
+                    تحليل إضافي لأداء نشاطك
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="advanced-grid">
+
+
+            <div class="advanced-card">
+
+                <span>
+                    متوسط قيمة عملية البيع
+                </span>
+
+                <strong id="averageSale">
+                    0 ج.م
+                </strong>
+
+            </div>
+
+
+            <div class="advanced-card">
+
+                <span>
+                    أعلى عملية بيع
+                </span>
+
+                <strong id="highestSale">
+                    0 ج.م
+                </strong>
+
+            </div>
+
+
+            <div class="advanced-card">
+
+                <span>
+                    نسبة المصروفات من المبيعات
+                </span>
+
+                <strong id="expenseRatio">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="advanced-card">
+
+                <span>
+                    هامش الربح
+                </span>
+
+                <strong id="profitMargin">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="advanced-card">
+
+                <span>
+                    إجمالي عدد العملاء
+                </span>
+
+                <strong id="customersCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="advanced-card">
+
+                <span>
+                    إجمالي المنتجات
+                </span>
+
+                <strong id="productsCount">
+                    0
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         Basic - مقفول
+    ========================= -->
+
+    <section
+        class="panel locked-section"
+        id="lockedSection"
+    >
+
+        <div class="locked-box">
+
+            <div class="locked-icon">
+                🔒
+            </div>
+
+            <h3>
+                التقارير المتقدمة غير متاحة في باقة Basic
+            </h3>
+
+            <p>
+                قم بالترقية إلى باقة Pro أو Business
+                للوصول إلى التحليلات المتقدمة وتصدير التقارير.
+            </p>
+
+        </div>
+
+    </section>
+
+
 </main>
 
 
 <script>
 
+
+/* ==========================================
+   Supabase
+========================================== */
+
 const SUPABASE_URL =
     "https://oklabfxjcekfwirnqlji.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -451,12 +862,36 @@ const supabaseClient =
     );
 
 
+/* ==========================================
+   Variables
+========================================== */
+
 let currentUser = null;
 
+let currentPlan = null;
+
+let planData = null;
+
+let salesData = [];
+
+let expensesData = [];
+
+let totalSalesValue = 0;
+
+let totalExpensesValue = 0;
+
+
+/* ==========================================
+   Helper
+========================================== */
 
 const $ = id =>
     document.getElementById(id);
 
+
+/* ==========================================
+   Error
+========================================== */
 
 function showError(message) {
 
@@ -469,6 +904,662 @@ function showError(message) {
 }
 
 
+/* ==========================================
+   Success
+========================================== */
+
+function showSuccess(message) {
+
+    $("successBox").textContent =
+        message;
+
+    $("successBox").style.display =
+        "block";
+
+
+    setTimeout(() => {
+
+        $("successBox").style.display =
+            "none";
+
+    }, 4000);
+
+}
+
+
+/* ==========================================
+   تحميل الباقة
+========================================== */
+
+async function loadPlan() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.rpc(
+            "get_my_plan"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Plan error:",
+            error
+        );
+
+        showError(
+            "تعذر تحميل بيانات الباقة: " +
+            error.message
+        );
+
+        return false;
+
+    }
+
+
+    if (!data || !data.active) {
+
+        currentPlan = null;
+
+        planData = null;
+
+        $("planName").textContent =
+            "لا توجد باقة فعالة";
+
+        $("planFeatures").textContent =
+            "لا توجد صلاحيات تقارير متاحة.";
+
+        $("exportBtn").disabled =
+            true;
+
+        $("lockedSection").style.display =
+            "block";
+
+        return false;
+
+    }
+
+
+    planData =
+        data;
+
+    currentPlan =
+        data.plan;
+
+
+    $("planName").textContent =
+        "باقة " + currentPlan;
+
+
+    /* ==========================================
+       Basic
+    ========================================== */
+
+    if (currentPlan === "Basic") {
+
+        $("planFeatures").textContent =
+            "التقرير الأساسي متاح";
+
+
+        $("exportBtn").disabled =
+            true;
+
+
+        $("advancedSection").style.display =
+            "none";
+
+
+        $("lockedSection").style.display =
+            "block";
+
+
+        return true;
+
+    }
+
+
+    /* ==========================================
+       Pro / Business
+    ========================================== */
+
+    if (
+        currentPlan === "Pro" ||
+        currentPlan === "Business"
+    ) {
+
+        $("planFeatures").textContent =
+            "التقارير المتقدمة + تصدير التقارير";
+
+
+        $("exportBtn").disabled =
+            false;
+
+
+        $("advancedSection").style.display =
+            "block";
+
+
+        $("lockedSection").style.display =
+            "none";
+
+    }
+
+
+    return true;
+
+}
+
+
+/* ==========================================
+   تحميل البيانات
+========================================== */
+
+async function loadReports() {
+
+    const [
+        salesResult,
+        expensesResult,
+        customersResult,
+        productsResult
+    ] =
+        await Promise.all([
+
+            supabaseClient
+                .from("sales")
+                .select("total")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                ),
+
+
+            supabaseClient
+                .from("expenses")
+                .select("amount")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                ),
+
+
+            supabaseClient
+                .from("customers")
+                .select("id", {
+                    count: "exact",
+                    head: true
+                })
+                .eq(
+                    "user_id",
+                    currentUser.id
+                ),
+
+
+            supabaseClient
+                .from("products")
+                .select("id", {
+                    count: "exact",
+                    head: true
+                })
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+
+        ]);
+
+
+    if (
+        salesResult.error ||
+        expensesResult.error ||
+        customersResult.error ||
+        productsResult.error
+    ) {
+
+        const error =
+            salesResult.error ||
+            expensesResult.error ||
+            customersResult.error ||
+            productsResult.error;
+
+
+        showError(
+            "حدث خطأ أثناء تحميل التقرير: " +
+            error.message
+        );
+
+
+        return;
+
+    }
+
+
+    salesData =
+        salesResult.data || [];
+
+
+    expensesData =
+        expensesResult.data || [];
+
+
+    const customersCount =
+        customersResult.count || 0;
+
+
+    const productsCount =
+        productsResult.count || 0;
+
+
+    /* ==========================================
+       إجمالي المبيعات
+    ========================================== */
+
+    totalSalesValue =
+        salesData.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.total || 0),
+            0
+        );
+
+
+    /* ==========================================
+       إجمالي المصروفات
+    ========================================== */
+
+    totalExpensesValue =
+        expensesData.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.amount || 0),
+            0
+        );
+
+
+    /* ==========================================
+       صافي الربح
+    ========================================== */
+
+    const netProfit =
+        totalSalesValue -
+        totalExpensesValue;
+
+
+    /* ==========================================
+       Basic report
+    ========================================== */
+
+    $("totalSales").textContent =
+        totalSalesValue.toFixed(2);
+
+
+    $("totalExpenses").textContent =
+        totalExpensesValue.toFixed(2);
+
+
+    $("netProfit").textContent =
+        netProfit.toFixed(2);
+
+
+    $("salesCount").textContent =
+        salesData.length;
+
+
+    $("salesLabel").textContent =
+        totalSalesValue.toFixed(2) +
+        " ج.م";
+
+
+    $("expensesLabel").textContent =
+        totalExpensesValue.toFixed(2) +
+        " ج.م";
+
+
+    /* ==========================================
+       Bars
+    ========================================== */
+
+    const max =
+        Math.max(
+            totalSalesValue,
+            totalExpensesValue,
+            1
+        );
+
+
+    $("salesBar").style.width =
+        (
+            totalSalesValue /
+            max *
+            100
+        ) + "%";
+
+
+    $("expensesBar").style.width =
+        (
+            totalExpensesValue /
+            max *
+            100
+        ) + "%";
+
+
+    /* ==========================================
+       Advanced report
+    ========================================== */
+
+    if (
+        currentPlan === "Pro" ||
+        currentPlan === "Business"
+    ) {
+
+        const saleValues =
+            salesData.map(
+                item =>
+                    Number(
+                        item.total || 0
+                    )
+            );
+
+
+        let averageSale =
+            0;
+
+
+        if (saleValues.length > 0) {
+
+            averageSale =
+                totalSalesValue /
+                saleValues.length;
+
+        }
+
+
+        const highestSale =
+            saleValues.length > 0
+                ? Math.max(...saleValues)
+                : 0;
+
+
+        let expenseRatio =
+            0;
+
+
+        if (totalSalesValue > 0) {
+
+            expenseRatio =
+                (
+                    totalExpensesValue /
+                    totalSalesValue
+                ) * 100;
+
+        }
+
+
+        let profitMargin =
+            0;
+
+
+        if (totalSalesValue > 0) {
+
+            profitMargin =
+                (
+                    netProfit /
+                    totalSalesValue
+                ) * 100;
+
+        }
+
+
+        $("averageSale").textContent =
+            averageSale.toFixed(2) +
+            " ج.م";
+
+
+        $("highestSale").textContent =
+            highestSale.toFixed(2) +
+            " ج.م";
+
+
+        $("expenseRatio").textContent =
+            expenseRatio.toFixed(2) +
+            "%";
+
+
+        $("profitMargin").textContent =
+            profitMargin.toFixed(2) +
+            "%";
+
+
+        $("customersCount").textContent =
+            customersCount;
+
+
+        $("productsCount").textContent =
+            productsCount;
+
+    }
+
+}
+
+
+/* ==========================================
+   تصدير التقرير
+========================================== */
+
+function exportReport() {
+
+    if (
+        currentPlan !== "Pro" &&
+        currentPlan !== "Business"
+    ) {
+
+        showError(
+            "تصدير التقارير متاح في باقة Pro وBusiness فقط."
+        );
+
+        return;
+
+    }
+
+
+    const netProfit =
+        totalSalesValue -
+        totalExpensesValue;
+
+
+    const saleValues =
+        salesData.map(
+            item =>
+                Number(
+                    item.total || 0
+                )
+        );
+
+
+    const averageSale =
+        saleValues.length > 0
+            ? totalSalesValue /
+              saleValues.length
+            : 0;
+
+
+    const highestSale =
+        saleValues.length > 0
+            ? Math.max(...saleValues)
+            : 0;
+
+
+    const expenseRatio =
+        totalSalesValue > 0
+            ? (
+                totalExpensesValue /
+                totalSalesValue
+            ) * 100
+            : 0;
+
+
+    const profitMargin =
+        totalSalesValue > 0
+            ? (
+                netProfit /
+                totalSalesValue
+            ) * 100
+            : 0;
+
+
+    /* ==========================================
+       CSV
+    ========================================== */
+
+    const rows = [
+
+        [
+            "التقرير",
+            "BizFlow"
+        ],
+
+        [
+            "الباقة",
+            currentPlan
+        ],
+
+        [],
+
+        [
+            "إجمالي المبيعات",
+            totalSalesValue.toFixed(2)
+        ],
+
+        [
+            "إجمالي المصروفات",
+            totalExpensesValue.toFixed(2)
+        ],
+
+        [
+            "صافي الربح",
+            netProfit.toFixed(2)
+        ],
+
+        [
+            "عدد عمليات البيع",
+            salesData.length
+        ],
+
+        [
+            "متوسط عملية البيع",
+            averageSale.toFixed(2)
+        ],
+
+        [
+            "أعلى عملية بيع",
+            highestSale.toFixed(2)
+        ],
+
+        [
+            "نسبة المصروفات",
+            expenseRatio.toFixed(2) + "%"
+        ],
+
+        [
+            "هامش الربح",
+            profitMargin.toFixed(2) + "%"
+        ]
+
+    ];
+
+
+    const csvContent =
+        "\uFEFF" +
+        rows
+            .map(
+                row =>
+                    row
+                        .map(
+                            value =>
+                                `"${String(value)
+                                    .replaceAll(
+                                        '"',
+                                        '""'
+                                    )}"`
+                        )
+                        .join(",")
+            )
+            .join("\n");
+
+
+    const blob =
+        new Blob(
+            [csvContent],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href =
+        url;
+
+
+    link.download =
+        `BizFlow-Report-${new Date()
+            .toISOString()
+            .slice(0, 10)}.csv`;
+
+
+    document.body.appendChild(link);
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    URL.revokeObjectURL(url);
+
+
+    showSuccess(
+        "تم تصدير التقرير بنجاح."
+    );
+
+}
+
+
+/* ==========================================
+   تسجيل الخروج
+========================================== */
+
+$("logoutBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+/* ==========================================
+   تشغيل الصفحة
+========================================== */
+
 async function init() {
 
     const {
@@ -478,7 +1569,11 @@ async function init() {
         await supabaseClient.auth.getUser();
 
 
-    if (error || !data.user) {
+    if (
+        error ||
+        !data ||
+        !data.user
+    ) {
 
         window.location.href =
             "login.html";
@@ -496,153 +1591,18 @@ async function init() {
         currentUser.email;
 
 
-    await loadReports();
-
-}
-
-
-async function loadReports() {
-
-    const [
-        salesResult,
-        expensesResult
-    ] =
-        await Promise.all([
-
-            supabaseClient
-                .from("sales")
-                .select("total")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                ),
-
-            supabaseClient
-                .from("expenses")
-                .select("amount")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
-
-        ]);
+    const planLoaded =
+        await loadPlan();
 
 
-    if (
-        salesResult.error ||
-        expensesResult.error
-    ) {
-
-        const error =
-            salesResult.error ||
-            expensesResult.error;
-
-        showError(
-            "حدث خطأ أثناء تحميل التقرير: " +
-            error.message
-        );
-
+    if (!planLoaded) {
         return;
-
     }
 
 
-    const sales =
-        salesResult.data || [];
-
-    const expenses =
-        expensesResult.data || [];
-
-
-    const totalSales =
-        sales.reduce(
-            (sum, item) =>
-                sum +
-                Number(item.total || 0),
-            0
-        );
-
-
-    const totalExpenses =
-        expenses.reduce(
-            (sum, item) =>
-                sum +
-                Number(item.amount || 0),
-            0
-        );
-
-
-    const netProfit =
-        totalSales -
-        totalExpenses;
-
-
-    $("totalSales").textContent =
-        totalSales.toFixed(2);
-
-
-    $("totalExpenses").textContent =
-        totalExpenses.toFixed(2);
-
-
-    $("netProfit").textContent =
-        netProfit.toFixed(2);
-
-
-    $("salesCount").textContent =
-        sales.length;
-
-
-    $("salesLabel").textContent =
-        totalSales.toFixed(2) +
-        " ج.م";
-
-
-    $("expensesLabel").textContent =
-        totalExpenses.toFixed(2) +
-        " ج.م";
-
-
-    const max =
-        Math.max(
-            totalSales,
-            totalExpenses,
-            1
-        );
-
-
-    $("salesBar").style.width =
-        (
-            totalSales /
-            max *
-            100
-        ) + "%";
-
-
-    $("expensesBar").style.width =
-        (
-            totalExpenses /
-            max *
-            100
-        ) + "%";
+    await loadReports();
 
 }
-
-
-$("logoutBtn")
-    .addEventListener(
-        "click",
-        async () => {
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-            window.location.href =
-                "login.html";
-
-        }
-    );
 
 
 init();
@@ -650,4 +1610,5 @@ init();
 </script>
 
 </body>
+
 </html>
