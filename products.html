@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>BizFlow - المنتجات</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <style>
+
+    .page-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .primary {
+      display: inline-block;
+      text-decoration: none;
+      background: #6c63ff;
+      color: white;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .secondary {
+      background: #334155;
+      color: white;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .search-box {
+      margin: 20px 0;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #273244;
+      background: #0f172a;
+      color: white;
+      outline: none;
+    }
+
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .products-table th,
+    .products-table td {
+      padding: 14px;
+      border-bottom: 1px solid #273244;
+      text-align: right;
+    }
+
+    .products-table th {
+      color: #94a3b8;
+    }
+
+    .action-btn {
+      border: 0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      margin-left: 5px;
+    }
+
+    .edit-btn {
+      background: #2563eb;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+    }
+
+    .stock-good {
+      color: #4ade80;
+      font-weight: bold;
+    }
+
+    .stock-low {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    .stock-empty {
+      color: #f87171;
+      font-weight: bold;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-box {
+      width: min(500px, 100%);
+      background: #111827;
+      border: 1px solid #273244;
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .modal-box h2 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      color: #cbd5e1;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 9px;
+      border: 1px solid #273244;
+      background: #0f172a;
+      color: white;
+      outline: none;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+    }
+
+    .empty-products {
+      text-align: center;
+      padding: 50px 20px;
+      color: #94a3b8;
+    }
+
+    .empty-products .icon {
+      font-size: 45px;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .message.success {
+      background: #063b25;
+      color: #4ade80;
+    }
+
+    .message.error {
+      background: #3b1111;
+      color: #f87171;
+    }
+
+    @media (max-width: 700px) {
+
+      .products-table {
+        min-width: 650px;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      Biz<span>Flow</span>
+    </div>
+
+
+    <nav>
+
+      <a href="index.html">
+        📊 الرئيسية
+      </a>
+
+      <a href="customers.html">
+        👥 العملاء
+      </a>
+
+      <a class="active" href="products.html">
+        📦 المنتجات
+      </a>
+
+      <a href="sales.html">
+        🧾 المبيعات
+      </a>
+
+      <a href="expenses.html">
+        💸 المصروفات
+      </a>
+
+      <a href="reports.html">
+        📈 التقارير
+      </a>
+
+    </nav>
+
+
+    <button
+      id="logoutBtn"
+      class="logout"
+      type="button"
+    >
+      تسجيل الخروج
+    </button>
+
+  </aside>
+
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <div>
+
+        <p class="welcome">
+          إدارة المنتجات 📦
+        </p>
+
+        <h1>
+          منتجاتي
+        </h1>
+
+      </div>
+
+
+      <div
+        class="user"
+        id="userEmail"
+      >
+        جاري التحميل...
+      </div>
+
+    </header>
+
+
+    <section class="panel">
+
+      <div class="panel-head">
+
+        <h2>
+          قائمة المنتجات
+        </h2>
+
+        <div class="page-actions">
+
+          <button
+            class="primary"
+            onclick="openAddModal()"
+          >
+            + إضافة منتج
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+
+      <div class="search-box">
+
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="🔎 ابحث عن منتج..."
+          oninput="renderProducts()"
+        >
+
+      </div>
+
+
+      <div
+        id="loading"
+        class="empty-products"
+      >
+        <div class="icon">
+          ⏳
+        </div>
+
+        جاري تحميل المنتجات...
+      </div>
+
+
+      <div
+        id="productsArea"
+        style="display:none"
+      >
+
+        <div class="table-scroll">
+
+          <table class="products-table">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  المنتج
+                </th>
+
+                <th>
+                  السعر
+                </th>
+
+                <th>
+                  المخزون
+                </th>
+
+                <th>
+                  تاريخ الإضافة
+                </th>
+
+                <th>
+                  الإجراءات
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="productsBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- Modal -->
+
+  <div
+    id="productModal"
+    class="modal"
+  >
+
+    <div class="modal-box">
+
+      <h2 id="modalTitle">
+        إضافة منتج
+      </h2>
+
+
+      <div
+        id="formMessage"
+        class="message"
+      ></div>
+
+
+      <div class="form-group">
+
+        <label>
+          اسم المنتج
+        </label>
+
+        <input
+          id="productName"
+          type="text"
+          placeholder="مثال: لابتوب"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          السعر
+        </label>
+
+        <input
+          id="productPrice"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="مثال: 25000"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          المخزون
+        </label>
+
+        <input
+          id="productStock"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="مثال: 10"
+        >
+
+      </div>
+
+
+      <div class="modal-actions">
+
+        <button
+          class="primary"
+          onclick="saveProduct()"
+        >
+          حفظ
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeModal()"
+        >
+          إلغاء
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Supabase -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/auth.js"></script>
+
+
+  <script>
+
+    // =====================================================
+    // Supabase
+    // =====================================================
+
+    const SUPABASE_URL =
+      "https://oklabfxjcekfwirnqlji.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    // =====================================================
+    // Variables
+    // =====================================================
+
+    let products = [];
+
+    let editingProductId = null;
+
+
+    // =====================================================
+    // HTML Helpers
+    // =====================================================
+
+    function escapeHtml(value) {
+
+      if (
+        value === null ||
+        value === undefined
+      ) {
+        return "";
+      }
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+
+    function formatDate(date) {
+
+      if (!date) {
+        return "-";
+      }
+
+      return new Date(date)
+        .toLocaleDateString("ar-EG");
+    }
+
+
+    function showMessage(
+      text,
+      type = "success"
+    ) {
+
+      const element =
+        document.getElementById("message");
+
+      element.textContent = text;
+
+      element.className =
+        "message " + type;
+
+      element.style.display = "block";
+
+
+      setTimeout(() => {
+
+        element.style.display = "none";
+
+      }, 4000);
+    }
+
+
+    function showFormMessage(
+      text,
+      type = "error"
+    ) {
+
+      const element =
+        document.getElementById(
+          "formMessage"
+        );
+
+      element.textContent = text;
+
+      element.className =
+        "message " + type;
+
+      element.style.display = "block";
+    }
+
+
+    // =====================================================
+    // Current User
+    // =====================================================
+
+    async function getCurrentUser() {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .auth
+          .getUser();
+
+
+      if (
+        error ||
+        !data ||
+        !data.user
+      ) {
+
+        window.location.href =
+          "login.html";
+
+        return null;
+      }
+
+
+      document.getElementById(
+        "userEmail"
+      ).textContent =
+        data.user.email;
+
+
+      return data.user;
+    }
+
+
+    // =====================================================
+    // Load Products
+    // =====================================================
+
+    async function loadProducts() {
+
+      const user =
+        await getCurrentUser();
+
+
+      if (!user) {
+        return;
+      }
+
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("products")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", {
+            ascending: false
+          });
+
+
+      if (error) {
+
+        console.error(error);
+
+        showMessage(
+          "حدث خطأ أثناء تحميل المنتجات: " +
+          error.message,
+          "error"
+        );
+
+        document.getElementById(
+          "loading"
+        ).style.display = "none";
+
+        return;
+      }
+
+
+      products = data || [];
+
+
+      document.getElementById(
+        "loading"
+      ).style.display = "none";
+
+      document.getElementById(
+        "productsArea"
+      ).style.display = "block";
+
+
+      renderProducts();
+    }
+
+
+    // =====================================================
+    // Render Products
+    // =====================================================
+
+    function renderProducts() {
+
+      const body =
+        document.getElementById(
+          "productsBody"
+        );
+
+
+      const search =
+        document.getElementById(
+          "searchInput"
+        ).value
+          .trim()
+          .toLowerCase();
+
+
+      const filtered =
+        products.filter(product => {
+
+          return product.name
+            .toLowerCase()
+            .includes(search);
+
+        });
+
+
+      if (filtered.length === 0) {
+
+        body.innerHTML = `
+
+          <tr>
+
+            <td
+              colspan="5"
+              style="
+                text-align:center;
+                padding:40px;
+                color:#94a3b8;
+              "
+            >
+
+              ${
+                products.length === 0
+                  ? "📦 لا توجد منتجات حتى الآن"
+                  : "🔎 لا توجد نتائج"
+              }
+
+            </td>
+
+          </tr>
+
+        `;
+
+        return;
+      }
+
+
+      body.innerHTML =
+        filtered.map(product => {
+
+          let stockClass =
+            "stock-good";
+
+
+          if (product.stock === 0) {
+            stockClass = "stock-empty";
+          }
+          else if (product.stock <= 5) {
+            stockClass = "stock-low";
+          }
+
+
+          return `
+
+            <tr>
+
+              <td>
+                <strong>
+                  ${escapeHtml(product.name)}
+                </strong>
+              </td>
+
+              <td>
+                ${Number(product.price).toLocaleString("ar-EG")}
+                ج.م
+              </td>
+
+              <td>
+
+                <span class="${stockClass}">
+                  ${Number(product.stock)}
+                </span>
+
+              </td>
+
+              <td>
+                ${formatDate(product.created_at)}
+              </td>
+
+              <td>
+
+                <button
+                  class="action-btn edit-btn"
+                  onclick="editProduct('${product.id}')"
+                >
+                  تعديل
+                </button>
+
+                <button
+                  class="action-btn delete-btn"
+                  onclick="deleteProduct('${product.id}')"
+                >
+                  حذف
+                </button>
+
+              </td>
+
+            </tr>
+
+          `;
+
+        }).join("");
+    }
+
+
+    // =====================================================
+    // Open Add Modal
+    // =====================================================
+
+    function openAddModal() {
+
+      editingProductId = null;
+
+
+      document.getElementById(
+        "modalTitle"
+      ).textContent =
+        "إضافة منتج";
+
+
+      document.getElementById(
+        "productName"
+      ).value = "";
+
+
+      document.getElementById(
+        "productPrice"
+      ).value = "";
+
+
+      document.getElementById(
+        "productStock"
+      ).value = "";
+
+
+      document.getElementById(
+        "formMessage"
+      ).style.display = "none";
+
+
+      document.getElementById(
+        "productModal"
+      ).style.display = "flex";
+    }
+
+
+    // =====================================================
+    // Close Modal
+    // =====================================================
+
+    function closeModal() {
+
+      document.getElementById(
+        "productModal"
+      ).style.display = "none";
+    }
+
+
+    // =====================================================
+    // Edit Product
+    // =====================================================
+
+    function editProduct(id) {
+
+      const product =
+        products.find(
+          p => p.id === id
+        );
+
+
+      if (!product) {
+        return;
+      }
+
+
+      editingProductId =
+        id;
+
+
+      document.getElementById(
+        "modalTitle"
+      ).textContent =
+        "تعديل المنتج";
+
+
+      document.getElementById(
+        "productName"
+      ).value =
+        product.name;
+
+
+      document.getElementById(
+        "productPrice"
+      ).value =
+        product.price;
+
+
+      document.getElementById(
+        "productStock"
+      ).value =
+        product.stock;
+
+
+      document.getElementById(
+        "formMessage"
+      ).style.display = "none";
+
+
+      document.getElementById(
+        "productModal"
+      ).style.display = "flex";
+    }
+
+
+    // =====================================================
+    // Save Product
+    // =====================================================
+
+    async function saveProduct() {
+
+      const user =
+        await getCurrentUser();
+
+
+      if (!user) {
+        return;
+      }
+
+
+      const name =
+        document.getElementById(
+          "productName"
+        ).value.trim();
+
+
+      const price =
+        Number(
+          document.getElementById(
+            "productPrice"
+          ).value
+        );
+
+
+      const stock =
+        Number(
+          document.getElementById(
+            "productStock"
+          ).value
+        );
+
+
+      if (!name) {
+
+        showFormMessage(
+          "اكتب اسم المنتج."
+        );
+
+        return;
+      }
+
+
+      if (
+        !Number.isFinite(price) ||
+        price < 0
+      ) {
+
+        showFormMessage(
+          "اكتب سعرًا صحيحًا."
+        );
+
+        return;
+      }
+
+
+      if (
+        !Number.isInteger(stock) ||
+        stock < 0
+      ) {
+
+        showFormMessage(
+          "اكتب كمية مخزون صحيحة."
+        );
+
+        return;
+      }
+
+
+      const productData = {
+
+        name,
+        price,
+        stock
+
+      };
+
+
+      let error;
+
+
+      if (editingProductId) {
+
+        const result =
+          await supabaseClient
+            .from("products")
+            .update(productData)
+            .eq(
+              "id",
+              editingProductId
+            )
+            .eq(
+              "user_id",
+              user.id
+            );
+
+
+        error =
+          result.error;
+
+      } else {
+
+        const result =
+          await supabaseClient
+            .from("products")
+            .insert({
+
+              ...productData,
+
+              user_id:
+                user.id
+
+            });
+
+
+        error =
+          result.error;
+      }
+
+
+      if (error) {
+
+        console.error(error);
+
+        showFormMessage(
+          "حدث خطأ أثناء حفظ المنتج: " +
+          error.message
+        );
+
+        return;
+      }
+
+
+      closeModal();
+
+
+      showMessage(
+        editingProductId
+          ? "تم تعديل المنتج بنجاح."
+          : "تم إضافة المنتج بنجاح."
+      );
+
+
+      await loadProducts();
+    }
+
+
+    // =====================================================
+    // Delete Product
+    // =====================================================
+
+    async function deleteProduct(id) {
+
+      const product =
+        products.find(
+          p => p.id === id
+        );
+
+
+      if (!product) {
+        return;
+      }
+
+
+      const confirmed =
+        confirm(
+          `هل أنت متأكد من حذف المنتج "${product.name}"؟`
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      const user =
+        await getCurrentUser();
+
+
+      if (!user) {
+        return;
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("products")
+          .delete()
+          .eq("id", id)
+          .eq("user_id", user.id);
+
+
+      if (error) {
+
+        console.error(error);
+
+        showMessage(
+          "حدث خطأ أثناء حذف المنتج: " +
+          error.message,
+          "error"
+        );
+
+        return;
+      }
+
+
+      showMessage(
+        "تم حذف المنتج بنجاح."
+      );
+
+
+      await loadProducts();
+    }
+
+
+    // =====================================================
+    // Logout
+    // =====================================================
+
+    document.getElementById(
+      "logoutBtn"
+    ).addEventListener(
+      "click",
+      async () => {
+
+        await supabaseClient
+          .auth
+          .signOut();
+
+        window.location.href =
+          "login.html";
+
+      }
+    );
+
+
+    // =====================================================
+    // Start
+    // =====================================================
+
+    loadProducts();
+
+  </script>
+
+</body>
+
+</html>
