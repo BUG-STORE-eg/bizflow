@@ -2,19 +2,12 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>BizFlow - الدفع</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- مهم: auth.js أولاً -->
     <script src="js/auth.js"></script>
 
     <style>
@@ -119,29 +112,42 @@
         }
 
         .method {
+            appearance: none;
+            -webkit-appearance: none;
+
             width: 100%;
+
             border: 1px solid #334155;
             background: #111827;
             color: #cbd5e1;
+
             border-radius: 10px;
-            padding: 13px;
+            padding: 14px;
+
             cursor: pointer;
+
             text-align: center;
             font-weight: 700;
-            transition: .2s;
-            user-select: none;
+            font-size: 15px;
+
+            transition: .15s;
+
+            outline: none;
         }
 
         .method:hover {
             border-color: #38bdf8;
-            color: #fff;
+        }
+
+        .method:active {
+            transform: scale(.98);
         }
 
         .method.active {
             border-color: #38bdf8;
             color: #38bdf8;
             background: #0c1d2b;
-            box-shadow: 0 0 0 1px rgba(56, 189, 248, .15);
+            box-shadow: 0 0 0 1px #38bdf8;
         }
 
         .form-group {
@@ -207,10 +213,6 @@
             cursor: pointer;
         }
 
-        .back-btn:hover {
-            background: #475569;
-        }
-
         .message {
             margin-top: 15px;
             padding: 13px;
@@ -241,6 +243,16 @@
             margin-top: 10px;
         }
 
+        .method-info {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #0b1220;
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+        }
+
         .security-note {
             margin-top: 20px;
             padding: 13px;
@@ -250,16 +262,6 @@
             color: #94a3b8;
             font-size: 13px;
             line-height: 1.7;
-        }
-
-        .method-info {
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 8px;
-            background: #0b1220;
-            color: #94a3b8;
-            font-size: 13px;
-            text-align: center;
         }
 
         @media (max-width: 500px) {
@@ -276,23 +278,18 @@
         }
 
     </style>
-
 </head>
 
 
 <body>
 
-
 <div class="container">
-
 
     <div class="logo">
         Biz<span>Flow</span>
     </div>
 
-
     <div class="card">
-
 
         <h1>
             إتمام الاشتراك
@@ -302,7 +299,6 @@
         <!-- الباقة -->
 
         <div class="selected-plan">
-
 
             <div class="selected-row">
 
@@ -335,29 +331,24 @@
 
             </div>
 
-
         </div>
 
 
-        <!-- بيانات التحويل -->
+        <!-- الدفع -->
 
         <div class="payment-info">
-
 
             <h3>
                 بيانات التحويل
             </h3>
 
-
             <div>
                 قم بتحويل قيمة الباقة إلى الرقم التالي:
             </div>
 
-
             <div class="phone">
                 01125035655
             </div>
-
 
             <div class="note">
                 يمكنك الدفع عن طريق Etisalat Cash
@@ -366,15 +357,13 @@
             </div>
 
 
-            <!-- طرق الدفع -->
-
             <div class="methods">
-
 
                 <button
                     type="button"
                     class="method active"
                     id="etisalatMethod"
+                    onclick="selectPaymentMethod('etisalat_cash')"
                 >
                     Etisalat Cash
                 </button>
@@ -384,10 +373,10 @@
                     type="button"
                     class="method"
                     id="instapayMethod"
+                    onclick="selectPaymentMethod('instapay')"
                 >
                     InstaPay
                 </button>
-
 
             </div>
 
@@ -399,28 +388,24 @@
                 طريقة الدفع المختارة: Etisalat Cash
             </div>
 
-
         </div>
 
 
         <!-- الفورم -->
 
-        <form id="paymentForm">
-
+        <form
+            id="paymentForm"
+            onsubmit="submitPayment(event)"
+        >
 
             <div class="form-group">
 
-
                 <label>
-
                     رقم العملية
-
                     <span style="color:#64748b;">
                         (اختياري)
                     </span>
-
                 </label>
-
 
                 <input
                     type="text"
@@ -429,17 +414,14 @@
                     placeholder="اكتب رقم العملية إذا كان موجودًا"
                 >
 
-
             </div>
 
 
             <div class="form-group">
 
-
                 <label>
                     صورة إثبات الدفع
                 </label>
-
 
                 <input
                     type="file"
@@ -448,12 +430,9 @@
                     required
                 >
 
-
                 <div class="note">
-                    ارفع صورة واضحة للتحويل.
-                    الحد الأقصى 5MB.
+                    ارفع صورة واضحة للتحويل. الحد الأقصى 5MB.
                 </div>
-
 
             </div>
 
@@ -466,14 +445,13 @@
                 إرسال طلب الدفع
             </button>
 
-
         </form>
 
 
         <button
             class="back-btn"
             type="button"
-            id="backBtn"
+            onclick="window.location.href='plans.html'"
         >
             ← تغيير الباقة
         </button>
@@ -492,133 +470,57 @@
 
         </div>
 
-
     </div>
-
 
 </div>
 
 
 <script>
 
-/* =========================================================
-   استخدام Supabase الموجود في auth.js
-   مهم جدًا:
-   لا نعيد تعريف SUPABASE_URL أو SUPABASE_KEY
-========================================================= */
+/* =====================================================
+   SUPABASE
+===================================================== */
 
 const supabaseClient =
-    window.BizFlowAuth?.supabaseClient;
+    window.BizFlowAuth &&
+    window.BizFlowAuth.supabaseClient;
 
 
-/* =========================================================
-   التأكد من وجود Supabase
-========================================================= */
-
-if (!supabaseClient) {
-
-    console.error(
-        "BizFlow Auth / Supabase client is not available."
-    );
-
-}
-
-
-/* =========================================================
-   الباقات والأسعار
-========================================================= */
+/* =====================================================
+   الأسعار
+===================================================== */
 
 const PLAN_PRICES = {
-
     Basic: 99,
-
     Pro: 199,
-
     Business: 399
-
 };
 
 
-/* =========================================================
-   عناصر الصفحة
-========================================================= */
-
-const planElement =
-    document.getElementById(
-        "selectedPlan"
-    );
-
-
-const amountElement =
-    document.getElementById(
-        "selectedAmount"
-    );
-
-
-const paymentForm =
-    document.getElementById(
-        "paymentForm"
-    );
-
-
-const submitBtn =
-    document.getElementById(
-        "submitBtn"
-    );
-
-
-const proofFile =
-    document.getElementById(
-        "proofFile"
-    );
-
-
-const transactionId =
-    document.getElementById(
-        "transactionId"
-    );
-
-
-const etisalatMethod =
-    document.getElementById(
-        "etisalatMethod"
-    );
-
-
-const instapayMethod =
-    document.getElementById(
-        "instapayMethod"
-    );
-
-
-const methodInfo =
-    document.getElementById(
-        "methodInfo"
-    );
-
-
-/* =========================================================
-   الباقة المختارة
-========================================================= */
+/* =====================================================
+   بيانات الباقة
+===================================================== */
 
 const selectedPlan =
-    localStorage.getItem(
-        "selectedPlan"
-    );
+    localStorage.getItem("selectedPlan");
+
+let selectedMethod =
+    "etisalat_cash";
+
+let actualAmount =
+    null;
 
 
-const storedAmount =
-    localStorage.getItem(
-        "selectedAmount"
-    );
-
-
-let actualAmount = null;
-
-
-/* =========================================================
+/* =====================================================
    عرض الباقة
-========================================================= */
+===================================================== */
+
+const planElement =
+    document.getElementById("selectedPlan");
+
+const amountElement =
+    document.getElementById("selectedAmount");
+
 
 if (
     selectedPlan &&
@@ -631,107 +533,76 @@ if (
     actualAmount =
         PLAN_PRICES[selectedPlan];
 
-
     planElement.textContent =
         selectedPlan;
 
-
     amountElement.textContent =
-        actualAmount.toFixed(2) +
-        " EGP";
+        actualAmount.toFixed(2) + " EGP";
 
 } else {
 
     planElement.textContent =
         "لم يتم اختيار باقة";
 
-
     amountElement.textContent =
         "-";
-
 }
 
 
-/* =========================================================
-   طريقة الدفع
-========================================================= */
+/* =====================================================
+   اختيار طريقة الدفع
+===================================================== */
 
-let selectedMethod =
-    "etisalat_cash";
+function selectPaymentMethod(method) {
+
+    selectedMethod =
+        method;
 
 
-function updatePaymentMethodUI() {
+    const etisalat =
+        document.getElementById(
+            "etisalatMethod"
+        );
 
-    etisalatMethod.classList.remove(
-        "active"
-    );
+    const instapay =
+        document.getElementById(
+            "instapayMethod"
+        );
 
-    instapayMethod.classList.remove(
-        "active"
-    );
+    const methodInfo =
+        document.getElementById(
+            "methodInfo"
+        );
+
+
+    etisalat.classList.remove("active");
+    instapay.classList.remove("active");
 
 
     if (
-        selectedMethod ===
-        "instapay"
+        method === "instapay"
     ) {
 
-        instapayMethod.classList.add(
-            "active"
-        );
+        instapay.classList.add("active");
 
         methodInfo.textContent =
             "طريقة الدفع المختارة: InstaPay";
 
     } else {
 
-        etisalatMethod.classList.add(
-            "active"
-        );
+        etisalat.classList.add("active");
 
         methodInfo.textContent =
             "طريقة الدفع المختارة: Etisalat Cash";
+
     }
+
 }
 
 
-/* =========================================================
-   اختيار Etisalat
-========================================================= */
-
-etisalatMethod.addEventListener(
-    "click",
-    function() {
-
-        selectedMethod =
-            "etisalat_cash";
-
-        updatePaymentMethodUI();
-
-    }
-);
-
-
-/* =========================================================
-   اختيار InstaPay
-========================================================= */
-
-instapayMethod.addEventListener(
-    "click",
-    function() {
-
-        selectedMethod =
-            "instapay";
-
-        updatePaymentMethodUI();
-
-    }
-);
-
-
-/* =========================================================
+/* =====================================================
    الرسائل
-========================================================= */
+===================================================== */
 
 function showMessage(
     text,
@@ -743,475 +614,338 @@ function showMessage(
             "message"
         );
 
-
     message.textContent =
         text;
 
-
     message.className =
-        "message show " +
-        type;
+        "message show " + type;
 
 }
 
 
-/* =========================================================
-   تغيير الباقة
-========================================================= */
+/* =====================================================
+   إرسال طلب الدفع
+===================================================== */
 
-document
-    .getElementById(
-        "backBtn"
-    )
-    .addEventListener(
-        "click",
-        function() {
+async function submitPayment(event) {
 
-            window.location.href =
-                "plans.html";
+    event.preventDefault();
+
+
+    const submitBtn =
+        document.getElementById(
+            "submitBtn"
+        );
+
+
+    try {
+
+        /* ---------------------------------------------
+           فحص Supabase
+        --------------------------------------------- */
+
+        if (!supabaseClient) {
+
+            throw new Error(
+                "لم يتم تحميل اتصال Supabase."
+            );
 
         }
-    );
 
 
-/* =========================================================
-   إرسال طلب الدفع
-========================================================= */
-
-paymentForm.addEventListener(
-    "submit",
-    async function(event) {
-
-        event.preventDefault();
-
-
-        /* -----------------------------------------
-           منع الضغط المتكرر
-        ----------------------------------------- */
+        /* ---------------------------------------------
+           فحص الباقة
+        --------------------------------------------- */
 
         if (
-            submitBtn.disabled
+            !selectedPlan ||
+            !Object.prototype.hasOwnProperty.call(
+                PLAN_PRICES,
+                selectedPlan
+            )
         ) {
+
+            throw new Error(
+                "لم يتم اختيار باقة صحيحة."
+            );
+
+        }
+
+
+        actualAmount =
+            PLAN_PRICES[selectedPlan];
+
+
+        /* ---------------------------------------------
+           المستخدم
+        --------------------------------------------- */
+
+        const {
+            data: userData,
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (userError) {
+
+            throw userError;
+
+        }
+
+
+        const user =
+            userData?.user;
+
+
+        if (!user) {
+
+            window.location.href =
+                "login.html";
 
             return;
 
         }
 
 
-        try {
+        /* ---------------------------------------------
+           صورة إثبات الدفع
+        --------------------------------------------- */
 
+        const file =
+            document.getElementById(
+                "proofFile"
+            ).files[0];
 
-            /* =====================================
-               التأكد من Supabase
-            ===================================== */
 
-            if (!supabaseClient) {
+        if (!file) {
 
-                throw new Error(
-                    "Supabase client غير متاح. تأكد من تحميل js/auth.js."
-                );
-
-            }
-
-
-            /* =====================================
-               المستخدم الحالي
-            ===================================== */
-
-            const {
-                data: userData,
-                error: userError
-            } =
-                await supabaseClient
-                    .auth
-                    .getUser();
-
-
-            if (
-                userError
-            ) {
-
-                throw userError;
-
-            }
-
-
-            const user =
-                userData?.user;
-
-
-            if (!user) {
-
-                window.location.href =
-                    "login.html";
-
-                return;
-
-            }
-
-
-            /* =====================================
-               التحقق من الباقة
-            ===================================== */
-
-            if (
-                !selectedPlan ||
-                !Object.prototype.hasOwnProperty.call(
-                    PLAN_PRICES,
-                    selectedPlan
-                )
-            ) {
-
-                showMessage(
-                    "لم يتم اختيار باقة صحيحة. ارجع إلى صفحة الباقات واختر باقة.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            actualAmount =
-                PLAN_PRICES[
-                    selectedPlan
-                ];
-
-
-            /* =====================================
-               الملف
-            ===================================== */
-
-            const file =
-                proofFile.files[0];
-
-
-            if (!file) {
-
-                showMessage(
-                    "ارفع صورة إثبات الدفع.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            /* =====================================
-               نوع الملف
-            ===================================== */
-
-            const allowedTypes = [
-
-                "image/jpeg",
-
-                "image/png",
-
-                "image/webp"
-
-            ];
-
-
-            if (
-                !allowedTypes.includes(
-                    file.type
-                )
-            ) {
-
-                showMessage(
-                    "نوع الصورة غير مدعوم. استخدم JPG أو PNG أو WEBP.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            /* =====================================
-               حجم الملف
-            ===================================== */
-
-            if (
-                file.size >
-                5 * 1024 * 1024
-            ) {
-
-                showMessage(
-                    "حجم الصورة كبير جدًا. الحد الأقصى 5MB.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            /* =====================================
-               تعطيل الزر
-            ===================================== */
-
-            submitBtn.disabled =
-                true;
-
-            submitBtn.textContent =
-                "جاري رفع إثبات الدفع...";
-
-
-            /* =====================================
-               اسم آمن للملف
-            ===================================== */
-
-            const safeName =
-                file.name
-                    .replace(
-                        /[^a-zA-Z0-9._-]/g,
-                        "_"
-                    );
-
-
-            const filePath =
-                user.id +
-                "/" +
-                Date.now() +
-                "-" +
-                safeName;
-
-
-            /* =====================================
-               رفع الصورة
-            ===================================== */
-
-            const {
-                error: uploadError
-            } =
-                await supabaseClient
-                    .storage
-                    .from(
-                        "payment-proofs"
-                    )
-                    .upload(
-                        filePath,
-                        file,
-                        {
-                            upsert: false,
-                            contentType:
-                                file.type
-                        }
-                    );
-
-
-            if (uploadError) {
-
-                throw uploadError;
-
-            }
-
-
-            /* =====================================
-               تحديث النص
-            ===================================== */
-
-            submitBtn.textContent =
-                "جاري إنشاء طلب الدفع...";
-
-
-            /* =====================================
-               رقم العملية
-            ===================================== */
-
-            const transactionValue =
-                transactionId.value
-                    .trim();
-
-
-            /* =====================================
-               RPC
-            ===================================== */
-
-            const {
-                data: requestData,
-                error: requestError
-            } =
-                await supabaseClient
-                    .rpc(
-                        "submit_payment_request",
-                        {
-                            p_plan:
-                                selectedPlan,
-
-                            p_amount:
-                                actualAmount,
-
-                            p_payment_method:
-                                selectedMethod,
-
-                            p_transaction_id:
-                                transactionValue ||
-                                null,
-
-                            p_proof_path:
-                                filePath
-                        }
-                    );
-
-
-            if (requestError) {
-
-                throw requestError;
-
-            }
-
-
-            /* =====================================
-               التحقق من نتيجة RPC
-            ===================================== */
-
-            if (
-                !requestData ||
-                requestData.success !== true
-            ) {
-
-                throw new Error(
-                    "تعذر إنشاء طلب الدفع."
-                );
-
-            }
-
-
-            /* =====================================
-               نجاح
-            ===================================== */
-
-            showMessage(
-                "✅ تم إرسال طلب الدفع بنجاح. سيتم مراجعته من الإدارة.",
-                "success"
+            throw new Error(
+                "ارفع صورة إثبات الدفع أولاً."
             );
-
-
-            submitBtn.textContent =
-                "تم إرسال الطلب ✓";
-
-
-            submitBtn.disabled =
-                true;
-
-
-            /* =====================================
-               تنظيف البيانات
-            ===================================== */
-
-            localStorage.removeItem(
-                "selectedPlan"
-            );
-
-
-            localStorage.removeItem(
-                "selectedAmount"
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "PAYMENT ERROR:",
-                error
-            );
-
-
-            let errorMessage =
-                "حدث خطأ أثناء إرسال طلب الدفع.";
-
-
-            const rawMessage =
-                error?.message ||
-                "";
-
-
-            if (
-                rawMessage.includes(
-                    "pending payment request"
-                )
-            ) {
-
-                errorMessage =
-                    "لديك بالفعل طلب دفع قيد المراجعة. انتظر رد الإدارة.";
-
-            } else if (
-                rawMessage.includes(
-                    "Invalid plan"
-                )
-            ) {
-
-                errorMessage =
-                    "الباقة المختارة غير صحيحة.";
-
-            } else if (
-                rawMessage.includes(
-                    "Invalid plan amount"
-                )
-            ) {
-
-                errorMessage =
-                    "قيمة الباقة غير صحيحة.";
-
-            } else if (
-                rawMessage.includes(
-                    "Payment proof is required"
-                )
-            ) {
-
-                errorMessage =
-                    "يجب رفع إثبات الدفع.";
-
-            } else if (
-                rawMessage.includes(
-                    "Authentication required"
-                )
-            ) {
-
-                errorMessage =
-                    "انتهت جلسة تسجيل الدخول. سجل الدخول مرة أخرى.";
-
-            } else if (
-                rawMessage
-            ) {
-
-                errorMessage =
-                    rawMessage;
-
-            }
-
-
-            showMessage(
-                errorMessage,
-                "error"
-            );
-
-
-            submitBtn.disabled =
-                false;
-
-
-            submitBtn.textContent =
-                "إرسال طلب الدفع";
 
         }
 
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+
+        if (
+            !allowedTypes.includes(
+                file.type
+            )
+        ) {
+
+            throw new Error(
+                "نوع الصورة غير مدعوم. استخدم JPG أو PNG أو WEBP."
+            );
+
+        }
+
+
+        if (
+            file.size >
+            5 * 1024 * 1024
+        ) {
+
+            throw new Error(
+                "حجم الصورة أكبر من 5MB."
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           تعطيل الزر
+        --------------------------------------------- */
+
+        submitBtn.disabled =
+            true;
+
+        submitBtn.textContent =
+            "جاري رفع إثبات الدفع...";
+
+
+        /* ---------------------------------------------
+           مسار الصورة
+        --------------------------------------------- */
+
+        const safeName =
+            file.name.replace(
+                /[^a-zA-Z0-9._-]/g,
+                "_"
+            );
+
+
+        const filePath =
+            user.id +
+            "/" +
+            Date.now() +
+            "-" +
+            safeName;
+
+
+        /* ---------------------------------------------
+           Upload
+        --------------------------------------------- */
+
+        const {
+            error: uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from("payment-proofs")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        upsert: false,
+                        contentType: file.type
+                    }
+                );
+
+
+        if (uploadError) {
+
+            throw uploadError;
+
+        }
+
+
+        /* ---------------------------------------------
+           إنشاء الطلب
+        --------------------------------------------- */
+
+        submitBtn.textContent =
+            "جاري إنشاء طلب الدفع...";
+
+
+        const transaction =
+            document
+                .getElementById(
+                    "transactionId"
+                )
+                .value
+                .trim();
+
+
+        const {
+            data: requestData,
+            error: requestError
+        } =
+            await supabaseClient.rpc(
+                "submit_payment_request",
+                {
+                    p_plan:
+                        selectedPlan,
+
+                    p_amount:
+                        actualAmount,
+
+                    p_payment_method:
+                        selectedMethod,
+
+                    p_transaction_id:
+                        transaction || null,
+
+                    p_proof_path:
+                        filePath
+                }
+            );
+
+
+        if (requestError) {
+
+            throw requestError;
+
+        }
+
+
+        if (
+            !requestData ||
+            requestData.success !== true
+        ) {
+
+            throw new Error(
+                "لم يتم إنشاء طلب الدفع."
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           نجاح
+        --------------------------------------------- */
+
+        showMessage(
+            "✅ تم إرسال طلب الدفع بنجاح. سيتم مراجعته من الإدارة.",
+            "success"
+        );
+
+
+        submitBtn.textContent =
+            "تم إرسال الطلب ✓";
+
+
+        submitBtn.disabled =
+            true;
+
+
+        localStorage.removeItem(
+            "selectedPlan"
+        );
+
+        localStorage.removeItem(
+            "selectedAmount"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "PAYMENT ERROR:",
+            error
+        );
+
+
+        let msg =
+            error?.message ||
+            "حدث خطأ أثناء إرسال طلب الدفع.";
+
+
+        if (
+            msg.includes(
+                "pending payment request"
+            )
+        ) {
+
+            msg =
+                "لديك بالفعل طلب دفع قيد المراجعة. انتظر رد الإدارة.";
+
+        }
+
+
+        showMessage(
+            msg,
+            "error"
+        );
+
+
+        submitBtn.disabled =
+            false;
+
+        submitBtn.textContent =
+            "إرسال طلب الدفع";
+
     }
-);
 
-
-/* =========================================================
-   تشغيل الواجهة
-========================================================= */
-
-updatePaymentMethodUI();
+}
 
 </script>
 
-
 </body>
-
 </html>
