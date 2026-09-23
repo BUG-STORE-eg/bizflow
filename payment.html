@@ -2,13 +2,8 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>BizFlow - الدفع</title>
 
@@ -17,7 +12,6 @@
     <script src="js/auth.js"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -25,268 +19,381 @@
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #0f1117;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #0b0f17;
             color: #fff;
-            padding: 25px;
         }
 
         .container {
-            width: 100%;
-            max-width: 700px;
+            width: min(650px, 92%);
             margin: auto;
-        }
-
-        .box {
-            background: #151923;
-            border: 1px solid #292f3d;
-            border-radius: 20px;
-            padding: 28px;
+            padding: 45px 0;
         }
 
         .logo {
             text-align: center;
             font-size: 32px;
-            font-weight: bold;
+            font-weight: 800;
             margin-bottom: 30px;
         }
 
         .logo span {
-            color: #4f8cff;
+            color: #38bdf8;
         }
 
-        .plan {
-            background: #10141d;
-            border: 1px solid #292f3d;
-            padding: 20px;
-            border-radius: 15px;
+        .card {
+            background: #111827;
+            border: 1px solid #263244;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .card h1 {
+            margin: 0 0 25px;
+            text-align: center;
+            font-size: 26px;
+        }
+
+        .selected-plan {
+            background: #0b1220;
+            border: 1px solid #263244;
+            border-radius: 12px;
+            padding: 18px;
             margin-bottom: 22px;
         }
 
-        .plan-name {
-            color: #8f97a8;
+        .selected-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 0;
         }
 
-        .amount {
-            font-size: 32px;
-            font-weight: bold;
-            margin-top: 8px;
+        .selected-row:not(:last-child) {
+            border-bottom: 1px solid #202b3d;
         }
 
-        .payment-number {
-            background: #202636;
+        .selected-label {
+            color: #94a3b8;
+        }
+
+        .selected-value {
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .payment-info {
+            background: #0f172a;
+            border: 1px solid #263244;
             border-radius: 12px;
             padding: 18px;
-            margin: 20px 0;
+            margin-bottom: 22px;
         }
 
-        .payment-number strong {
-            display: block;
-            font-size: 24px;
+        .payment-info h3 {
+            margin: 0 0 15px;
+        }
+
+        .phone {
+            font-size: 25px;
+            font-weight: 800;
+            color: #22c55e;
             direction: ltr;
             text-align: center;
-            margin-top: 8px;
+            margin: 12px 0;
         }
 
-        label {
-            display: block;
-            color: #b8beca;
-            margin: 15px 0 8px;
+        .methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
         }
 
-        select,
-        input {
-            width: 100%;
-            padding: 13px;
-            background: #0f1117;
-            border: 1px solid #2a3040;
+        .method {
+            border: 1px solid #334155;
+            background: #111827;
+            color: #cbd5e1;
             border-radius: 10px;
-            color: #fff;
-            outline: none;
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .method.active {
+            border-color: #38bdf8;
+            color: #38bdf8;
+            background: #0c1d2b;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 9px;
+            border: 1px solid #334155;
+            background: #0b1220;
+            color: white;
         }
 
         input[type="file"] {
-            padding: 10px;
-        }
-
-        button {
-            width: 100%;
-            border: 0;
-            padding: 14px;
-            border-radius: 10px;
-            background: #4f8cff;
-            color: #fff;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
         }
 
-        button:disabled {
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .submit-btn:disabled {
             opacity: .6;
             cursor: not-allowed;
         }
 
-        .back {
-            background: #272c38;
+        .back-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 0;
+            border-radius: 10px;
+            background: #334155;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
         }
 
-        .error,
-        .success {
-            display: none;
+        .message {
+            margin-top: 15px;
             padding: 13px;
             border-radius: 10px;
-            margin-bottom: 18px;
-            line-height: 1.6;
+            text-align: center;
+            display: none;
         }
 
-        .error {
-            background: #3b2024;
-            color: #ff9ca5;
+        .message.show {
+            display: block;
         }
 
-        .success {
-            background: #173526;
-            color: #8de0ad;
+        .message.success {
+            background: #064e3b;
+            color: #a7f3d0;
         }
 
+        .message.error {
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        .note {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.7;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 500px) {
+
+            .methods {
+                grid-template-columns: 1fr;
+            }
+
+            .selected-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
     </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-    <div class="box">
+    <div class="logo">
+        Biz<span>Flow</span>
+    </div>
 
-        <div class="logo">
-            Biz<span>Flow</span>
+
+    <div class="card">
+
+        <h1>
+            إتمام الاشتراك
+        </h1>
+
+
+        <!-- SELECTED PLAN -->
+
+        <div class="selected-plan">
+
+            <div class="selected-row">
+
+                <span class="selected-label">
+                    الباقة المختارة
+                </span>
+
+                <strong
+                    class="selected-value"
+                    id="selectedPlan">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="selected-row">
+
+                <span class="selected-label">
+                    السعر
+                </span>
+
+                <strong
+                    class="selected-value"
+                    id="selectedAmount">
+                    -
+                </strong>
+
+            </div>
+
         </div>
 
 
-        <div
-            id="errorBox"
-            class="error"
-        ></div>
+        <!-- PAYMENT INFO -->
 
+        <div class="payment-info">
 
-        <div
-            id="successBox"
-            class="success"
-        ></div>
-
-
-        <div class="plan">
-
-            <div class="plan-name">
-                الباقة المختارة
-            </div>
-
-            <div
-                id="planName"
-                class="amount"
-            >
-                -
-            </div>
-
-            <div
-                id="planAmount"
-                style="color:#8f97a8;margin-top:8px;"
-            >
-                -
-            </div>
-
-        </div>
-
-
-        <div class="payment-number">
+            <h3>
+                بيانات التحويل
+            </h3>
 
             <div>
-                رقم التحويل:
+                قم بتحويل قيمة الباقة إلى الرقم التالي:
             </div>
 
-            <strong>
+            <div class="phone">
                 01125035655
-            </strong>
+            </div>
 
-            <div
-                style="
-                    color:#8f97a8;
-                    text-align:center;
-                    margin-top:8px;
-                "
-            >
-                Etisalat Cash / InstaPay
+            <div class="note">
+                يمكنك الدفع عن طريق Etisalat Cash
+                أو InstaPay، وبعد التحويل ارفع صورة
+                إثبات الدفع بالأسفل.
+            </div>
+
+
+            <div class="methods">
+
+                <div
+                    class="method active"
+                    id="etisalatMethod"
+                    onclick="selectMethod('etisalat_cash')">
+
+                    Etisalat Cash
+
+                </div>
+
+                <div
+                    class="method"
+                    id="instapayMethod"
+                    onclick="selectMethod('instapay')">
+
+                    InstaPay
+
+                </div>
+
             </div>
 
         </div>
 
+
+        <!-- FORM -->
 
         <form id="paymentForm">
 
-            <label>
-                طريقة الدفع
-            </label>
+            <div class="form-group">
 
-            <select
-                id="paymentMethod"
-                required
-            >
+                <label>
+                    رقم العملية
+                    <span style="color:#64748b;">
+                        (اختياري)
+                    </span>
+                </label>
 
-                <option value="">
-                    اختر طريقة الدفع
-                </option>
+                <input
+                    type="text"
+                    id="transactionId"
+                    placeholder="اكتب رقم العملية إذا كان موجودًا">
 
-                <option value="etisalat_cash">
-                    Etisalat Cash
-                </option>
-
-                <option value="instapay">
-                    InstaPay
-                </option>
-
-            </select>
+            </div>
 
 
-            <label>
-                رقم العملية - اختياري
-            </label>
+            <div class="form-group">
 
-            <input
-                id="transactionId"
-                type="text"
-                placeholder="رقم العملية"
-            >
+                <label>
+                    صورة إثبات الدفع
+                </label>
 
+                <input
+                    type="file"
+                    id="proofFile"
+                    accept="image/*"
+                    required>
 
-            <label>
-                صورة إثبات الدفع
-            </label>
+                <div class="note">
+                    ارفع صورة واضحة للتحويل.
+                </div>
 
-            <input
-                id="proof"
-                type="file"
-                accept="image/*"
-                required
-            >
+            </div>
 
 
             <button
-                id="submitBtn"
                 type="submit"
-            >
-                إرسال طلب الاشتراك
+                class="submit-btn"
+                id="submitBtn">
+
+                إرسال طلب الدفع
+
             </button>
 
         </form>
 
 
         <button
-            class="back"
-            onclick="window.location.href='plans.html'"
-        >
-            العودة للباقات
+            class="back-btn"
+            onclick="window.location.href='plans.html'">
+
+            ← تغيير الباقة
+
         </button>
+
+
+        <div
+            class="message"
+            id="message">
+        </div>
 
     </div>
 
@@ -295,128 +402,138 @@
 
 <script>
 
-const supabaseClient =
-    BizFlowAuth.supabaseClient;
-
-
-let currentUser = null;
-
-
-let selectedPlan =
+const selectedPlan =
     localStorage.getItem(
-        "bizflow_selected_plan"
+        "selectedPlan"
     );
 
-let selectedAmount =
-    Number(
-        localStorage.getItem(
-            "bizflow_selected_amount"
-        )
+const selectedAmount =
+    localStorage.getItem(
+        "selectedAmount"
     );
 
 
-const planName =
+const planElement =
     document.getElementById(
-        "planName"
+        "selectedPlan"
     );
 
-const planAmount =
+const amountElement =
     document.getElementById(
-        "planAmount"
-    );
-
-const errorBox =
-    document.getElementById(
-        "errorBox"
-    );
-
-const successBox =
-    document.getElementById(
-        "successBox"
-    );
-
-const submitBtn =
-    document.getElementById(
-        "submitBtn"
+        "selectedAmount"
     );
 
 
-function showError(message) {
+// ==========================================
+// SHOW SELECTED PLAN
+// ==========================================
 
-    errorBox.textContent =
-        message;
+if (selectedPlan) {
 
-    errorBox.style.display =
-        "block";
-
-    successBox.style.display =
-        "none";
-
-}
-
-
-function showSuccess(message) {
-
-    successBox.textContent =
-        message;
-
-    successBox.style.display =
-        "block";
-
-    errorBox.style.display =
-        "none";
-
-}
-
-
-async function initPayment() {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient.auth.getUser();
-
-
-    if (
-        error ||
-        !data ||
-        !data.user
-    ) {
-
-        window.location.href =
-            "login.html";
-
-        return;
-    }
-
-
-    currentUser =
-        data.user;
-
-
-    if (
-        !selectedPlan ||
-        !selectedAmount
-    ) {
-
-        window.location.href =
-            "plans.html";
-
-        return;
-    }
-
-
-    planName.textContent =
+    planElement.textContent =
         selectedPlan;
 
+} else {
 
-    planAmount.textContent =
-        selectedAmount +
-        " ج.م / شهر";
+    planElement.textContent =
+        "-";
 
 }
 
+
+if (selectedAmount) {
+
+    amountElement.textContent =
+        Number(selectedAmount)
+        .toFixed(2) + " EGP";
+
+} else {
+
+    amountElement.textContent =
+        "-";
+
+}
+
+
+// ==========================================
+// PAYMENT METHOD
+// ==========================================
+
+let selectedMethod =
+    "etisalat_cash";
+
+
+function selectMethod(method) {
+
+    selectedMethod =
+        method;
+
+
+    document
+        .getElementById(
+            "etisalatMethod"
+        )
+        .classList.remove("active");
+
+
+    document
+        .getElementById(
+            "instapayMethod"
+        )
+        .classList.remove("active");
+
+
+    if (
+        method ===
+        "etisalat_cash"
+    ) {
+
+        document
+            .getElementById(
+                "etisalatMethod"
+            )
+            .classList.add("active");
+
+    } else {
+
+        document
+            .getElementById(
+                "instapayMethod"
+            )
+            .classList.add("active");
+
+    }
+
+}
+
+
+// ==========================================
+// MESSAGE
+// ==========================================
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.textContent =
+        text;
+
+    message.className =
+        "message show " +
+        type;
+
+}
+
+
+// ==========================================
+// PAYMENT SUBMIT
+// ==========================================
 
 document
     .getElementById(
@@ -429,89 +546,60 @@ document
             event.preventDefault();
 
 
-            showError("");
-
-            errorBox.style.display =
-                "none";
-
-            successBox.style.display =
-                "none";
-
-
-            const paymentMethod =
-                document
-                    .getElementById(
-                        "paymentMethod"
-                    )
-                    .value;
+            const {
+                data: {
+                    session
+                }
+            } =
+                await supabaseClient
+                    .auth
+                    .getSession();
 
 
-            const transactionId =
-                document
-                    .getElementById(
-                        "transactionId"
-                    )
-                    .value
-                    .trim();
+            if (!session) {
 
-
-            const proofFile =
-                document
-                    .getElementById(
-                        "proof"
-                    )
-                    .files[0];
-
-
-            if (!paymentMethod) {
-
-                showError(
-                    "اختر طريقة الدفع."
-                );
+                window.location.href =
+                    "login.html";
 
                 return;
-
-            }
-
-
-            if (!proofFile) {
-
-                showError(
-                    "ارفع صورة إثبات الدفع."
-                );
-
-                return;
-
             }
 
 
             if (
-                !proofFile.type.startsWith(
-                    "image/"
-                )
+                !selectedPlan ||
+                !selectedAmount
             ) {
 
-                showError(
-                    "الملف يجب أن يكون صورة."
+                showMessage(
+                    "لم يتم اختيار باقة.",
+                    "error"
                 );
 
                 return;
-
             }
 
 
-            if (
-                proofFile.size >
-                5 * 1024 * 1024
-            ) {
+            const file =
+                document.getElementById(
+                    "proofFile"
+                ).files[0];
 
-                showError(
-                    "حجم الصورة يجب ألا يتجاوز 5MB."
+
+            if (!file) {
+
+                showMessage(
+                    "ارفع صورة إثبات الدفع.",
+                    "error"
                 );
 
                 return;
-
             }
+
+
+            const submitBtn =
+                document.getElementById(
+                    "submitBtn"
+                );
 
 
             submitBtn.disabled =
@@ -523,15 +611,16 @@ document
 
             try {
 
-                /*
-                    مسار الملف:
+                const userId =
+                    session.user.id;
 
-                    user-id /
-                    timestamp-file-name
-                */
+
+                // ==================================
+                // FILE NAME
+                // ==================================
 
                 const safeName =
-                    proofFile.name
+                    file.name
                         .replace(
                             /[^a-zA-Z0-9._-]/g,
                             "_"
@@ -539,16 +628,20 @@ document
 
 
                 const filePath =
-                    currentUser.id +
+                    userId +
                     "/" +
                     Date.now() +
                     "-" +
                     safeName;
 
 
+                // ==================================
+                // UPLOAD PROOF
+                // ==================================
+
                 const {
                     error:
-                        uploadError
+                    uploadError
                 } =
                     await supabaseClient
                         .storage
@@ -557,7 +650,7 @@ document
                         )
                         .upload(
                             filePath,
-                            proofFile,
+                            file,
                             {
                                 upsert: false
                             }
@@ -571,9 +664,13 @@ document
                 }
 
 
+                // ==================================
+                // INSERT PAYMENT REQUEST
+                // ==================================
+
                 const {
                     error:
-                        requestError
+                    insertError
                 } =
                     await supabaseClient
                         .from(
@@ -582,71 +679,70 @@ document
                         .insert({
 
                             user_id:
-                                currentUser.id,
+                                userId,
 
                             plan:
                                 selectedPlan,
 
                             amount:
-                                selectedAmount,
+                                Number(
+                                    selectedAmount
+                                ),
 
                             payment_method:
-                                paymentMethod,
+                                selectedMethod,
 
                             transaction_id:
-                                transactionId ||
+                                document
+                                    .getElementById(
+                                        "transactionId"
+                                    )
+                                    .value
+                                    .trim() ||
                                 null,
 
                             proof_path:
-                                filePath,
-
-                            status:
-                                "pending"
+                                filePath
 
                         });
 
 
-                if (requestError) {
+                if (insertError) {
 
-                    throw requestError;
+                    throw insertError;
 
                 }
 
 
-                localStorage.removeItem(
-                    "bizflow_selected_plan"
-                );
-
-                localStorage.removeItem(
-                    "bizflow_selected_amount"
+                showMessage(
+                    "تم إرسال طلب الدفع بنجاح. انتظر موافقة الإدارة.",
+                    "success"
                 );
 
 
-                showSuccess(
-                    "تم إرسال طلب الاشتراك بنجاح. طلبك الآن قيد المراجعة من الإدارة."
-                );
-
-
+                // منع إرسال طلب ثاني بالغلط
                 submitBtn.textContent =
-                    "تم إرسال الطلب";
+                    "تم إرسال الطلب ✓";
 
 
-                setTimeout(() => {
+                // تنظيف البيانات بعد نجاح الطلب
+                localStorage.removeItem(
+                    "selectedPlan"
+                );
 
-                    window.location.href =
-                        "plans.html";
-
-                }, 1800);
+                localStorage.removeItem(
+                    "selectedAmount"
+                );
 
 
             } catch (error) {
 
                 console.error(error);
 
-
-                showError(
+                showMessage(
                     error.message ||
-                    "حدث خطأ أثناء إرسال الطلب."
+                    "حدث خطأ أثناء إرسال الطلب.",
+                    "error"
                 );
 
 
@@ -654,15 +750,12 @@ document
                     false;
 
                 submitBtn.textContent =
-                    "إرسال طلب الاشتراك";
+                    "إرسال طلب الدفع";
 
             }
 
         }
     );
-
-
-initPayment();
 
 </script>
 
