@@ -2,33 +2,23 @@
 <html lang="ar" dir="rtl">
 
 <head>
-
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>BizFlow - المنتجات</title>
 
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
+  <link rel="stylesheet" href="css/style.css">
 
   <style>
-
     .page-actions {
       display: flex;
       gap: 10px;
       align-items: center;
-      flex-wrap: wrap;
     }
 
     .primary {
       display: inline-block;
-      text-decoration: none;
       background: #6c63ff;
       color: white;
       border: 0;
@@ -59,11 +49,17 @@
       background: #0f172a;
       color: white;
       outline: none;
+      font-size: 15px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
     }
 
     .products-table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 700px;
     }
 
     .products-table th,
@@ -113,11 +109,11 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.7);
+      background: rgba(0, 0, 0, .75);
       align-items: center;
       justify-content: center;
       padding: 20px;
-      z-index: 999;
+      z-index: 9999;
     }
 
     .modal-box {
@@ -139,7 +135,6 @@
     .form-group label {
       display: block;
       margin-bottom: 7px;
-      color: #cbd5e1;
     }
 
     .form-group input {
@@ -162,17 +157,6 @@
       flex: 1;
     }
 
-    .empty-products {
-      text-align: center;
-      padding: 50px 20px;
-      color: #94a3b8;
-    }
-
-    .empty-products .icon {
-      font-size: 45px;
-      margin-bottom: 10px;
-    }
-
     .message {
       display: none;
       padding: 12px;
@@ -180,30 +164,22 @@
       margin-bottom: 15px;
     }
 
-    .message.success {
+    .success {
       background: #063b25;
       color: #4ade80;
     }
 
-    .message.error {
+    .error {
       background: #3b1111;
       color: #f87171;
     }
 
-    @media (max-width: 700px) {
-
-      .products-table {
-        min-width: 650px;
-      }
-
-      .table-scroll {
-        overflow-x: auto;
-      }
-
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #94a3b8;
     }
-
   </style>
-
 </head>
 
 
@@ -214,7 +190,6 @@
     <div class="brand">
       Biz<span>Flow</span>
     </div>
-
 
     <nav>
 
@@ -244,7 +219,6 @@
 
     </nav>
 
-
     <button
       id="logoutBtn"
       class="logout"
@@ -272,12 +246,11 @@
 
       </div>
 
-
       <div
         class="user"
         id="userEmail"
       >
-        جاري التحميل...
+        جاري التحقق...
       </div>
 
     </header>
@@ -295,6 +268,7 @@
 
           <button
             class="primary"
+            type="button"
             onclick="openAddModal()"
           >
             + إضافة منتج
@@ -325,12 +299,8 @@
 
       <div
         id="loading"
-        class="empty-products"
+        class="loading"
       >
-        <div class="icon">
-          ⏳
-        </div>
-
         جاري تحميل المنتجات...
       </div>
 
@@ -347,27 +317,11 @@
             <thead>
 
               <tr>
-
-                <th>
-                  المنتج
-                </th>
-
-                <th>
-                  السعر
-                </th>
-
-                <th>
-                  المخزون
-                </th>
-
-                <th>
-                  تاريخ الإضافة
-                </th>
-
-                <th>
-                  الإجراءات
-                </th>
-
+                <th>المنتج</th>
+                <th>السعر</th>
+                <th>المخزون</th>
+                <th>تاريخ الإضافة</th>
+                <th>الإجراءات</th>
               </tr>
 
             </thead>
@@ -385,7 +339,7 @@
   </main>
 
 
-  <!-- Modal -->
+  <!-- إضافة / تعديل منتج -->
 
   <div
     id="productModal"
@@ -398,12 +352,10 @@
         إضافة منتج
       </h2>
 
-
       <div
         id="formMessage"
         class="message"
       ></div>
-
 
       <div class="form-group">
 
@@ -418,7 +370,6 @@
         >
 
       </div>
-
 
       <div class="form-group">
 
@@ -436,7 +387,6 @@
 
       </div>
 
-
       <div class="form-group">
 
         <label>
@@ -453,11 +403,11 @@
 
       </div>
 
-
       <div class="modal-actions">
 
         <button
           class="primary"
+          type="button"
           onclick="saveProduct()"
         >
           حفظ
@@ -465,6 +415,7 @@
 
         <button
           class="secondary"
+          type="button"
           onclick="closeModal()"
         >
           إلغاء
@@ -481,20 +432,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="js/auth.js"></script>
-
 
   <script>
-
-    // =====================================================
-    // Supabase
-    // =====================================================
 
     const SUPABASE_URL =
       "https://oklabfxjcekfwirnqlji.supabase.co";
 
     const SUPABASE_KEY =
       "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
 
     const supabaseClient =
       supabase.createClient(
@@ -503,140 +449,86 @@
       );
 
 
-    // =====================================================
-    // Variables
-    // =====================================================
+    let currentUser = null;
 
     let products = [];
 
     let editingProductId = null;
 
 
-    // =====================================================
-    // HTML Helpers
-    // =====================================================
+    // ==========================================
+    // تسجيل الدخول
+    // ==========================================
 
-    function escapeHtml(value) {
+    async function checkLogin() {
 
-      if (
-        value === null ||
-        value === undefined
-      ) {
-        return "";
-      }
+      try {
 
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.getUser();
 
 
-    function formatDate(date) {
-
-      if (!date) {
-        return "-";
-      }
-
-      return new Date(date)
-        .toLocaleDateString("ar-EG");
-    }
+        if (error) {
+          throw error;
+        }
 
 
-    function showMessage(
-      text,
-      type = "success"
-    ) {
+        if (!data || !data.user) {
 
-      const element =
-        document.getElementById("message");
+          window.location.href =
+            "login.html";
 
-      element.textContent = text;
-
-      element.className =
-        "message " + type;
-
-      element.style.display = "block";
+          return false;
+        }
 
 
-      setTimeout(() => {
-
-        element.style.display = "none";
-
-      }, 4000);
-    }
+        currentUser =
+          data.user;
 
 
-    function showFormMessage(
-      text,
-      type = "error"
-    ) {
-
-      const element =
         document.getElementById(
-          "formMessage"
+          "userEmail"
+        ).textContent =
+          currentUser.email;
+
+
+        return true;
+
+      } catch (error) {
+
+        console.error(
+          "Auth error:",
+          error
         );
 
-      element.textContent = text;
 
-      element.className =
-        "message " + type;
-
-      element.style.display = "block";
-    }
-
-
-    // =====================================================
-    // Current User
-    // =====================================================
-
-    async function getCurrentUser() {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .auth
-          .getUser();
+        document.getElementById(
+          "loading"
+        ).textContent =
+          "حدث خطأ في التحقق من تسجيل الدخول: " +
+          error.message;
 
 
-      if (
-        error ||
-        !data ||
-        !data.user
-      ) {
-
-        window.location.href =
-          "login.html";
-
-        return null;
+        return false;
       }
 
-
-      document.getElementById(
-        "userEmail"
-      ).textContent =
-        data.user.email;
-
-
-      return data.user;
     }
 
 
-    // =====================================================
-    // Load Products
-    // =====================================================
+    // ==========================================
+    // تحميل المنتجات
+    // ==========================================
 
     async function loadProducts() {
 
-      const user =
-        await getCurrentUser();
+      const loggedIn =
+        await checkLogin();
 
 
-      if (!user) {
+      if (!loggedIn) {
         return;
       }
 
@@ -648,49 +540,60 @@
         await supabaseClient
           .from("products")
           .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", {
-            ascending: false
-          });
+          .eq(
+            "user_id",
+            currentUser.id
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false
+            }
+          );
 
 
       if (error) {
 
-        console.error(error);
-
-        showMessage(
-          "حدث خطأ أثناء تحميل المنتجات: " +
-          error.message,
-          "error"
+        console.error(
+          "Products error:",
+          error
         );
+
 
         document.getElementById(
           "loading"
-        ).style.display = "none";
+        ).textContent =
+          "حدث خطأ أثناء تحميل المنتجات: " +
+          error.message;
+
 
         return;
       }
 
 
-      products = data || [];
+      products =
+        data || [];
 
 
       document.getElementById(
         "loading"
-      ).style.display = "none";
+      ).style.display =
+        "none";
+
 
       document.getElementById(
         "productsArea"
-      ).style.display = "block";
+      ).style.display =
+        "block";
 
 
       renderProducts();
     }
 
 
-    // =====================================================
-    // Render Products
-    // =====================================================
+    // ==========================================
+    // عرض المنتجات
+    // ==========================================
 
     function renderProducts() {
 
@@ -704,18 +607,17 @@
         document.getElementById(
           "searchInput"
         ).value
-          .trim()
-          .toLowerCase();
+        .trim()
+        .toLowerCase();
 
 
       const filtered =
-        products.filter(product => {
-
-          return product.name
-            .toLowerCase()
-            .includes(search);
-
-        });
+        products.filter(
+          product =>
+            String(product.name)
+              .toLowerCase()
+              .includes(search)
+        );
 
 
       if (filtered.length === 0) {
@@ -750,80 +652,95 @@
 
 
       body.innerHTML =
-        filtered.map(product => {
+        filtered.map(
+          product => {
 
-          let stockClass =
-            "stock-good";
+            let stockClass =
+              "stock-good";
 
 
-          if (product.stock === 0) {
-            stockClass = "stock-empty";
+            if (
+              Number(product.stock) === 0
+            ) {
+
+              stockClass =
+                "stock-empty";
+
+            }
+            else if (
+              Number(product.stock) <= 5
+            ) {
+
+              stockClass =
+                "stock-low";
+
+            }
+
+
+            return `
+
+              <tr>
+
+                <td>
+                  <strong>
+                    ${escapeHtml(product.name)}
+                  </strong>
+                </td>
+
+                <td>
+                  ${Number(product.price).toLocaleString("ar-EG")}
+                  ج.م
+                </td>
+
+                <td>
+
+                  <span class="${stockClass}">
+                    ${Number(product.stock)}
+                  </span>
+
+                </td>
+
+                <td>
+                  ${formatDate(product.created_at)}
+                </td>
+
+                <td>
+
+                  <button
+                    class="action-btn edit-btn"
+                    type="button"
+                    onclick="editProduct('${product.id}')"
+                  >
+                    تعديل
+                  </button>
+
+                  <button
+                    class="action-btn delete-btn"
+                    type="button"
+                    onclick="deleteProduct('${product.id}')"
+                  >
+                    حذف
+                  </button>
+
+                </td>
+
+              </tr>
+
+            `;
+
           }
-          else if (product.stock <= 5) {
-            stockClass = "stock-low";
-          }
-
-
-          return `
-
-            <tr>
-
-              <td>
-                <strong>
-                  ${escapeHtml(product.name)}
-                </strong>
-              </td>
-
-              <td>
-                ${Number(product.price).toLocaleString("ar-EG")}
-                ج.م
-              </td>
-
-              <td>
-
-                <span class="${stockClass}">
-                  ${Number(product.stock)}
-                </span>
-
-              </td>
-
-              <td>
-                ${formatDate(product.created_at)}
-              </td>
-
-              <td>
-
-                <button
-                  class="action-btn edit-btn"
-                  onclick="editProduct('${product.id}')"
-                >
-                  تعديل
-                </button>
-
-                <button
-                  class="action-btn delete-btn"
-                  onclick="deleteProduct('${product.id}')"
-                >
-                  حذف
-                </button>
-
-              </td>
-
-            </tr>
-
-          `;
-
-        }).join("");
+        ).join("");
     }
 
 
-    // =====================================================
-    // Open Add Modal
-    // =====================================================
+    // ==========================================
+    // إضافة منتج
+    // ==========================================
 
     function openAddModal() {
 
-      editingProductId = null;
+      editingProductId =
+        null;
 
 
       document.getElementById(
@@ -834,45 +751,51 @@
 
       document.getElementById(
         "productName"
-      ).value = "";
+      ).value =
+        "";
 
 
       document.getElementById(
         "productPrice"
-      ).value = "";
+      ).value =
+        "";
 
 
       document.getElementById(
         "productStock"
-      ).value = "";
+      ).value =
+        "";
 
 
       document.getElementById(
         "formMessage"
-      ).style.display = "none";
+      ).style.display =
+        "none";
 
 
       document.getElementById(
         "productModal"
-      ).style.display = "flex";
+      ).style.display =
+        "flex";
     }
 
 
-    // =====================================================
-    // Close Modal
-    // =====================================================
+    // ==========================================
+    // إغلاق
+    // ==========================================
 
     function closeModal() {
 
       document.getElementById(
         "productModal"
-      ).style.display = "none";
+      ).style.display =
+        "none";
     }
 
 
-    // =====================================================
-    // Edit Product
-    // =====================================================
+    // ==========================================
+    // تعديل
+    // ==========================================
 
     function editProduct(id) {
 
@@ -917,26 +840,29 @@
 
       document.getElementById(
         "formMessage"
-      ).style.display = "none";
+      ).style.display =
+        "none";
 
 
       document.getElementById(
         "productModal"
-      ).style.display = "flex";
+      ).style.display =
+        "flex";
     }
 
 
-    // =====================================================
-    // Save Product
-    // =====================================================
+    // ==========================================
+    // حفظ
+    // ==========================================
 
     async function saveProduct() {
 
-      const user =
-        await getCurrentUser();
+      if (!currentUser) {
 
+        alert(
+          "يجب تسجيل الدخول أولًا."
+        );
 
-      if (!user) {
         return;
       }
 
@@ -992,7 +918,7 @@
       ) {
 
         showFormMessage(
-          "اكتب كمية مخزون صحيحة."
+          "اكتب مخزونًا صحيحًا."
         );
 
         return;
@@ -1001,19 +927,21 @@
 
       const productData = {
 
-        name,
-        price,
-        stock
+        name: name,
+
+        price: price,
+
+        stock: stock
 
       };
 
 
-      let error;
+      let result;
 
 
       if (editingProductId) {
 
-        const result =
+        result =
           await supabaseClient
             .from("products")
             .update(productData)
@@ -1023,16 +951,12 @@
             )
             .eq(
               "user_id",
-              user.id
+              currentUser.id
             );
-
-
-        error =
-          result.error;
 
       } else {
 
-        const result =
+        result =
           await supabaseClient
             .from("products")
             .insert({
@@ -1040,23 +964,24 @@
               ...productData,
 
               user_id:
-                user.id
+                currentUser.id
 
             });
 
-
-        error =
-          result.error;
       }
 
 
-      if (error) {
+      if (result.error) {
 
-        console.error(error);
+        console.error(
+          "Save error:",
+          result.error
+        );
+
 
         showFormMessage(
-          "حدث خطأ أثناء حفظ المنتج: " +
-          error.message
+          "حدث خطأ: " +
+          result.error.message
         );
 
         return;
@@ -1077,9 +1002,9 @@
     }
 
 
-    // =====================================================
-    // Delete Product
-    // =====================================================
+    // ==========================================
+    // حذف
+    // ==========================================
 
     async function deleteProduct(id) {
 
@@ -1096,20 +1021,11 @@
 
       const confirmed =
         confirm(
-          `هل أنت متأكد من حذف المنتج "${product.name}"؟`
+          `هل أنت متأكد من حذف "${product.name}"؟`
         );
 
 
       if (!confirmed) {
-        return;
-      }
-
-
-      const user =
-        await getCurrentUser();
-
-
-      if (!user) {
         return;
       }
 
@@ -1120,16 +1036,26 @@
         await supabaseClient
           .from("products")
           .delete()
-          .eq("id", id)
-          .eq("user_id", user.id);
+          .eq(
+            "id",
+            id
+          )
+          .eq(
+            "user_id",
+            currentUser.id
+          );
 
 
       if (error) {
 
-        console.error(error);
+        console.error(
+          "Delete error:",
+          error
+        );
+
 
         showMessage(
-          "حدث خطأ أثناء حذف المنتج: " +
+          "حدث خطأ أثناء الحذف: " +
           error.message,
           "error"
         );
@@ -1147,9 +1073,9 @@
     }
 
 
-    // =====================================================
-    // Logout
-    // =====================================================
+    // ==========================================
+    // تسجيل الخروج
+    // ==========================================
 
     document.getElementById(
       "logoutBtn"
@@ -1168,9 +1094,89 @@
     );
 
 
-    // =====================================================
-    // Start
-    // =====================================================
+    // ==========================================
+    // Helpers
+    // ==========================================
+
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+
+    function formatDate(date) {
+
+      if (!date) {
+        return "-";
+      }
+
+      return new Date(date)
+        .toLocaleDateString("ar-EG");
+    }
+
+
+    function showMessage(
+      text,
+      type = "success"
+    ) {
+
+      const element =
+        document.getElementById(
+          "message"
+        );
+
+
+      element.textContent =
+        text;
+
+
+      element.className =
+        "message " + type;
+
+
+      element.style.display =
+        "block";
+
+
+      setTimeout(
+        () => {
+          element.style.display =
+            "none";
+        },
+        4000
+      );
+    }
+
+
+    function showFormMessage(
+      text
+    ) {
+
+      const element =
+        document.getElementById(
+          "formMessage"
+        );
+
+
+      element.textContent =
+        text;
+
+
+      element.className =
+        "message error";
+
+
+      element.style.display =
+        "block";
+    }
+
+
+    // تشغيل الصفحة
 
     loadProducts();
 
