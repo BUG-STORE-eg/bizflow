@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>BizFlow - تسجيل الدخول</title>
+
   <link rel="stylesheet" href="css/auth.css">
 </head>
 
 <body>
 
   <div class="auth-container">
+
     <div class="auth-card">
 
       <div class="logo">
@@ -17,46 +20,287 @@
       </div>
 
       <h1>تسجيل الدخول</h1>
-      <p class="subtitle">ادخل إلى حسابك لإدارة مشروعك</p>
+
+      <p class="subtitle">
+        ادخل إلى حسابك لإدارة مشروعك
+      </p>
 
       <form id="loginForm">
 
-        <label for="email">البريد الإلكتروني</label>
+        <label for="email">
+          البريد الإلكتروني
+        </label>
 
         <input
           type="email"
           id="email"
           placeholder="example@email.com"
+          autocomplete="email"
           required
         >
 
-        <label for="password">كلمة المرور</label>
+        <label for="password">
+          كلمة المرور
+        </label>
 
         <input
           type="password"
           id="password"
           placeholder="••••••••"
+          autocomplete="current-password"
           required
         >
 
-        <button type="submit" id="loginBtn">
+        <button
+          type="submit"
+          id="loginBtn"
+        >
           تسجيل الدخول
         </button>
 
-        <p id="message" class="message"></p>
+        <p
+          id="message"
+          class="message"
+        ></p>
 
       </form>
 
       <div class="switch">
         ليس لديك حساب؟
-        <a href="register.html">إنشاء حساب جديد</a>
+        <a href="register.html">
+          إنشاء حساب جديد
+        </a>
       </div>
 
     </div>
+
   </div>
 
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/auth.js"></script>
+
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://oklabfxjcekfwirnqlji.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    const loginForm =
+      document.getElementById("loginForm");
+
+    const emailInput =
+      document.getElementById("email");
+
+    const passwordInput =
+      document.getElementById("password");
+
+    const loginBtn =
+      document.getElementById("loginBtn");
+
+    const message =
+      document.getElementById("message");
+
+
+    function showMessage(text, type = "error") {
+
+      message.textContent = text;
+
+      message.className =
+        "message " + type;
+
+    }
+
+
+    loginForm.addEventListener("submit", async function (event) {
+
+      // مهم جداً: منع الـ Refresh
+      event.preventDefault();
+
+      const email =
+        emailInput.value.trim();
+
+      const password =
+        passwordInput.value;
+
+
+      if (!email || !password) {
+
+        showMessage(
+          "اكتب البريد الإلكتروني وكلمة المرور",
+          "error"
+        );
+
+        return;
+      }
+
+
+      loginBtn.disabled = true;
+
+      loginBtn.textContent =
+        "جاري تسجيل الدخول...";
+
+      showMessage("", "normal");
+
+
+      try {
+
+        const { data, error } =
+          await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+
+        if (error) {
+
+          console.error(
+            "LOGIN ERROR:",
+            error
+          );
+
+          showMessage(
+            "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+            "error"
+          );
+
+          loginBtn.disabled = false;
+
+          loginBtn.textContent =
+            "تسجيل الدخول";
+
+          return;
+        }
+
+
+        if (!data || !data.user) {
+
+          showMessage(
+            "حدث خطأ أثناء تسجيل الدخول",
+            "error"
+          );
+
+          loginBtn.disabled = false;
+
+          loginBtn.textContent =
+            "تسجيل الدخول";
+
+          return;
+        }
+
+
+        const user =
+          data.user;
+
+
+        /*
+          أولاً: هل الحساب Admin؟
+        */
+
+        const { data: adminData, error: adminError } =
+          await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+
+        if (adminError) {
+
+          console.error(
+            "ADMIN CHECK ERROR:",
+            adminError
+          );
+
+        }
+
+
+        if (adminData) {
+
+          window.location.href =
+            "admin.html";
+
+          return;
+        }
+
+
+        /*
+          ثانياً: هل عنده اشتراك Active؟
+        */
+
+        const { data: subscription, error: subscriptionError } =
+          await supabaseClient
+            .from("subscriptions")
+            .select("*")
+            .eq("user_id", user.id)
+            .eq("status", "active")
+            .gt("expires_at", new Date().toISOString())
+            .order("expires_at", {
+              ascending: false
+            })
+            .limit(1)
+            .maybeSingle();
+
+
+        if (subscriptionError) {
+
+          console.error(
+            "SUBSCRIPTION ERROR:",
+            subscriptionError
+          );
+
+        }
+
+
+        if (subscription) {
+
+          window.location.href =
+            "index.html";
+
+          return;
+        }
+
+
+        /*
+          مفيش اشتراك
+        */
+
+        window.location.href =
+          "plans.html";
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "UNEXPECTED LOGIN ERROR:",
+          error
+        );
+
+        showMessage(
+          "حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.",
+          "error"
+        );
+
+        loginBtn.disabled = false;
+
+        loginBtn.textContent =
+          "تسجيل الدخول";
+      }
+
+    });
+
+  </script>
 
 </body>
 </html>
