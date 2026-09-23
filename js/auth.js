@@ -26,6 +26,8 @@ const PUBLIC_PAGES = [
     "plans.html",
 
     "payment.html",
+    
+    "payment-pending.html"
 
     /*
         صفحة الحساب مسموحة حتى لو الاشتراك
