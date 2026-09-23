@@ -83,6 +83,76 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
 
+        // ==========================================
+        // جلب خطة المستخدم
+        // ==========================================
+
+        const {
+            data: planData,
+            error: planError
+        } = await supabaseClient.rpc("get_my_plan");
+
+
+        console.log(
+            "MY PLAN:",
+            planData
+        );
+
+        console.log(
+            "PLAN ERROR:",
+            planError
+        );
+
+
+        // ==========================================
+        // عرض معلومات الخطة في Console
+        // ==========================================
+
+        if (planData) {
+
+            if (planData.active) {
+
+                console.log(
+                    "Current Plan:",
+                    planData.plan
+                );
+
+                console.log(
+                    "Max Customers:",
+                    planData.max_customers
+                );
+
+                console.log(
+                    "Max Products:",
+                    planData.max_products
+                );
+
+                console.log(
+                    "Advanced Reports:",
+                    planData.advanced_reports
+                );
+
+                console.log(
+                    "Export Reports:",
+                    planData.export_reports
+                );
+
+                console.log(
+                    "Advanced Management:",
+                    planData.advanced_management
+                );
+
+            } else {
+
+                console.warn(
+                    "No active BizFlow subscription."
+                );
+
+            }
+
+        }
+
+
     } catch (error) {
 
         console.error(
