@@ -31,27 +31,27 @@
 
     <nav>
 
-      <a class="active" href="#">
+      <a class="active" href="index.html">
         📊 الرئيسية
       </a>
 
-      <a href="#">
+      <a href="customers.html">
         👥 العملاء
       </a>
 
-      <a href="#">
+      <a href="products.html">
         📦 المنتجات
       </a>
 
-      <a href="#">
+      <a href="sales.html">
         🧾 المبيعات
       </a>
 
-      <a href="#">
+      <a href="expenses.html">
         💸 المصروفات
       </a>
 
-      <a href="#">
+      <a href="reports.html">
         📈 التقارير
       </a>
 
@@ -96,6 +96,8 @@
     </header>
 
 
+    <!-- الإحصائيات -->
+
     <section class="cards">
 
       <div class="card">
@@ -104,7 +106,7 @@
           إجمالي المبيعات
         </span>
 
-        <strong>
+        <strong id="totalSales">
           0 ج.م
         </strong>
 
@@ -121,7 +123,7 @@
           الأرباح
         </span>
 
-        <strong>
+        <strong id="totalProfit">
           0 ج.م
         </strong>
 
@@ -138,7 +140,7 @@
           العملاء
         </span>
 
-        <strong>
+        <strong id="customersCount">
           0
         </strong>
 
@@ -155,7 +157,7 @@
           المنتجات
         </span>
 
-        <strong>
+        <strong id="productsCount">
           0
         </strong>
 
@@ -168,6 +170,8 @@
     </section>
 
 
+    <!-- آخر المبيعات -->
+
     <section class="panel">
 
       <div class="panel-head">
@@ -176,29 +180,80 @@
           آخر المبيعات
         </h2>
 
-        <button
+        <a
           class="primary"
-          type="button"
+          href="sales.html"
         >
           + إضافة عملية بيع
-        </button>
+        </a>
 
       </div>
 
 
-      <div class="empty">
+      <div id="salesContainer">
 
-        <div class="empty-icon">
-          🧾
+        <div class="empty">
+
+          <div class="empty-icon">
+            🧾
+          </div>
+
+          <h3>
+            جاري تحميل المبيعات...
+          </h3>
+
         </div>
 
-        <h3>
-          لا توجد مبيعات حتى الآن
-        </h3>
+      </div>
 
-        <p>
-          عند إضافة أول عملية بيع ستظهر هنا.
-        </p>
+    </section>
+
+
+    <!-- اختصارات -->
+
+    <section class="panel">
+
+      <div class="panel-head">
+
+        <h2>
+          الوصول السريع
+        </h2>
+
+      </div>
+
+
+      <div class="quick-actions">
+
+        <a href="products.html">
+          📦
+          <span>
+            إدارة المنتجات
+          </span>
+        </a>
+
+
+        <a href="customers.html">
+          👥
+          <span>
+            إدارة العملاء
+          </span>
+        </a>
+
+
+        <a href="sales.html">
+          🧾
+          <span>
+            إضافة بيع
+          </span>
+        </a>
+
+
+        <a href="expenses.html">
+          💸
+          <span>
+            إضافة مصروف
+          </span>
+        </a>
 
       </div>
 
