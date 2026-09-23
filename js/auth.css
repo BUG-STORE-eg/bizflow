@@ -2,7 +2,7 @@ const SUPABASE_URL =
   "https://oklabfxjcekfwirnqlji.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-  "ضع_PUBLISHABLE_KEY_هنا";
+  "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
 
 const { createClient } = supabase;
 
@@ -38,12 +38,11 @@ if (loginForm) {
 
     button.disabled = true;
     button.textContent = "جاري تسجيل الدخول...";
-
     message.textContent = "";
     message.className = "message";
 
 
-    const { data, error } =
+    const { error } =
       await supabaseClient.auth.signInWithPassword({
         email,
         password
@@ -72,7 +71,9 @@ if (loginForm) {
       "message success";
 
 
-    window.location.href = "index.html";
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 500);
 
   });
 
@@ -91,7 +92,6 @@ if (registerForm) {
   registerForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
-
 
     const email =
       document.getElementById("email").value.trim();
@@ -189,7 +189,6 @@ if (registerForm) {
     message.className =
       "message success";
 
-
     button.disabled = false;
     button.textContent =
       "إنشاء الحساب";
@@ -200,30 +199,35 @@ if (registerForm) {
 
 
 // ==============================
-// CHECK DASHBOARD SESSION
+// DASHBOARD SESSION
 // ==============================
-
-if (
-  window.location.pathname.endsWith("/index.html") ||
-  window.location.pathname.endsWith("/bizflow/") ||
-  window.location.pathname === "/"
-) {
-
-  checkDashboardSession();
-
-}
-
 
 async function checkDashboardSession() {
 
-  const { data } =
-    await supabaseClient.auth.getSession();
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.getSession();
 
 
-  if (!data.session) {
+  if (error || !data.session) {
 
     window.location.href =
       "login.html";
+
+    return;
+
+  }
+
+
+  const userEmail =
+    document.getElementById("userEmail");
+
+
+  if (userEmail && data.session.user) {
+
+    userEmail.textContent =
+      data.session.user.email;
 
   }
 
@@ -234,21 +238,90 @@ async function checkDashboardSession() {
 // LOGOUT
 // ==============================
 
-const logoutBtn =
-  document.getElementById("logoutBtn");
+async function logout() {
 
-if (logoutBtn) {
+  const logoutBtn =
+    document.getElementById("logoutBtn");
 
-  logoutBtn.addEventListener("click", async () => {
 
-    await supabaseClient.auth.signOut();
+  if (logoutBtn) {
 
-    window.location.href =
-      "login.html";
+    logoutBtn.disabled = true;
+    logoutBtn.textContent =
+      "جاري تسجيل الخروج...";
 
-  });
+  }
+
+
+  const {
+    error
+  } = await supabaseClient.auth.signOut();
+
+
+  if (error) {
+
+    console.error(
+      "Logout error:",
+      error
+    );
+
+
+    if (logoutBtn) {
+
+      logoutBtn.disabled = false;
+      logoutBtn.textContent =
+        "تسجيل الخروج";
+
+    }
+
+    alert(
+      "حدث خطأ أثناء تسجيل الخروج. افتح Console لمعرفة الخطأ."
+    );
+
+    return;
+
+  }
+
+
+  window.location.replace("login.html");
 
 }
+
+
+// ==============================
+// START
+// ==============================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    const logoutBtn =
+      document.getElementById("logoutBtn");
+
+
+    if (logoutBtn) {
+
+      logoutBtn.addEventListener(
+        "click",
+        logout
+      );
+
+    }
+
+
+    if (
+      window.location.pathname.endsWith("/index.html") ||
+      window.location.pathname.endsWith("/bizflow/") ||
+      window.location.pathname === "/"
+    ) {
+
+      checkDashboardSession();
+
+    }
+
+  }
+);
 
 
 // ==============================
