@@ -4,7 +4,6 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
 
-
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
@@ -12,32 +11,23 @@ const supabaseClient =
     );
 
 
-/*
-    الصفحات التي يستطيع المستخدم فتحها
-    بدون اشتراك Active.
-*/
+// =========================================================
+// الصفحات التي لا تحتاج اشتراك نشط
+// =========================================================
 
 const PUBLIC_PAGES = [
-
     "login.html",
-
     "register.html",
-
     "plans.html",
-
     "payment.html",
-    
-    "payment-pending.html"
-
-    /*
-        صفحة الحساب مسموحة حتى لو الاشتراك
-        منتهي، عشان المستخدم يقدر يشوف
-        بياناته ويجدد الاشتراك.
-    */
+    "payment-pending.html",
     "account.html"
-
 ];
 
+
+// =========================================================
+// معرفة الصفحة الحالية
+// =========================================================
 
 function getCurrentPage() {
 
@@ -48,15 +38,16 @@ function getCurrentPage() {
             .toLowerCase();
 
     return path || "index.html";
-
 }
 
 
+// =========================================================
+// الانتقال إلى صفحة
+// =========================================================
+
 function goTo(page) {
 
-    if (
-        getCurrentPage() !== page
-    ) {
+    if (getCurrentPage() !== page) {
 
         window.location.href = page;
 
@@ -65,20 +56,20 @@ function goTo(page) {
 }
 
 
+// =========================================================
+// التحقق من الأدمن
+// =========================================================
+
 async function isAdmin(userId) {
 
     const {
         data,
         error
-    } =
-        await supabaseClient
-            .from("admin_users")
-            .select("user_id")
-            .eq(
-                "user_id",
-                userId
-            )
-            .maybeSingle();
+    } = await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", userId)
+        .maybeSingle();
 
 
     if (error) {
@@ -98,6 +89,10 @@ async function isAdmin(userId) {
 }
 
 
+// =========================================================
+// الحصول على الاشتراك النشط
+// =========================================================
+
 async function getActiveSubscription(userId) {
 
     const now =
@@ -107,30 +102,20 @@ async function getActiveSubscription(userId) {
     const {
         data,
         error
-    } =
-        await supabaseClient
-            .from("subscriptions")
-            .select("*")
-            .eq(
-                "user_id",
-                userId
-            )
-            .eq(
-                "status",
-                "active"
-            )
-            .gt(
-                "expires_at",
-                now
-            )
-            .order(
-                "expires_at",
-                {
-                    ascending: false
-                }
-            )
-            .limit(1)
-            .maybeSingle();
+    } = await supabaseClient
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("status", "active")
+        .gt("expires_at", now)
+        .order(
+            "expires_at",
+            {
+                ascending: false
+            }
+        )
+        .limit(1)
+        .maybeSingle();
 
 
     if (error) {
@@ -150,15 +135,19 @@ async function getActiveSubscription(userId) {
 }
 
 
+// =========================================================
+// حماية صفحات BizFlow
+// =========================================================
+
 async function protectBizFlow() {
 
     const currentPage =
         getCurrentPage();
 
 
-    /*
-        الصفحات العامة.
-    */
+    // =====================================================
+    // الصفحات العامة
+    // =====================================================
 
     if (
         PUBLIC_PAGES.includes(
@@ -169,13 +158,14 @@ async function protectBizFlow() {
         const {
             data
         } =
-            await supabaseClient.auth.getUser();
+            await supabaseClient
+                .auth
+                .getUser();
 
 
-        /*
-            لو المستخدم مش مسجل دخول،
-            صفحة الحساب لا تفتح.
-        */
+        // -------------------------------------------------
+        // صفحة الحساب تحتاج تسجيل دخول
+        // -------------------------------------------------
 
         if (
             currentPage ===
@@ -193,22 +183,41 @@ async function protectBizFlow() {
 
             }
 
-            /*
-                المستخدم المسجل يقدر يدخل
-                account.html حتى لو اشتراكه
-                منتهي.
-            */
 
             return;
 
         }
 
 
-        /*
-            لو عنده Session بالفعل
-            وهو داخل login/register
-            نرسله للباقات أو الداشبورد.
-        */
+        // -------------------------------------------------
+        // صفحة الانتظار تحتاج تسجيل دخول
+        // -------------------------------------------------
+
+        if (
+            currentPage ===
+            "payment-pending.html"
+        ) {
+
+            if (
+                !data ||
+                !data.user
+            ) {
+
+                goTo("login.html");
+
+                return;
+
+            }
+
+
+            return;
+
+        }
+
+
+        // -------------------------------------------------
+        // لو المستخدم مسجل دخول
+        // -------------------------------------------------
 
         if (
             data &&
@@ -219,10 +228,13 @@ async function protectBizFlow() {
                 data.user;
 
 
+            // ---------------------------------------------
+            // لو فتح Login أو Register
+            // ---------------------------------------------
+
             if (
                 currentPage ===
                     "login.html" ||
-
                 currentPage ===
                     "register.html"
             ) {
@@ -258,6 +270,9 @@ async function protectBizFlow() {
 
                 }
 
+
+                return;
+
             }
 
         }
@@ -268,16 +283,17 @@ async function protectBizFlow() {
     }
 
 
-    /*
-        أي صفحة من صفحات النظام
-        تحتاج مستخدم مسجل.
-    */
+    // =====================================================
+    // الصفحات المحمية
+    // =====================================================
 
     const {
         data,
         error
     } =
-        await supabaseClient.auth.getUser();
+        await supabaseClient
+            .auth
+            .getUser();
 
 
     if (
@@ -297,9 +313,9 @@ async function protectBizFlow() {
         data.user;
 
 
-    /*
-        الأدمن يدخل النظام مباشرة.
-    */
+    // =====================================================
+    // الأدمن يدخل بدون اشتراك
+    // =====================================================
 
     const admin =
         await isAdmin(
@@ -314,10 +330,9 @@ async function protectBizFlow() {
     }
 
 
-    /*
-        المستخدم العادي لازم يكون عنده
-        Subscription Active وغير منتهي.
-    */
+    // =====================================================
+    // المستخدم العادي يحتاج اشتراك
+    // =====================================================
 
     const subscription =
         await getActiveSubscription(
@@ -326,12 +341,6 @@ async function protectBizFlow() {
 
 
     if (!subscription) {
-
-        /*
-            الاشتراك منتهي أو غير موجود.
-            نسمح له فقط بصفحات
-            plans/payment/account.
-        */
 
         goTo("plans.html");
 
@@ -342,9 +351,9 @@ async function protectBizFlow() {
 }
 
 
-/*
-    تسجيل الخروج.
-*/
+// =========================================================
+// تسجيل الخروج
+// =========================================================
 
 async function logout() {
 
@@ -359,14 +368,13 @@ async function logout() {
 }
 
 
-/*
-    تشغيل الحماية تلقائيًا
-    بعد تحميل الصفحة.
-*/
+// =========================================================
+// تشغيل الحماية
+// =========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function () {
 
         protectBizFlow();
 
@@ -374,9 +382,9 @@ document.addEventListener(
 );
 
 
-/*
-    متاح لباقي ملفات الموقع.
-*/
+// =========================================================
+// إتاحة الدوال لباقي الصفحات
+// =========================================================
 
 window.BizFlowAuth = {
 
