@@ -86,7 +86,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       gap: 20px;
     }
 
@@ -107,6 +107,57 @@
       border-radius: 10px;
       color: #aeb4c0;
       direction: ltr;
+    }
+
+    /* Plan Info */
+
+    .plan-info {
+      background: #151923;
+      border: 1px solid #252a36;
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .plan-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-name {
+      font-size: 17px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .plan-count {
+      color: #8f97a8;
+      font-size: 14px;
+    }
+
+    .plan-badge {
+      background: #293c5f;
+      color: #8fb7ff;
+      padding: 7px 13px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .limit-warning {
+      display: none;
+      background: #3b2024;
+      border: 1px solid #633039;
+      color: #ffabb2;
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
     }
 
     .panel {
@@ -170,6 +221,12 @@
 
     .primary:hover {
       background: #3d78df;
+    }
+
+    .primary:disabled {
+      background: #343a48;
+      color: #858c9b;
+      cursor: not-allowed;
     }
 
     .table-wrap {
@@ -374,6 +431,11 @@
       .search {
         max-width: none;
       }
+
+      .plan-info {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
 
     @media (max-width: 600px) {
@@ -415,7 +477,7 @@
       <a href="reports.html">📈 التقارير</a>
     </nav>
 
-    <button class="logout" id="logoutBtn">
+    <button class="logout" id="logoutBtn" type="button">
       تسجيل الخروج
     </button>
 
@@ -436,6 +498,34 @@
       </div>
 
     </header>
+
+
+    <!-- معلومات الباقة -->
+
+    <section class="plan-info">
+
+      <div class="plan-left">
+
+        <div>
+          <div class="plan-name" id="planName">
+            جاري تحميل الباقة...
+          </div>
+
+          <div class="plan-count" id="planCount">
+            جاري حساب العملاء...
+          </div>
+        </div>
+
+      </div>
+
+      <div class="plan-badge" id="planBadge">
+        ...
+      </div>
+
+    </section>
+
+
+    <div class="limit-warning" id="limitWarning"></div>
 
 
     <section class="panel">
@@ -587,6 +677,10 @@
 
 <script>
 
+  // ==========================================
+  // Supabase
+  // ==========================================
+
   const SUPABASE_URL =
     "https://oklabfxjcekfwirnqlji.supabase.co";
 
@@ -600,9 +694,19 @@
     );
 
 
+  // ==========================================
+  // Variables
+  // ==========================================
+
   let currentUser = null;
   let customers = [];
+  let currentPlan = null;
+  let maxCustomers = null;
 
+
+  // ==========================================
+  // Elements
+  // ==========================================
 
   const tableContainer =
     document.getElementById("tableContainer");
@@ -634,6 +738,25 @@
   const customerEmail =
     document.getElementById("customerEmail");
 
+  const addCustomerBtn =
+    document.getElementById("addCustomerBtn");
+
+  const planName =
+    document.getElementById("planName");
+
+  const planCount =
+    document.getElementById("planCount");
+
+  const planBadge =
+    document.getElementById("planBadge");
+
+  const limitWarning =
+    document.getElementById("limitWarning");
+
+
+  // ==========================================
+  // Error
+  // ==========================================
 
   function showError(message) {
 
@@ -649,6 +772,10 @@
 
   }
 
+
+  // ==========================================
+  // المستخدم
+  // ==========================================
 
   async function checkUser() {
 
@@ -672,6 +799,7 @@
     currentUser =
       data.user;
 
+
     document.getElementById("userEmail").textContent =
       currentUser.email;
 
@@ -680,6 +808,143 @@
 
   }
 
+
+  // ==========================================
+  // جلب الخطة
+  // ==========================================
+
+  async function loadPlan() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.rpc("get_my_plan");
+
+
+    console.log("CUSTOMERS PLAN:", data);
+    console.log("CUSTOMERS PLAN ERROR:", error);
+
+
+    if (error) {
+
+      console.error(error);
+
+      planName.textContent =
+        "تعذر تحميل الباقة";
+
+      planCount.textContent =
+        "حدث خطأ أثناء تحميل معلومات الباقة";
+
+      planBadge.textContent =
+        "خطأ";
+
+      return false;
+
+    }
+
+
+    if (!data || !data.active) {
+
+      planName.textContent =
+        "لا يوجد اشتراك نشط";
+
+      planCount.textContent =
+        "لا يمكنك إضافة عملاء بدون اشتراك نشط";
+
+      planBadge.textContent =
+        "غير نشط";
+
+      addCustomerBtn.disabled = true;
+
+      return false;
+
+    }
+
+
+    currentPlan =
+      data.plan;
+
+    maxCustomers =
+      data.max_customers;
+
+
+    planName.textContent =
+      "باقة " + currentPlan;
+
+
+    planBadge.textContent =
+      currentPlan;
+
+
+    updatePlanCounter();
+
+
+    return true;
+
+  }
+
+
+  // ==========================================
+  // تحديث عداد الباقة
+  // ==========================================
+
+  function updatePlanCounter() {
+
+    const count =
+      customers.length;
+
+
+    if (maxCustomers === null) {
+
+      planCount.textContent =
+        `العملاء: ${count} / غير محدود`;
+
+      addCustomerBtn.disabled = false;
+
+      limitWarning.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    planCount.textContent =
+      `العملاء: ${count} / ${maxCustomers}`;
+
+
+    if (count >= maxCustomers) {
+
+      addCustomerBtn.disabled = true;
+
+      addCustomerBtn.title =
+        "وصلت للحد الأقصى لخطتك";
+
+
+      limitWarning.textContent =
+        `⚠️ وصلت للحد الأقصى لباقة ${currentPlan} (${maxCustomers} عميل). قم بترقية الباقة لإضافة عملاء جدد.`;
+
+      limitWarning.style.display =
+        "block";
+
+    } else {
+
+      addCustomerBtn.disabled = false;
+
+      addCustomerBtn.title = "";
+
+      limitWarning.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  // ==========================================
+  // تحميل العملاء
+  // ==========================================
 
   async function loadCustomers() {
 
@@ -722,10 +987,16 @@
       data || [];
 
 
+    updatePlanCounter();
+
     renderCustomers();
 
   }
 
+
+  // ==========================================
+  // عرض العملاء
+  // ==========================================
 
   function renderCustomers() {
 
@@ -863,6 +1134,10 @@
   }
 
 
+  // ==========================================
+  // حماية HTML
+  // ==========================================
+
   function escapeHtml(value) {
 
     return String(value)
@@ -874,6 +1149,10 @@
 
   }
 
+
+  // ==========================================
+  // التاريخ
+  // ==========================================
 
   function formatDate(date) {
 
@@ -891,7 +1170,25 @@
   }
 
 
+  // ==========================================
+  // فتح نافذة الإضافة
+  // ==========================================
+
   function openAddModal() {
+
+    if (
+      maxCustomers !== null &&
+      customers.length >= maxCustomers
+    ) {
+
+      alert(
+        `لقد وصلت للحد الأقصى لباقة ${currentPlan}. قم بترقية الباقة لإضافة عملاء جدد.`
+      );
+
+      return;
+
+    }
+
 
     modalTitle.textContent =
       "إضافة عميل";
@@ -907,12 +1204,20 @@
   }
 
 
+  // ==========================================
+  // إغلاق النافذة
+  // ==========================================
+
   function closeModal() {
 
     modal.classList.remove("show");
 
   }
 
+
+  // ==========================================
+  // حفظ العميل
+  // ==========================================
 
   async function saveCustomer(event) {
 
@@ -970,6 +1275,26 @@
 
     } else {
 
+      // فحص إضافي قبل الإضافة
+      if (
+        maxCustomers !== null &&
+        customers.length >= maxCustomers
+      ) {
+
+        saveButton.disabled = false;
+
+        saveButton.textContent =
+          "حفظ العميل";
+
+        showError(
+          `لقد وصلت للحد الأقصى لباقة ${currentPlan}. قم بترقية الباقة لإضافة عملاء جدد.`
+        );
+
+        return;
+
+      }
+
+
       result =
         await supabaseClient
           .from("customers")
@@ -993,10 +1318,27 @@
 
       console.error(result.error);
 
-      showError(
-        "حدث خطأ أثناء حفظ العميل: " +
-        result.error.message
-      );
+
+      // رسالة عربية للحد الأقصى
+      if (
+        result.error.message &&
+        result.error.message.includes(
+          "Customer limit reached"
+        )
+      ) {
+
+        showError(
+          `⚠️ وصلت للحد الأقصى لباقة ${currentPlan}. قم بترقية الباقة لإضافة عملاء جدد.`
+        );
+
+      } else {
+
+        showError(
+          "حدث خطأ أثناء حفظ العميل: " +
+          result.error.message
+        );
+
+      }
 
       return;
 
@@ -1009,6 +1351,10 @@
 
   }
 
+
+  // ==========================================
+  // تعديل العميل
+  // ==========================================
 
   window.editCustomer =
     function(id) {
@@ -1045,6 +1391,10 @@
 
     };
 
+
+  // ==========================================
+  // حذف العميل
+  // ==========================================
 
   window.deleteCustomer =
     async function(id) {
@@ -1098,12 +1448,14 @@
     };
 
 
-  document
-    .getElementById("addCustomerBtn")
-    .addEventListener(
-      "click",
-      openAddModal
-    );
+  // ==========================================
+  // الأحداث
+  // ==========================================
+
+  addCustomerBtn.addEventListener(
+    "click",
+    openAddModal
+  );
 
 
   document
@@ -1122,18 +1474,16 @@
     );
 
 
-  customerForm
-    .addEventListener(
-      "submit",
-      saveCustomer
-    );
+  customerForm.addEventListener(
+    "submit",
+    saveCustomer
+  );
 
 
-  searchInput
-    .addEventListener(
-      "input",
-      renderCustomers
-    );
+  searchInput.addEventListener(
+    "input",
+    renderCustomers
+  );
 
 
   modal.addEventListener(
@@ -1148,11 +1498,24 @@
   );
 
 
+  // ==========================================
+  // تسجيل الخروج
+  // ==========================================
+
   document
     .getElementById("logoutBtn")
     .addEventListener(
       "click",
       async () => {
+
+        const logoutBtn =
+          document.getElementById("logoutBtn");
+
+        logoutBtn.disabled = true;
+
+        logoutBtn.textContent =
+          "جاري تسجيل الخروج...";
+
 
         await supabaseClient.auth.signOut();
 
@@ -1163,6 +1526,10 @@
     );
 
 
+  // ==========================================
+  // تشغيل الصفحة
+  // ==========================================
+
   async function init() {
 
     const loggedIn =
@@ -1171,6 +1538,19 @@
 
     if (!loggedIn)
       return;
+
+
+    const hasPlan =
+      await loadPlan();
+
+
+    if (!hasPlan) {
+
+      await loadCustomers();
+
+      return;
+
+    }
 
 
     await loadCustomers();
