@@ -8,7 +8,6 @@
     <title>BizFlow - الباقات</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="js/auth.js"></script>
 
     <style>
@@ -20,25 +19,27 @@
             margin: 0;
             min-height: 100vh;
             font-family: Arial, Tahoma, sans-serif;
-            background: #0b0f17;
+            background:
+                radial-gradient(circle at top, rgba(37, 99, 235, .12), transparent 35%),
+                #0b0f17;
             color: #fff;
         }
 
         .container {
-            width: min(1100px, 92%);
+            width: min(1150px, 92%);
             margin: auto;
             padding: 50px 0;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 45px;
         }
 
         .logo {
-            font-size: 34px;
+            font-size: 36px;
             font-weight: 800;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .logo span {
@@ -46,94 +47,220 @@
         }
 
         .header h1 {
-            margin: 0 0 10px;
-            font-size: 30px;
+            margin: 0 0 12px;
+            font-size: 31px;
         }
 
         .header p {
             color: #94a3b8;
             margin: 0;
+            font-size: 15px;
         }
 
         .plans {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 22px;
+            align-items: stretch;
         }
 
         .plan {
-            background: #111827;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: rgba(17, 24, 39, .95);
             border: 1px solid #263244;
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 28px;
             text-align: center;
-            transition: .2s;
+            transition: .25s ease;
+            overflow: hidden;
         }
 
         .plan:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
             border-color: #38bdf8;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .25);
         }
 
         .plan.featured {
             border-color: #2563eb;
-            box-shadow: 0 0 30px rgba(37, 99, 235, .12);
+            box-shadow: 0 0 35px rgba(37, 99, 235, .15);
+        }
+
+        .popular {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #2563eb;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
         }
 
         .plan h2 {
             margin: 0 0 15px;
-            font-size: 24px;
+            font-size: 25px;
+        }
+
+        .plan.featured h2 {
+            color: #60a5fa;
         }
 
         .price {
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .currency {
             color: #94a3b8;
             font-size: 14px;
+            font-weight: normal;
         }
 
         .period {
             color: #94a3b8;
             margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        /* LIMITS */
+
+        .limits {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .limit-box {
+            background: #0b1220;
+            border: 1px solid #263244;
+            border-radius: 12px;
+            padding: 13px 8px;
+        }
+
+        .limit-number {
+            display: block;
+            font-size: 22px;
+            font-weight: 800;
+            color: #38bdf8;
+            margin-bottom: 4px;
+        }
+
+        .limit-label {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .unlimited {
+            color: #22c55e;
+            font-size: 20px;
+        }
+
+        .features-title {
+            text-align: right;
+            font-size: 14px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .features {
             text-align: right;
             color: #cbd5e1;
-            line-height: 2;
+            line-height: 1.9;
             margin-bottom: 25px;
+            flex: 1;
+        }
+
+        .features div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
 
         .features div::before {
             content: "✓";
+            flex-shrink: 0;
             color: #22c55e;
             font-weight: bold;
-            margin-left: 8px;
+        }
+
+        .features .disabled {
+            color: #64748b;
+        }
+
+        .features .disabled::before {
+            content: "—";
+            color: #64748b;
         }
 
         .choose-btn {
             width: 100%;
             border: 0;
-            padding: 13px;
-            border-radius: 10px;
+            padding: 14px;
+            border-radius: 11px;
             background: #2563eb;
             color: white;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
+            transition: .2s;
         }
 
         .choose-btn:hover {
             background: #1d4ed8;
+            transform: translateY(-1px);
         }
 
-        @media (max-width: 800px) {
+        .basic-btn {
+            background: #334155;
+        }
+
+        .basic-btn:hover {
+            background: #475569;
+        }
+
+        .business-btn {
+            background: #7c3aed;
+        }
+
+        .business-btn:hover {
+            background: #6d28d9;
+        }
+
+        .bottom-note {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 850px) {
             .plans {
                 grid-template-columns: 1fr;
+                max-width: 500px;
+                margin: auto;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .container {
+                padding: 30px 0;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .plan {
+                padding: 23px;
             }
         }
     </style>
@@ -152,7 +279,7 @@
         <h1>اختر الباقة المناسبة لك</h1>
 
         <p>
-            اختر الباقة ثم انتقل لإتمام الدفع
+            اختر الباقة التي تناسب حجم نشاطك وابدأ في إدارة أعمالك بسهولة
         </p>
 
     </div>
@@ -160,7 +287,7 @@
 
     <div class="plans">
 
-        <!-- BASIC -->
+        <!-- ================= BASIC ================= -->
 
         <div class="plan">
 
@@ -175,16 +302,48 @@
                 شهريًا
             </div>
 
+            <div class="limits">
+
+                <div class="limit-box">
+                    <span class="limit-number">50</span>
+                    <span class="limit-label">عميل كحد أقصى</span>
+                </div>
+
+                <div class="limit-box">
+                    <span class="limit-number">50</span>
+                    <span class="limit-label">منتج كحد أقصى</span>
+                </div>
+
+            </div>
+
+            <div class="features-title">
+                مميزات الباقة
+            </div>
+
             <div class="features">
-                <div>إدارة المنتجات</div>
+
                 <div>إدارة العملاء</div>
+
+                <div>إدارة المنتجات</div>
+
                 <div>إدارة المبيعات</div>
+
                 <div>إدارة المصروفات</div>
-                <div>التقارير</div>
+
+                <div>التقارير الأساسية</div>
+
+                <div>حفظ وإدارة بيانات النشاط</div>
+
+                <div class="disabled">التقارير المتقدمة</div>
+
+                <div class="disabled">تصدير البيانات</div>
+
+                <div class="disabled">الإدارة المتقدمة</div>
+
             </div>
 
             <button
-                class="choose-btn"
+                class="choose-btn basic-btn"
                 onclick="selectPlan('Basic', 99)">
 
                 اختيار Basic
@@ -194,9 +353,13 @@
         </div>
 
 
-        <!-- PRO -->
+        <!-- ================= PRO ================= -->
 
         <div class="plan featured">
+
+            <div class="popular">
+                الأكثر استخدامًا
+            </div>
 
             <h2>Pro</h2>
 
@@ -209,12 +372,44 @@
                 شهريًا
             </div>
 
+            <div class="limits">
+
+                <div class="limit-box">
+                    <span class="limit-number">500</span>
+                    <span class="limit-label">عميل كحد أقصى</span>
+                </div>
+
+                <div class="limit-box">
+                    <span class="limit-number">500</span>
+                    <span class="limit-label">منتج كحد أقصى</span>
+                </div>
+
+            </div>
+
+            <div class="features-title">
+                كل مميزات Basic بالإضافة إلى:
+            </div>
+
             <div class="features">
-                <div>كل مميزات Basic</div>
-                <div>تقارير متقدمة</div>
-                <div>إدارة أفضل للمبيعات</div>
+
+                <div>إدارة العملاء</div>
+
+                <div>إدارة المنتجات</div>
+
+                <div>إدارة المبيعات</div>
+
                 <div>إدارة المصروفات</div>
-                <div>مميزات إضافية</div>
+
+                <div>التقارير الأساسية</div>
+
+                <div>التقارير المتقدمة</div>
+
+                <div>تصدير البيانات</div>
+
+                <div>حفظ وإدارة بيانات النشاط</div>
+
+                <div class="disabled">الإدارة المتقدمة</div>
+
             </div>
 
             <button
@@ -228,7 +423,7 @@
         </div>
 
 
-        <!-- BUSINESS -->
+        <!-- ================= BUSINESS ================= -->
 
         <div class="plan">
 
@@ -243,16 +438,48 @@
                 شهريًا
             </div>
 
+            <div class="limits">
+
+                <div class="limit-box">
+                    <span class="limit-number unlimited">∞</span>
+                    <span class="limit-label">عملاء غير محدودين</span>
+                </div>
+
+                <div class="limit-box">
+                    <span class="limit-number unlimited">∞</span>
+                    <span class="limit-label">منتجات غير محدودة</span>
+                </div>
+
+            </div>
+
+            <div class="features-title">
+                جميع مميزات BizFlow
+            </div>
+
             <div class="features">
-                <div>كل مميزات Pro</div>
-                <div>إدارة متقدمة</div>
-                <div>تقارير شاملة</div>
-                <div>مناسب للشركات</div>
-                <div>مميزات إضافية</div>
+
+                <div>إدارة العملاء بدون حدود</div>
+
+                <div>إدارة المنتجات بدون حدود</div>
+
+                <div>إدارة المبيعات</div>
+
+                <div>إدارة المصروفات</div>
+
+                <div>التقارير الأساسية</div>
+
+                <div>التقارير المتقدمة</div>
+
+                <div>تصدير البيانات</div>
+
+                <div>الإدارة المتقدمة</div>
+
+                <div>مناسب للشركات والأنشطة الكبيرة</div>
+
             </div>
 
             <button
-                class="choose-btn"
+                class="choose-btn business-btn"
                 onclick="selectPlan('Business', 399)">
 
                 اختيار Business
@@ -263,6 +490,11 @@
 
     </div>
 
+
+    <div class="bottom-note">
+        جميع الباقات صالحة لمدة 30 يومًا من تاريخ التفعيل
+    </div>
+
 </div>
 
 
@@ -270,19 +502,16 @@
 
 function selectPlan(plan, amount) {
 
-    // حفظ الباقة
     localStorage.setItem(
         "selectedPlan",
         plan
     );
 
-    // حفظ السعر
     localStorage.setItem(
         "selectedAmount",
         amount
     );
 
-    // الانتقال للدفع
     window.location.href =
         "payment.html";
 }
