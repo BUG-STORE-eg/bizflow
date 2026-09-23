@@ -7,38 +7,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userEmailElement =
         document.getElementById("userEmail");
 
+    const logoutBtn =
+        document.getElementById("logoutBtn");
+
+
+    // ==========================================
+    // Supabase
+    // ==========================================
+
+    const SUPABASE_URL =
+        "https://oklabfxjcekfwirnqlji.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    // ==========================================
+    // عرض إيميل المستخدم
+    // ==========================================
+
     try {
 
-        // التأكد إن Supabase موجود
-        if (!window.supabase) {
-            throw new Error("Supabase لم يتم تحميله");
-        }
-
-        // استخدام عميل Supabase الموجود من auth.js
-        const client =
-            window.BizFlowAuth?.supabase ||
-            window.supabaseClient;
-
-        let supabaseClient = client;
-
-        // لو auth.js مش مخرج الـ client، ننشئه هنا
-        if (!supabaseClient) {
-
-            const SUPABASE_URL =
-                "https://oklabfxjcekfwirnqlji.supabase.co";
-
-            const SUPABASE_KEY =
-                "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
-
-            supabaseClient =
-                window.supabase.createClient(
-                    SUPABASE_URL,
-                    SUPABASE_KEY
-                );
-        }
-
-
-        // جلب المستخدم الحالي
         const {
             data: {
                 user
@@ -48,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         if (error) {
+
             console.error(
                 "USER ERROR:",
                 error
@@ -73,7 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        // عرض إيميل العميل
         if (userEmailElement) {
 
             userEmailElement.textContent =
@@ -101,6 +96,71 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "تعذر تحميل الحساب";
 
         }
+
+    }
+
+
+    // ==========================================
+    // تسجيل الخروج
+    // ==========================================
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+            "click",
+            async () => {
+
+                try {
+
+                    logoutBtn.disabled = true;
+
+                    logoutBtn.textContent =
+                        "جاري تسجيل الخروج...";
+
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient.auth.signOut();
+
+
+                    if (error) {
+
+                        console.error(
+                            "LOGOUT ERROR:",
+                            error
+                        );
+
+                        logoutBtn.disabled = false;
+
+                        logoutBtn.textContent =
+                            "تسجيل الخروج";
+
+                        return;
+                    }
+
+
+                    // الرجوع لصفحة تسجيل الدخول
+                    window.location.href =
+                        "login.html";
+
+
+                } catch (error) {
+
+                    console.error(
+                        "LOGOUT ERROR:",
+                        error
+                    );
+
+                    logoutBtn.disabled = false;
+
+                    logoutBtn.textContent =
+                        "تسجيل الخروج";
+
+                }
+
+            }
+        );
 
     }
 
