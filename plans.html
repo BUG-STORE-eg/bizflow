@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BizFlow - اختر باقتك</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Tahoma, sans-serif;
+      background: #0b1020;
+      color: #eef2ff;
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: auto;
+      padding: 60px 0;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .logo {
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    .logo span {
+      color: #5b8cff;
+    }
+
+    .header h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+    }
+
+    .header p {
+      color: #8794b3;
+      margin: 0;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .plan {
+      background: #11182b;
+      border: 1px solid #202a42;
+      border-radius: 18px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .plan h2 {
+      margin: 0 0 15px;
+    }
+
+    .price {
+      font-size: 34px;
+      font-weight: 800;
+      margin: 20px 0;
+    }
+
+    .price small {
+      font-size: 14px;
+      color: #8794b3;
+      font-weight: normal;
+    }
+
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 25px 0;
+      text-align: right;
+    }
+
+    .features li {
+      padding: 9px 0;
+      color: #cbd5ef;
+    }
+
+    .choose {
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px;
+      background: #5b8cff;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .choose:hover {
+      opacity: .9;
+    }
+
+    @media (max-width: 800px) {
+      .plans {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="header">
+
+      <div class="logo">
+        Biz<span>Flow</span>
+      </div>
+
+      <h1>
+        اختر الباقة المناسبة لك
+      </h1>
+
+      <p>
+        اختر الباقة ثم انتقل إلى الدفع لتفعيل حسابك.
+      </p>
+
+    </div>
+
+
+    <div class="plans">
+
+      <!-- BASIC -->
+
+      <div class="plan">
+
+        <h2>
+          Basic
+        </h2>
+
+        <div class="price">
+          99 ج.م
+          <small>/ شهر</small>
+        </div>
+
+        <ul class="features">
+          <li>✓ إدارة العملاء</li>
+          <li>✓ إدارة المنتجات</li>
+          <li>✓ تسجيل المبيعات</li>
+          <li>✓ المصروفات</li>
+        </ul>
+
+        <button
+          class="choose"
+          onclick="choosePlan('basic')"
+        >
+          اختيار الباقة
+        </button>
+
+      </div>
+
+
+      <!-- PRO -->
+
+      <div class="plan">
+
+        <h2>
+          Pro
+        </h2>
+
+        <div class="price">
+          199 ج.م
+          <small>/ شهر</small>
+        </div>
+
+        <ul class="features">
+          <li>✓ كل مميزات Basic</li>
+          <li>✓ التقارير</li>
+          <li>✓ إحصائيات متقدمة</li>
+          <li>✓ إدارة أفضل للمبيعات</li>
+        </ul>
+
+        <button
+          class="choose"
+          onclick="choosePlan('pro')"
+        >
+          اختيار الباقة
+        </button>
+
+      </div>
+
+
+      <!-- BUSINESS -->
+
+      <div class="plan">
+
+        <h2>
+          Business
+        </h2>
+
+        <div class="price">
+          399 ج.م
+          <small>/ شهر</small>
+        </div>
+
+        <ul class="features">
+          <li>✓ كل مميزات Pro</li>
+          <li>✓ إدارة متقدمة</li>
+          <li>✓ مزايا للشركات</li>
+          <li>✓ أولوية الدعم</li>
+        </ul>
+
+        <button
+          class="choose"
+          onclick="choosePlan('business')"
+        >
+          اختيار الباقة
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    function choosePlan(plan) {
+
+      localStorage.setItem(
+        "bizflow_selected_plan",
+        plan
+      );
+
+      alert(
+        "تم اختيار الباقة: " +
+        plan +
+        "\n\nالخطوة التالية ستكون الدفع."
+      );
+
+    }
+
+  </script>
+
+</body>
+
+</html>
