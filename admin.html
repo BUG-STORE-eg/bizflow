@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>BizFlow - Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0f19;
+      color: #fff;
+    }
+
+    .container {
+      width: min(1400px, 94%);
+      margin: 30px auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .brand span {
+      color: #6c63ff;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .logout {
+      background: #ef4444;
+    }
+
+    .refresh {
+      background: #334155;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 15px;
+      padding: 20px;
+    }
+
+    .stat-title {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .section {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .section h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th,
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #1f2937;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .pending {
+      background: #3b2f00;
+      color: #facc15;
+    }
+
+    .approved,
+    .active {
+      background: #063b25;
+      color: #4ade80;
+    }
+
+    .rejected,
+    .cancelled,
+    .expired {
+      background: #3b1111;
+      color: #f87171;
+    }
+
+    .approve {
+      background: #16a34a;
+      margin-left: 5px;
+    }
+
+    .reject {
+      background: #dc2626;
+    }
+
+    .proof {
+      background: #2563eb;
+    }
+
+    .cancel {
+      background: #dc2626;
+    }
+
+    .empty {
+      text-align: center;
+      color: #94a3b8;
+      padding: 25px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #94a3b8;
+    }
+
+    .error {
+      background: #3b1111;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="topbar">
+
+    <div class="brand">
+      Biz<span>Flow</span> Admin
+    </div>
+
+    <div class="top-actions">
+      <button class="refresh" onclick="loadAll()">
+        تحديث
+      </button>
+
+      <button class="logout" onclick="logout()">
+        تسجيل الخروج
+      </button>
+    </div>
+
+  </div>
+
+  <div id="errorBox" class="error"></div>
+
+  <!-- الإحصائيات -->
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-title">
+        إجمالي الحسابات
+      </div>
+
+      <div id="accountsCount" class="stat-value">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        الاشتراكات النشطة
+      </div>
+
+      <div id="activeCount" class="stat-value">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        طلبات الدفع المعلقة
+      </div>
+
+      <div id="pendingCount" class="stat-value">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        الاشتراكات المنتهية
+      </div>
+
+      <div id="expiredCount" class="stat-value">
+        0
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- طلبات الدفع -->
+
+  <div class="section">
+
+    <h2>
+      💳 طلبات الدفع
+    </h2>
+
+    <div id="paymentsLoading" class="loading">
+      جاري تحميل طلبات الدفع...
+    </div>
+
+    <div class="table-wrapper">
+
+      <table id="paymentsTable" style="display:none">
+
+        <thead>
+
+          <tr>
+            <th>الإيميل</th>
+            <th>الباقة</th>
+            <th>المبلغ</th>
+            <th>طريقة الدفع</th>
+            <th>Transaction ID</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+            <th>الإجراء</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="paymentsBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+
+  <!-- الحسابات -->
+
+  <div class="section">
+
+    <h2>
+      👥 جميع الحسابات
+    </h2>
+
+    <div id="accountsLoading" class="loading">
+      جاري تحميل الحسابات...
+    </div>
+
+    <div class="table-wrapper">
+
+      <table id="accountsTable" style="display:none">
+
+        <thead>
+
+          <tr>
+            <th>الإيميل</th>
+            <th>الباقة</th>
+            <th>الحالة</th>
+            <th>تاريخ البداية</th>
+            <th>تاريخ الانتهاء</th>
+            <th>المدة المتبقية</th>
+            <th>الإجراء</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="accountsBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  // =========================================================
+  // Supabase
+  // =========================================================
+
+  const SUPABASE_URL =
+    "https://oklabfxjcekfwirnqlji.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  // =========================================================
+  // أدوات
+  // =========================================================
+
+  function showError(message) {
+
+    const box =
+      document.getElementById("errorBox");
+
+    box.textContent = message;
+
+    box.style.display = "block";
+  }
+
+
+  function hideError() {
+
+    const box =
+      document.getElementById("errorBox");
+
+    box.style.display = "none";
+  }
+
+
+  function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+
+  function formatDate(date) {
+
+    if (!date) {
+      return "-";
+    }
+
+    return new Date(date).toLocaleString("ar-EG");
+  }
+
+
+  function getRemainingDays(expiresAt) {
+
+    if (!expiresAt) {
+      return 0;
+    }
+
+    const now = new Date();
+
+    const expires =
+      new Date(expiresAt);
+
+    const difference =
+      expires - now;
+
+    if (difference <= 0) {
+      return 0;
+    }
+
+    return Math.ceil(
+      difference / (1000 * 60 * 60 * 24)
+    );
+  }
+
+
+  function getSubscriptionStatus(subscription) {
+
+    if (!subscription) {
+      return {
+        text: "بدون اشتراك",
+        className: "cancelled"
+      };
+    }
+
+    if (
+      subscription.status === "active" &&
+      subscription.expires_at &&
+      new Date(subscription.expires_at) > new Date()
+    ) {
+
+      return {
+        text: "نشط",
+        className: "active"
+      };
+
+    }
+
+    if (subscription.status === "cancelled") {
+
+      return {
+        text: "ملغي",
+        className: "cancelled"
+      };
+
+    }
+
+    if (
+      subscription.expires_at &&
+      new Date(subscription.expires_at) <= new Date()
+    ) {
+
+      return {
+        text: "منتهي",
+        className: "expired"
+      };
+
+    }
+
+    return {
+      text: subscription.status,
+      className: "cancelled"
+    };
+  }
+
+
+  // =========================================================
+  // التأكد من الأدمن
+  // =========================================================
+
+  async function checkAdmin() {
+
+    const {
+      data: {
+        user
+      },
+      error
+    } =
+      await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+
+      window.location.href =
+        "login.html";
+
+      return false;
+    }
+
+
+    const {
+      data,
+      error: adminError
+    } =
+      await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if (adminError) {
+
+      console.error(adminError);
+
+      showError(
+        "حصل خطأ أثناء التحقق من صلاحيات الأدمن: " +
+        adminError.message
+      );
+
+      return false;
+    }
+
+
+    if (!data) {
+
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          text-align:center;
+          padding:20px;
+        ">
+          <div>
+            <h1>غير مصرح</h1>
+            <p style="color:#94a3b8">
+              هذا الحساب ليس لديه صلاحيات Admin.
+            </p>
+            <button
+              onclick="location.href='index.html'"
+              style="
+                background:#6c63ff;
+                border:0;
+                color:white;
+                padding:12px 20px;
+                border-radius:10px;
+                cursor:pointer;
+              "
+            >
+              العودة
+            </button>
+          </div>
+        </div>
+      `;
+
+      return false;
+    }
+
+
+    return true;
+  }
+
+
+  // =========================================================
+  // تحميل كل البيانات
+  // =========================================================
+
+  async function loadAll() {
+
+    hideError();
+
+    const isAdmin =
+      await checkAdmin();
+
+    if (!isAdmin) {
+      return;
+    }
+
+
+    await Promise.all([
+      loadPayments(),
+      loadAccounts()
+    ]);
+  }
+
+
+  // =========================================================
+  // طلبات الدفع
+  // =========================================================
+
+  async function loadPayments() {
+
+    const loading =
+      document.getElementById(
+        "paymentsLoading"
+      );
+
+    const table =
+      document.getElementById(
+        "paymentsTable"
+      );
+
+    const body =
+      document.getElementById(
+        "paymentsBody"
+      );
+
+
+    loading.style.display = "block";
+    table.style.display = "none";
+
+    body.innerHTML = "";
+
+
+    // الحسابات لاستخراج الإيميل
+    const {
+      data: accounts,
+      error: accountsError
+    } =
+      await supabaseClient
+        .from("bizflow_accounts")
+        .select("user_id,email");
+
+
+    if (accountsError) {
+
+      console.error(accountsError);
+
+      showError(
+        "خطأ في تحميل الحسابات: " +
+        accountsError.message
+      );
+
+      loading.style.display = "none";
+
+      return;
+    }
+
+
+    const emailMap = {};
+
+    for (const account of accounts || []) {
+
+      emailMap[account.user_id] =
+        account.email;
+    }
+
+
+    const {
+      data: requests,
+      error
+    } =
+      await supabaseClient
+        .from("payment_requests")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+
+    if (error) {
+
+      console.error(error);
+
+      showError(
+        "خطأ في تحميل طلبات الدفع: " +
+        error.message
+      );
+
+      loading.style.display = "none";
+
+      return;
+    }
+
+
+    document.getElementById(
+      "pendingCount"
+    ).textContent =
+      (requests || [])
+        .filter(r => r.status === "pending")
+        .length;
+
+
+    if (!requests || requests.length === 0) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="8" class="empty">
+            لا توجد طلبات دفع حاليًا
+          </td>
+        </tr>
+      `;
+
+    } else {
+
+      for (const request of requests) {
+
+        const email =
+          emailMap[request.user_id] ||
+          request.user_id;
+
+
+        let method =
+          request.payment_method;
+
+
+        if (method === "etisalat_cash") {
+          method = "Etisalat Cash";
+        }
+
+        if (method === "instapay") {
+          method = "InstaPay";
+        }
+
+
+        let statusClass =
+          request.status;
+
+
+        let statusText =
+          request.status;
+
+
+        if (request.status === "pending") {
+          statusText = "معلق";
+        }
+
+        if (request.status === "approved") {
+          statusText = "مقبول";
+        }
+
+        if (request.status === "rejected") {
+          statusText = "مرفوض";
+        }
+
+
+        let actions = "";
+
+
+        if (request.status === "pending") {
+
+          actions = `
+
+            <button
+              class="proof"
+              onclick="viewProof('${request.proof_path}')"
+            >
+              إثبات الدفع
+            </button>
+
+            <button
+              class="approve"
+              onclick="approvePayment('${request.id}')"
+            >
+              قبول
+            </button>
+
+            <button
+              class="reject"
+              onclick="rejectPayment('${request.id}')"
+            >
+              رفض
+            </button>
+
+          `;
+
+        } else {
+
+          actions = "-";
+
+        }
+
+
+        body.innerHTML += `
+
+          <tr>
+
+            <td>
+              ${escapeHtml(email)}
+            </td>
+
+            <td>
+              ${escapeHtml(request.plan)}
+            </td>
+
+            <td>
+              ${escapeHtml(request.amount)} EGP
+            </td>
+
+            <td>
+              ${escapeHtml(method)}
+            </td>
+
+            <td>
+              ${escapeHtml(request.transaction_id || "-")}
+            </td>
+
+            <td>
+              ${formatDate(request.created_at)}
+            </td>
+
+            <td>
+              <span class="badge ${statusClass}">
+                ${escapeHtml(statusText)}
+              </span>
+            </td>
+
+            <td>
+              ${actions}
+            </td>
+
+          </tr>
+
+        `;
+      }
+
+    }
+
+
+    loading.style.display = "none";
+    table.style.display = "table";
+  }
+
+
+  // =========================================================
+  // عرض إثبات الدفع
+  // =========================================================
+
+  async function viewProof(path) {
+
+    if (!path) {
+
+      alert("لا يوجد إثبات دفع.");
+
+      return;
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .storage
+        .from("payment-proofs")
+        .createSignedUrl(
+          path,
+          300
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "لم نتمكن من فتح إثبات الدفع:\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    if (data?.signedUrl) {
+
+      window.open(
+        data.signedUrl,
+        "_blank"
+      );
+
+    }
+
+  }
+
+
+  // =========================================================
+  // قبول الدفع
+  // =========================================================
+
+  async function approvePayment(id) {
+
+    const confirmed =
+      confirm(
+        "هل أنت متأكد من قبول عملية الدفع وتفعيل الاشتراك لمدة 30 يوم؟"
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .rpc(
+          "approve_payment_request",
+          {
+            request_id: id
+          }
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "فشل قبول الدفع:\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    console.log(data);
+
+    alert(
+      "تم قبول الدفع وتفعيل الاشتراك بنجاح."
+    );
+
+
+    await loadAll();
+  }
+
+
+  // =========================================================
+  // رفض الدفع
+  // =========================================================
+
+  async function rejectPayment(id) {
+
+    const confirmed =
+      confirm(
+        "هل أنت متأكد من رفض طلب الدفع؟"
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .rpc(
+          "reject_payment_request",
+          {
+            request_id: id
+          }
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "فشل رفض الدفع:\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    console.log(data);
+
+    alert(
+      "تم رفض طلب الدفع."
+    );
+
+
+    await loadAll();
+  }
+
+
+  // =========================================================
+  // الحسابات والاشتراكات
+  // =========================================================
+
+  async function loadAccounts() {
+
+    const loading =
+      document.getElementById(
+        "accountsLoading"
+      );
+
+    const table =
+      document.getElementById(
+        "accountsTable"
+      );
+
+    const body =
+      document.getElementById(
+        "accountsBody"
+      );
+
+
+    loading.style.display = "block";
+    table.style.display = "none";
+
+    body.innerHTML = "";
+
+
+    const {
+      data: accounts,
+      error: accountsError
+    } =
+      await supabaseClient
+        .from("bizflow_accounts")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+
+    if (accountsError) {
+
+      console.error(accountsError);
+
+      showError(
+        "خطأ في تحميل الحسابات: " +
+        accountsError.message
+      );
+
+      loading.style.display = "none";
+
+      return;
+    }
+
+
+    const {
+      data: subscriptions,
+      error: subscriptionsError
+    } =
+      await supabaseClient
+        .from("subscriptions")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+
+    if (subscriptionsError) {
+
+      console.error(subscriptionsError);
+
+      showError(
+        "خطأ في تحميل الاشتراكات: " +
+        subscriptionsError.message
+      );
+
+      loading.style.display = "none";
+
+      return;
+    }
+
+
+    let activeCount = 0;
+    let expiredCount = 0;
+
+
+    if (!accounts || accounts.length === 0) {
+
+      body.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty">
+            لا توجد حسابات
+          </td>
+        </tr>
+      `;
+
+    } else {
+
+      for (const account of accounts) {
+
+        const userSubscriptions =
+          (subscriptions || [])
+            .filter(
+              s => s.user_id === account.user_id
+            );
+
+
+        // أحدث اشتراك
+        const subscription =
+          userSubscriptions.length > 0
+            ? userSubscriptions[0]
+            : null;
+
+
+        const status =
+          getSubscriptionStatus(
+            subscription
+          );
+
+
+        const remaining =
+          subscription
+            ? getRemainingDays(
+                subscription.expires_at
+              )
+            : 0;
+
+
+        if (
+          subscription &&
+          subscription.status === "active" &&
+          remaining > 0
+        ) {
+
+          activeCount++;
+
+        }
+
+
+        if (
+          subscription &&
+          (
+            subscription.status === "expired" ||
+            (
+              subscription.expires_at &&
+              new Date(subscription.expires_at) <= new Date()
+            )
+          )
+        ) {
+
+          expiredCount++;
+
+        }
+
+
+        let action = "-";
+
+
+        if (
+          subscription &&
+          subscription.status === "active" &&
+          remaining > 0
+        ) {
+
+          action = `
+
+            <button
+              class="cancel"
+              onclick="cancelSubscription('${subscription.id}')"
+            >
+              إنهاء الاشتراك
+            </button>
+
+          `;
+
+        }
+
+
+        body.innerHTML += `
+
+          <tr>
+
+            <td>
+              ${escapeHtml(account.email)}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                subscription?.plan || "-"
+              )}
+            </td>
+
+            <td>
+
+              <span class="badge ${status.className}">
+                ${escapeHtml(status.text)}
+              </span>
+
+            </td>
+
+            <td>
+              ${formatDate(
+                subscription?.started_at
+              )}
+            </td>
+
+            <td>
+              ${formatDate(
+                subscription?.expires_at
+              )}
+            </td>
+
+            <td>
+              ${
+                subscription && remaining > 0
+                  ? remaining + " يوم"
+                  : "0 يوم"
+              }
+            </td>
+
+            <td>
+              ${action}
+            </td>
+
+          </tr>
+
+        `;
+
+      }
+
+    }
+
+
+    document.getElementById(
+      "accountsCount"
+    ).textContent =
+      accounts?.length || 0;
+
+
+    document.getElementById(
+      "activeCount"
+    ).textContent =
+      activeCount;
+
+
+    document.getElementById(
+      "expiredCount"
+    ).textContent =
+      expiredCount;
+
+
+    loading.style.display = "none";
+    table.style.display = "table";
+  }
+
+
+  // =========================================================
+  // إنهاء الاشتراك
+  // =========================================================
+
+  async function cancelSubscription(id) {
+
+    const confirmed =
+      confirm(
+        "هل أنت متأكد من إنهاء هذا الاشتراك؟"
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .rpc(
+          "cancel_subscription",
+          {
+            subscription_id: id
+          }
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "فشل إنهاء الاشتراك:\n" +
+        error.message
+      );
+
+      return;
+    }
+
+
+    console.log(data);
+
+    alert(
+      "تم إنهاء الاشتراك."
+    );
+
+
+    await loadAll();
+  }
+
+
+  // =========================================================
+  // تسجيل الخروج
+  // =========================================================
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+      "login.html";
+  }
+
+
+  // =========================================================
+  // البداية
+  // =========================================================
+
+  loadAll();
+
+</script>
+
+</body>
+</html>
