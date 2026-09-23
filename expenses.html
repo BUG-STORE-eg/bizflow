@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BizFlow - المصروفات</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #e8eaf0;
+        }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #151923;
+            border-left: 1px solid #252a36;
+            padding: 25px 15px;
+        }
+
+        .brand {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        .brand span {
+            color: #4f8cff;
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: #aeb4c0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #202636;
+            color: #fff;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            right: 15px;
+            width: calc(100% - 30px);
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            background: #272c38;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .main {
+            margin-right: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .welcome {
+            color: #8f97a8;
+            margin-bottom: 7px;
+        }
+
+        .user {
+            background: #181d28;
+            border: 1px solid #272d3b;
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #aeb4c0;
+            direction: ltr;
+        }
+
+        .panel {
+            background: #151923;
+            border: 1px solid #252a36;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .panel-head h2 {
+            margin: 0;
+        }
+
+        .primary {
+            border: 0;
+            background: #4f8cff;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #252a36;
+            text-align: right;
+        }
+
+        th {
+            color: #8f97a8;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .delete {
+            border: 0;
+            background: #4b252b;
+            color: #ff929d;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8f97a8;
+        }
+
+        .error {
+            display: none;
+            background: #3b2024;
+            color: #ff9ca5;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 500px;
+            background: #151923;
+            border: 1px solid #2a3040;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-head h2 {
+            margin: 0;
+        }
+
+        .close {
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin: 16px 0;
+        }
+
+        .form-group label {
+            display: block;
+            color: #aeb4c0;
+            margin-bottom: 7px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #0f1117;
+            border: 1px solid #2a3040;
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .save {
+            background: #4f8cff;
+            color: white;
+        }
+
+        .cancel {
+            background: #292e3a;
+            color: white;
+        }
+
+        @media(max-width:600px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: static;
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .main {
+                margin-right: 0;
+                padding: 20px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="brand">
+        Biz<span>Flow</span>
+    </div>
+
+    <nav>
+        <a href="index.html">📊 الرئيسية</a>
+        <a href="customers.html">👥 العملاء</a>
+        <a href="products.html">📦 المنتجات</a>
+        <a href="sales.html">🧾 المبيعات</a>
+        <a class="active" href="expenses.html">💸 المصروفات</a>
+        <a href="reports.html">📈 التقارير</a>
+    </nav>
+
+    <button class="logout" id="logoutBtn">
+        تسجيل الخروج
+    </button>
+
+</aside>
+
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div>
+            <p class="welcome">
+                إدارة المصروفات
+            </p>
+
+            <h1>
+                المصروفات
+            </h1>
+        </div>
+
+        <div class="user" id="userEmail">
+            جاري التحميل...
+        </div>
+
+    </header>
+
+
+    <section class="panel">
+
+        <div class="panel-head">
+
+            <h2>
+                قائمة المصروفات
+            </h2>
+
+            <button
+                class="primary"
+                id="addExpenseBtn"
+            >
+                + إضافة مصروف
+            </button>
+
+        </div>
+
+
+        <div
+            id="errorBox"
+            class="error"
+        ></div>
+
+
+        <div id="tableContainer">
+
+            <div class="empty">
+                جاري تحميل المصروفات...
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<div class="modal" id="expenseModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>
+                إضافة مصروف
+            </h2>
+
+            <button
+                class="close"
+                id="closeModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="expenseForm">
+
+            <div class="form-group">
+
+                <label>
+                    اسم المصروف
+                </label>
+
+                <input
+                    id="expenseTitle"
+                    type="text"
+                    placeholder="مثال: كهرباء"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    المبلغ
+                </label>
+
+                <input
+                    id="expenseAmount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    required
+                >
+
+            </div>
+
+
+            <div class="buttons">
+
+                <button
+                    class="save"
+                    type="submit"
+                >
+                    حفظ المصروف
+                </button>
+
+                <button
+                    class="cancel"
+                    type="button"
+                    id="cancelModal"
+                >
+                    إلغاء
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://oklabfxjcekfwirnqlji.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+let currentUser = null;
+
+
+const $ = id =>
+    document.getElementById(id);
+
+
+function showError(message) {
+
+    $("errorBox").textContent =
+        message;
+
+    $("errorBox").style.display =
+        "block";
+
+}
+
+
+function hideError() {
+
+    $("errorBox").style.display =
+        "none";
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+async function init() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (error || !data.user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    $("userEmail").textContent =
+        currentUser.email;
+
+
+    await loadExpenses();
+
+}
+
+
+async function loadExpenses() {
+
+    hideError();
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("expenses")
+            .select("*")
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        showError(
+            "حدث خطأ أثناء تحميل المصروفات: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if (!data || data.length === 0) {
+
+        $("tableContainer").innerHTML = `
+
+            <div class="empty">
+
+                <div style="font-size:45px">
+                    💸
+                </div>
+
+                <h3>
+                    لا توجد مصروفات
+                </h3>
+
+                <p>
+                    أضف أول مصروف لك.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let rows = "";
+
+
+    data.forEach((expense, index) => {
+
+        rows += `
+
+            <tr>
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${escapeHtml(expense.title)}
+                </td>
+
+                <td>
+                    ${Number(
+                        expense.amount
+                    ).toFixed(2)}
+                    ج.م
+                </td>
+
+                <td>
+                    ${new Date(
+                        expense.created_at
+                    ).toLocaleString("ar-EG")}
+                </td>
+
+                <td>
+
+                    <button
+                        class="delete"
+                        onclick="deleteExpense('${expense.id}')"
+                    >
+                        حذف
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    $("tableContainer").innerHTML = `
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>المصروف</th>
+                        <th>المبلغ</th>
+                        <th>التاريخ</th>
+                        <th>الإجراء</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+
+}
+
+
+function openModal() {
+
+    $("expenseForm").reset();
+
+    $("expenseModal")
+        .classList
+        .add("show");
+
+    $("expenseTitle").focus();
+
+}
+
+
+function closeModal() {
+
+    $("expenseModal")
+        .classList
+        .remove("show");
+
+}
+
+
+$("addExpenseBtn")
+    .addEventListener(
+        "click",
+        openModal
+    );
+
+
+$("closeModal")
+    .addEventListener(
+        "click",
+        closeModal
+    );
+
+
+$("cancelModal")
+    .addEventListener(
+        "click",
+        closeModal
+    );
+
+
+$("expenseForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            hideError();
+
+
+            const title =
+                $("expenseTitle")
+                    .value
+                    .trim();
+
+            const amount =
+                Number(
+                    $("expenseAmount").value
+                );
+
+
+            if (!title) {
+
+                alert(
+                    "اكتب اسم المصروف."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !Number.isFinite(amount) ||
+                amount < 0
+            ) {
+
+                alert(
+                    "اكتب مبلغ صحيح."
+                );
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("expenses")
+                    .insert({
+
+                        user_id:
+                            currentUser.id,
+
+                        title:
+                            title,
+
+                        amount:
+                            amount
+
+                    });
+
+
+            if (error) {
+
+                showError(
+                    "حدث خطأ أثناء حفظ المصروف: " +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            closeModal();
+
+            await loadExpenses();
+
+        }
+    );
+
+
+window.deleteExpense =
+    async function(id) {
+
+        if (
+            !confirm(
+                "هل أنت متأكد من حذف المصروف؟"
+            )
+        ) {
+            return;
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("expenses")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+
+            showError(
+                "حدث خطأ أثناء حذف المصروف: " +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        await loadExpenses();
+
+    };
+
+
+$("logoutBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+init();
+
+</script>
+
+</body>
+</html>
