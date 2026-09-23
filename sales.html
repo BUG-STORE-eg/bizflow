@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BizFlow - المبيعات</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #e8eaf0;
+        }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #151923;
+            border-left: 1px solid #252a36;
+            padding: 25px 15px;
+        }
+
+        .brand {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        .brand span {
+            color: #4f8cff;
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: #aeb4c0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #202636;
+            color: #fff;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            right: 15px;
+            width: calc(100% - 30px);
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            background: #272c38;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .main {
+            margin-right: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .welcome {
+            color: #8f97a8;
+            margin-bottom: 7px;
+        }
+
+        .user {
+            background: #181d28;
+            border: 1px solid #272d3b;
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #aeb4c0;
+            direction: ltr;
+        }
+
+        .panel {
+            background: #151923;
+            border: 1px solid #252a36;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .panel-head h2 {
+            margin: 0;
+        }
+
+        .primary {
+            border: 0;
+            background: #4f8cff;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #252a36;
+            text-align: right;
+        }
+
+        th {
+            color: #8f97a8;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .delete {
+            border: 0;
+            background: #4b252b;
+            color: #ff929d;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8f97a8;
+        }
+
+        .error {
+            display: none;
+            background: #3b2024;
+            color: #ff9ca5;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Modal */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .7);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 520px;
+            background: #151923;
+            border: 1px solid #2a3040;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-head h2 {
+            margin: 0;
+        }
+
+        .close {
+            background: transparent;
+            border: 0;
+            color: #fff;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin: 16px 0;
+        }
+
+        .form-group label {
+            display: block;
+            color: #aeb4c0;
+            margin-bottom: 7px;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #0f1117;
+            border: 1px solid #2a3040;
+            color: #fff;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .total {
+            font-size: 18px;
+            margin: 18px 0;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .save {
+            background: #4f8cff;
+            color: white;
+        }
+
+        .cancel {
+            background: #292e3a;
+            color: white;
+        }
+
+        @media(max-width: 800px) {
+            .sidebar {
+                width: 190px;
+            }
+
+            .main {
+                margin-right: 190px;
+                padding: 20px;
+            }
+        }
+
+        @media(max-width: 600px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: static;
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .main {
+                margin-right: 0;
+                padding: 20px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="brand">
+        Biz<span>Flow</span>
+    </div>
+
+    <nav>
+        <a href="index.html">📊 الرئيسية</a>
+        <a href="customers.html">👥 العملاء</a>
+        <a href="products.html">📦 المنتجات</a>
+        <a class="active" href="sales.html">🧾 المبيعات</a>
+        <a href="expenses.html">💸 المصروفات</a>
+        <a href="reports.html">📈 التقارير</a>
+    </nav>
+
+    <button class="logout" id="logoutBtn">
+        تسجيل الخروج
+    </button>
+
+</aside>
+
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div>
+            <p class="welcome">
+                إدارة المبيعات
+            </p>
+
+            <h1>
+                المبيعات
+            </h1>
+        </div>
+
+        <div class="user" id="userEmail">
+            جاري التحميل...
+        </div>
+
+    </header>
+
+
+    <section class="panel">
+
+        <div class="panel-head">
+
+            <h2>
+                آخر عمليات البيع
+            </h2>
+
+            <button
+                class="primary"
+                id="addSaleBtn"
+                type="button"
+            >
+                + إضافة عملية بيع
+            </button>
+
+        </div>
+
+
+        <div
+            id="errorBox"
+            class="error"
+        ></div>
+
+
+        <div id="tableContainer">
+            <div class="empty">
+                جاري تحميل المبيعات...
+            </div>
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- Modal -->
+
+<div
+    class="modal"
+    id="saleModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>
+                إضافة عملية بيع
+            </h2>
+
+            <button
+                class="close"
+                id="closeModal"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="saleForm">
+
+            <div class="form-group">
+
+                <label>
+                    العميل
+                </label>
+
+                <select
+                    id="customerSelect"
+                    required
+                >
+
+                    <option value="">
+                        اختر العميل
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    المنتج
+                </label>
+
+                <select
+                    id="productSelect"
+                    required
+                >
+
+                    <option value="">
+                        اختر المنتج
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    الكمية
+                </label>
+
+                <input
+                    id="quantity"
+                    type="number"
+                    min="1"
+                    value="1"
+                    required
+                >
+
+            </div>
+
+
+            <div class="total">
+                الإجمالي:
+                <strong id="total">
+                    0.00
+                </strong>
+                ج.م
+            </div>
+
+
+            <div class="buttons">
+
+                <button
+                    class="save"
+                    type="submit"
+                >
+                    حفظ البيع
+                </button>
+
+                <button
+                    class="cancel"
+                    type="button"
+                    id="cancelModal"
+                >
+                    إلغاء
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://oklabfxjcekfwirnqlji.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+let currentUser = null;
+let customers = [];
+let products = [];
+
+
+const $ = id =>
+    document.getElementById(id);
+
+
+function showError(message) {
+
+    $("errorBox").textContent =
+        message;
+
+    $("errorBox").style.display =
+        "block";
+
+}
+
+
+function hideError() {
+
+    $("errorBox").style.display =
+        "none";
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+async function checkUser() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (error || !data.user) {
+
+        window.location.href =
+            "login.html";
+
+        return false;
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    $("userEmail").textContent =
+        currentUser.email;
+
+
+    return true;
+
+}
+
+
+async function loadData() {
+
+    hideError();
+
+
+    const [
+        customersResult,
+        productsResult,
+        salesResult
+    ] =
+        await Promise.all([
+
+            supabaseClient
+                .from("customers")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order("name"),
+
+            supabaseClient
+                .from("products")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order("name"),
+
+            supabaseClient
+                .from("sales")
+                .select("*, customers(name)")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                )
+
+        ]);
+
+
+    if (
+        customersResult.error ||
+        productsResult.error ||
+        salesResult.error
+    ) {
+
+        const error =
+            customersResult.error ||
+            productsResult.error ||
+            salesResult.error;
+
+        console.error(error);
+
+        showError(
+            "حدث خطأ: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    customers =
+        customersResult.data || [];
+
+    products =
+        productsResult.data || [];
+
+
+    fillSelects();
+
+    renderSales(
+        salesResult.data || []
+    );
+
+}
+
+
+function fillSelects() {
+
+    $("customerSelect").innerHTML =
+        '<option value="">اختر العميل</option>' +
+
+        customers
+            .map(customer => `
+                <option value="${customer.id}">
+                    ${escapeHtml(customer.name)}
+                </option>
+            `)
+            .join("");
+
+
+    $("productSelect").innerHTML =
+        '<option value="">اختر المنتج</option>' +
+
+        products
+            .map(product => `
+                <option
+                    value="${product.id}"
+                    data-price="${product.price}"
+                >
+                    ${escapeHtml(product.name)}
+                    — ${Number(product.price).toFixed(2)} ج.م
+                    — المخزون: ${product.stock}
+                </option>
+            `)
+            .join("");
+
+
+    updateTotal();
+
+}
+
+
+function renderSales(sales) {
+
+    if (!sales.length) {
+
+        $("tableContainer").innerHTML = `
+
+            <div class="empty">
+
+                <div style="font-size:45px">
+                    🧾
+                </div>
+
+                <h3>
+                    لا توجد مبيعات حتى الآن
+                </h3>
+
+                <p>
+                    أضف أول عملية بيع لك.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let rows = "";
+
+
+    sales.forEach((sale, index) => {
+
+        rows += `
+
+            <tr>
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        sale.customers?.name ||
+                        "بدون عميل"
+                    )}
+                </td>
+
+                <td>
+                    ${Number(
+                        sale.total || 0
+                    ).toFixed(2)}
+                    ج.م
+                </td>
+
+                <td>
+                    ${new Date(
+                        sale.created_at
+                    ).toLocaleString("ar-EG")}
+                </td>
+
+                <td>
+
+                    <button
+                        class="delete"
+                        onclick="deleteSale('${sale.id}')"
+                    >
+                        حذف
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    $("tableContainer").innerHTML = `
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>العميل</th>
+                        <th>الإجمالي</th>
+                        <th>التاريخ</th>
+                        <th>الإجراء</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+
+}
+
+
+function updateTotal() {
+
+    const option =
+        $("productSelect")
+            .selectedOptions[0];
+
+    const quantity =
+        Number(
+            $("quantity").value
+        ) || 0;
+
+
+    const price =
+        Number(
+            option?.dataset.price
+        ) || 0;
+
+
+    $("total").textContent =
+        (price * quantity).toFixed(2);
+
+}
+
+
+$("productSelect")
+    .addEventListener(
+        "change",
+        updateTotal
+    );
+
+
+$("quantity")
+    .addEventListener(
+        "input",
+        updateTotal
+    );
+
+
+$("addSaleBtn")
+    .addEventListener(
+        "click",
+        () => {
+
+            $("saleForm").reset();
+
+            $("quantity").value = 1;
+
+            $("saleModal")
+                .classList
+                .add("show");
+
+            updateTotal();
+
+        }
+    );
+
+
+function closeModal() {
+
+    $("saleModal")
+        .classList
+        .remove("show");
+
+}
+
+
+$("closeModal")
+    .addEventListener(
+        "click",
+        closeModal
+    );
+
+
+$("cancelModal")
+    .addEventListener(
+        "click",
+        closeModal
+    );
+
+
+$("saleForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            hideError();
+
+
+            const customerId =
+                $("customerSelect").value;
+
+            const productId =
+                $("productSelect").value;
+
+            const quantity =
+                Number(
+                    $("quantity").value
+                );
+
+
+            const product =
+                products.find(
+                    item =>
+                        item.id === productId
+                );
+
+
+            if (!product) {
+
+                alert(
+                    "اختر المنتج."
+                );
+
+                return;
+
+            }
+
+
+            if (quantity < 1) {
+
+                alert(
+                    "الكمية غير صحيحة."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number(product.stock) <
+                quantity
+            ) {
+
+                alert(
+                    "الكمية المطلوبة أكبر من المخزون."
+                );
+
+                return;
+
+            }
+
+
+            const total =
+                Number(product.price) *
+                quantity;
+
+
+            const {
+                data: sale,
+                error: saleError
+            } =
+                await supabaseClient
+                    .from("sales")
+                    .insert({
+                        user_id:
+                            currentUser.id,
+
+                        customer_id:
+                            customerId || null,
+
+                        total:
+                            total
+                    })
+                    .select()
+                    .single();
+
+
+            if (saleError) {
+
+                showError(
+                    "حدث خطأ أثناء إنشاء البيع: " +
+                    saleError.message
+                );
+
+                return;
+
+            }
+
+
+            const {
+                error: itemError
+            } =
+                await supabaseClient
+                    .from("sale_items")
+                    .insert({
+                        sale_id:
+                            sale.id,
+
+                        product_id:
+                            productId,
+
+                        quantity:
+                            quantity,
+
+                        price:
+                            product.price
+                    });
+
+
+            if (itemError) {
+
+                await supabaseClient
+                    .from("sales")
+                    .delete()
+                    .eq(
+                        "id",
+                        sale.id
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
+
+
+                showError(
+                    "حدث خطأ أثناء حفظ تفاصيل البيع: " +
+                    itemError.message
+                );
+
+                return;
+
+            }
+
+
+            const {
+                error: stockError
+            } =
+                await supabaseClient
+                    .from("products")
+                    .update({
+                        stock:
+                            Number(product.stock) -
+                            quantity
+                    })
+                    .eq(
+                        "id",
+                        productId
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
+
+
+            if (stockError) {
+
+                showError(
+                    "تم تسجيل البيع لكن حدث خطأ في تحديث المخزون: " +
+                    stockError.message
+                );
+
+                return;
+
+            }
+
+
+            closeModal();
+
+            await loadData();
+
+        }
+    );
+
+
+window.deleteSale =
+    async function(id) {
+
+        const confirmed =
+            confirm(
+                "هل أنت متأكد من حذف عملية البيع؟"
+            );
+
+
+        if (!confirmed)
+            return;
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("sales")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+
+            showError(
+                "حدث خطأ أثناء حذف البيع: " +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        await loadData();
+
+    };
+
+
+$("logoutBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+async function init() {
+
+    const loggedIn =
+        await checkUser();
+
+
+    if (!loggedIn)
+        return;
+
+
+    await loadData();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>
