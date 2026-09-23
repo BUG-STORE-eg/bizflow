@@ -263,6 +263,24 @@
             text-decoration: underline;
         }
 
+        .error-box {
+            margin: 15px 20px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: #450a0a;
+            border: 1px solid #7f1d1d;
+            color: #fecaca;
+            display: none;
+            font-size: 13px;
+            direction: ltr;
+            text-align: left;
+            word-break: break-word;
+        }
+
+        .error-box.show {
+            display: block;
+        }
+
         /* MODAL */
 
         .modal-overlay {
@@ -367,12 +385,6 @@
             gap: 10px;
         }
 
-        .modal-buttons {
-            display: grid;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
         .danger-zone {
             margin-top: 22px;
             padding-top: 18px;
@@ -460,7 +472,6 @@
     </div>
 </header>
 
-
 <main>
     <div class="container">
 
@@ -469,6 +480,7 @@
             <p>إدارة العملاء والاشتراكات وطلبات الدفع</p>
         </div>
 
+        <div class="error-box" id="errorBox"></div>
 
         <!-- STATS -->
 
@@ -484,7 +496,6 @@
                 </div>
             </div>
 
-
             <div class="stat">
                 <div class="stat-title">
                     الاشتراكات النشطة
@@ -495,7 +506,6 @@
                 </div>
             </div>
 
-
             <div class="stat">
                 <div class="stat-title">
                     طلبات الدفع المعلقة
@@ -505,7 +515,6 @@
                     0
                 </div>
             </div>
-
 
             <div class="stat">
                 <div class="stat-title">
@@ -518,7 +527,6 @@
             </div>
 
         </div>
-
 
         <!-- PAYMENT REQUESTS -->
 
@@ -551,13 +559,17 @@
                     </thead>
 
                     <tbody id="paymentsBody">
+
                         <tr>
                             <td colspan="9">
+
                                 <div class="loading">
                                     جاري التحميل...
                                 </div>
+
                             </td>
                         </tr>
+
                     </tbody>
 
                 </table>
@@ -565,7 +577,6 @@
             </div>
 
         </section>
-
 
         <!-- SUBSCRIPTIONS -->
 
@@ -584,6 +595,7 @@
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>الإيميل</th>
                             <th>الباقة</th>
@@ -593,16 +605,21 @@
                             <th>الوقت المتبقي</th>
                             <th>الإجراءات</th>
                         </tr>
+
                     </thead>
 
                     <tbody id="subscriptionsBody">
+
                         <tr>
                             <td colspan="7">
+
                                 <div class="loading">
                                     جاري التحميل...
                                 </div>
+
                             </td>
                         </tr>
+
                     </tbody>
 
                 </table>
@@ -610,7 +627,6 @@
             </div>
 
         </section>
-
 
         <!-- USERS -->
 
@@ -625,6 +641,7 @@
                 <table>
 
                     <thead>
+
                         <tr>
                             <th>الإيميل</th>
                             <th>تاريخ التسجيل</th>
@@ -632,16 +649,21 @@
                             <th>الحالة</th>
                             <th>الانتهاء</th>
                         </tr>
+
                     </thead>
 
                     <tbody id="usersBody">
+
                         <tr>
                             <td colspan="5">
+
                                 <div class="loading">
                                     جاري التحميل...
                                 </div>
+
                             </td>
                         </tr>
+
                     </tbody>
 
                 </table>
@@ -652,7 +674,6 @@
 
     </div>
 </main>
-
 
 <!-- SUBSCRIPTION MODAL -->
 
@@ -674,7 +695,6 @@
 
         </div>
 
-
         <div class="modal-body">
 
             <div class="user-info">
@@ -695,7 +715,6 @@
                 </div>
 
             </div>
-
 
             <div class="form-group">
 
@@ -727,7 +746,6 @@
 
             </div>
 
-
             <button
                 class="btn-green"
                 style="width:100%;"
@@ -736,7 +754,6 @@
                 ➕ إضافة المدة
 
             </button>
-
 
             <div class="form-group" style="margin-top:20px;">
 
@@ -762,7 +779,6 @@
 
             </div>
 
-
             <button
                 class="btn-blue"
                 style="width:100%;"
@@ -771,7 +787,6 @@
                 🔧 تغيير الباقة
 
             </button>
-
 
             <div class="danger-zone">
 
@@ -792,9 +807,7 @@
 
 </div>
 
-
 <div class="message" id="message"></div>
-
 
 <script>
 
@@ -802,14 +815,13 @@ const SUPABASE_URL =
     "https://oklabfxjcekfwirnqlji.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlug5ug_9_Lqlug5";
 
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
-
 
 let currentUser = null;
 let currentSubscription = null;
@@ -840,6 +852,44 @@ function showMessage(text, type = "success") {
 
 
 // ==========================================
+// ERROR BOX
+// ==========================================
+
+function showError(error) {
+
+    const box =
+        document.getElementById("errorBox");
+
+    if (!box) {
+        return;
+    }
+
+    let message =
+        error?.message ||
+        String(error) ||
+        "Unknown error";
+
+    box.textContent =
+        "Supabase Error: " + message;
+
+    box.classList.add("show");
+
+    console.error("SUPABASE ERROR:", error);
+}
+
+function clearError() {
+
+    const box =
+        document.getElementById("errorBox");
+
+    if (box) {
+        box.textContent = "";
+        box.classList.remove("show");
+    }
+}
+
+
+// ==========================================
 // FORMAT DATE
 // ==========================================
 
@@ -849,7 +899,13 @@ function formatDate(date) {
         return "-";
     }
 
-    return new Date(date).toLocaleString(
+    const d = new Date(date);
+
+    if (isNaN(d.getTime())) {
+        return "-";
+    }
+
+    return d.toLocaleString(
         "ar-EG",
         {
             dateStyle: "medium",
@@ -873,11 +929,9 @@ function remainingTime(expiresAt) {
         new Date(expiresAt).getTime()
         - Date.now();
 
-
     if (diff <= 0) {
         return "منتهي";
     }
-
 
     const totalMinutes =
         Math.floor(diff / 60000);
@@ -893,17 +947,12 @@ function remainingTime(expiresAt) {
     const minutes =
         totalMinutes % 60;
 
-
     if (days > 0) {
-
         return `${days} يوم ${hours} ساعة`;
-
     }
 
     if (hours > 0) {
-
         return `${hours} ساعة ${minutes} دقيقة`;
-
     }
 
     return `${minutes} دقيقة`;
@@ -917,12 +966,13 @@ function remainingTime(expiresAt) {
 function subscriptionStatus(sub) {
 
     if (!sub) {
+
         return {
             text: "لا يوجد",
             className: "badge-expired"
         };
-    }
 
+    }
 
     if (
         sub.status === "active" &&
@@ -937,7 +987,6 @@ function subscriptionStatus(sub) {
 
     }
 
-
     if (
         sub.status === "active" &&
         sub.expires_at &&
@@ -951,7 +1000,6 @@ function subscriptionStatus(sub) {
 
     }
 
-
     if (sub.status === "cancelled") {
 
         return {
@@ -961,6 +1009,23 @@ function subscriptionStatus(sub) {
 
     }
 
+    if (sub.status === "pending") {
+
+        return {
+            text: "معلق",
+            className: "badge-pending"
+        };
+
+    }
+
+    if (sub.status === "expired") {
+
+        return {
+            text: "منتهي",
+            className: "badge-expired"
+        };
+
+    }
 
     return {
         text: sub.status || "-",
@@ -975,59 +1040,103 @@ function subscriptionStatus(sub) {
 
 async function checkAdmin() {
 
-    const {
-        data: {
-            session
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.getSession();
+
+        if (error) {
+
+            console.error(
+                "SESSION ERROR:",
+                error
+            );
+
+            showError(error);
+
+            return false;
         }
-    } = await supabaseClient.auth.getSession();
 
+        const session =
+            data?.session;
 
-    if (!session) {
+        if (!session) {
 
-        window.location.href =
-            "login.html";
+            window.location.href =
+                "login.html";
 
-        return false;
-    }
+            return false;
+        }
 
+        currentUser =
+            session.user;
 
-    currentUser =
-        session.user;
+        document.getElementById(
+            "adminEmail"
+        ).textContent =
+            currentUser.email || "-";
 
+        const {
+            data: adminData,
+            error: adminError
+        } =
+            await supabaseClient
+                .from("admin_users")
+                .select("user_id,email")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
 
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("admin_users")
-            .select("user_id,email")
-            .eq("user_id", currentUser.id)
-            .maybeSingle();
+        if (adminError) {
 
+            console.error(
+                "ADMIN CHECK ERROR:",
+                adminError
+            );
 
-    if (error || !data) {
+            showError(adminError);
 
-        alert(
-            "ليس لديك صلاحية الدخول إلى لوحة الإدارة."
+            return false;
+        }
+
+        if (!adminData) {
+
+            alert(
+                "ليس لديك صلاحية الدخول إلى لوحة الإدارة."
+            );
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "index.html";
+
+            return false;
+        }
+
+        document.getElementById(
+            "adminEmail"
+        ).textContent =
+            adminData.email ||
+            currentUser.email;
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "CHECK ADMIN ERROR:",
+            error
         );
 
-        await supabaseClient.auth.signOut();
-
-        window.location.href =
-            "index.html";
+        showError(error);
 
         return false;
     }
-
-
-    document.getElementById(
-        "adminEmail"
-    ).textContent =
-        currentUser.email;
-
-
-    return true;
 }
 
 
@@ -1037,13 +1146,33 @@ async function checkAdmin() {
 
 async function loadAll() {
 
-    await Promise.all([
-        loadAccounts(),
-        loadSubscriptions(),
-        loadPayments()
-    ]);
+    clearError();
 
-    updateStats();
+    try {
+
+        await loadAccounts();
+
+        await loadSubscriptions();
+
+        await loadPayments();
+
+        updateStats();
+
+    } catch (error) {
+
+        console.error(
+            "LOAD ALL ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء تحميل لوحة الإدارة",
+            "error"
+        );
+    }
 }
 
 
@@ -1059,26 +1188,38 @@ async function loadAccounts() {
     } =
         await supabaseClient
             .from("bizflow_accounts")
-            .select("*")
+            .select(
+                "user_id,email,created_at"
+            )
             .order("created_at", {
                 ascending: false
             });
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "ACCOUNTS ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
-            "حدث خطأ في تحميل العملاء",
+            "خطأ العملاء: " +
+            error.message,
             "error"
         );
 
         return;
     }
 
+    allAccounts =
+        data || [];
 
-    allAccounts = data || [];
+    console.log(
+        "ACCOUNTS:",
+        allAccounts
+    );
 
     renderUsers();
 }
@@ -1101,22 +1242,31 @@ async function loadSubscriptions() {
                 ascending: false
             });
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "SUBSCRIPTIONS ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
-            "حدث خطأ في تحميل الاشتراكات",
+            "خطأ الاشتراكات: " +
+            error.message,
             "error"
         );
 
         return;
     }
 
-
     allSubscriptions =
         data || [];
+
+    console.log(
+        "SUBSCRIPTIONS:",
+        allSubscriptions
+    );
 
     renderSubscriptions();
     renderUsers();
@@ -1140,24 +1290,33 @@ async function loadPayments() {
                 ascending: false
             });
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "PAYMENTS ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
-            "حدث خطأ في تحميل طلبات الدفع",
+            "خطأ طلبات الدفع: " +
+            error.message,
             "error"
         );
 
         return;
     }
 
-
     allPayments =
         data || [];
 
-    renderPayments();
+    console.log(
+        "PAYMENTS:",
+        allPayments
+    );
+
+    await renderPayments();
 
     updateStats();
 }
@@ -1174,7 +1333,6 @@ async function renderPayments() {
             "paymentsBody"
         );
 
-
     if (!allPayments.length) {
 
         body.innerHTML = `
@@ -1190,7 +1348,6 @@ async function renderPayments() {
         return;
     }
 
-
     const rows =
         await Promise.all(
             allPayments.map(
@@ -1203,9 +1360,7 @@ async function renderPayments() {
                                 payment.user_id
                         );
 
-
                     let proofHtml = "-";
-
 
                     if (payment.proof_path) {
 
@@ -1217,34 +1372,51 @@ async function renderPayments() {
                             } =
                                 await supabaseClient
                                     .storage
-                                    .from("payment-proofs")
+                                    .from(
+                                        "payment-proofs"
+                                    )
                                     .createSignedUrl(
                                         payment.proof_path,
                                         3600
                                     );
 
-
-                            if (!error && data?.signedUrl) {
+                            if (
+                                !error &&
+                                data?.signedUrl
+                            ) {
 
                                 proofHtml = `
                                     <a
                                         class="proof-link"
                                         href="${data.signedUrl}"
                                         target="_blank"
+                                        rel="noopener noreferrer"
                                     >
                                         عرض الإثبات
                                     </a>
                                 `;
 
+                            } else if (error) {
+
+                                console.error(
+                                    "PROOF ERROR:",
+                                    error
+                                );
+
+                                proofHtml = "تعذر فتح الإثبات";
                             }
 
                         } catch (e) {
 
-                            console.error(e);
+                            console.error(
+                                "PROOF EXCEPTION:",
+                                e
+                            );
 
+                            proofHtml =
+                                "تعذر فتح الإثبات";
                         }
                     }
-
 
                     let statusClass =
                         "badge-pending";
@@ -1253,21 +1425,20 @@ async function renderPayments() {
                         payment.status ===
                         "approved"
                     ) {
+
                         statusClass =
                             "badge-approved";
-                    }
 
-                    if (
+                    } else if (
                         payment.status ===
                         "rejected"
                     ) {
+
                         statusClass =
                             "badge-rejected";
                     }
 
-
                     let actions = "-";
-
 
                     if (
                         payment.status ===
@@ -1295,7 +1466,6 @@ async function renderPayments() {
                         `;
                     }
 
-
                     return `
                         <tr>
 
@@ -1314,7 +1484,7 @@ async function renderPayments() {
 
                             <td>
                                 ${Number(
-                                    payment.amount
+                                    payment.amount || 0
                                 ).toFixed(2)}
                                 EGP
                             </td>
@@ -1324,7 +1494,13 @@ async function renderPayments() {
                                     payment.payment_method ===
                                     "etisalat_cash"
                                     ? "Etisalat Cash"
-                                    : "InstaPay"
+                                    : payment.payment_method ===
+                                      "instapay"
+                                    ? "InstaPay"
+                                    : escapeHtml(
+                                        payment.payment_method ||
+                                        "-"
+                                      )
                                 }
                             </td>
 
@@ -1342,7 +1518,8 @@ async function renderPayments() {
                             <td>
                                 <span class="badge ${statusClass}">
                                     ${escapeHtml(
-                                        payment.status
+                                        payment.status ||
+                                        "-"
                                     )}
                                 </span>
                             </td>
@@ -1363,7 +1540,6 @@ async function renderPayments() {
             )
         );
 
-
     body.innerHTML =
         rows.join("");
 }
@@ -1380,7 +1556,6 @@ function renderSubscriptions() {
             "subscriptionsBody"
         );
 
-
     if (!allSubscriptions.length) {
 
         body.innerHTML = `
@@ -1396,7 +1571,6 @@ function renderSubscriptions() {
         return;
     }
 
-
     body.innerHTML =
         allSubscriptions.map(
             sub => {
@@ -1408,10 +1582,8 @@ function renderSubscriptions() {
                             sub.user_id
                     );
 
-
                 const status =
                     subscriptionStatus(sub);
-
 
                 return `
                     <tr>
@@ -1490,7 +1662,6 @@ function renderUsers() {
             "usersBody"
         );
 
-
     if (!allAccounts.length) {
 
         body.innerHTML = `
@@ -1506,7 +1677,6 @@ function renderUsers() {
         return;
     }
 
-
     body.innerHTML =
         allAccounts.map(
             account => {
@@ -1518,10 +1688,8 @@ function renderUsers() {
                             account.user_id
                     );
 
-
                 const status =
                     subscriptionStatus(sub);
-
 
                 return `
                     <tr>
@@ -1587,7 +1755,6 @@ function updateStats() {
                 ) > new Date()
         ).length;
 
-
     const expired =
         allSubscriptions.filter(
             sub =>
@@ -1597,7 +1764,6 @@ function updateStats() {
                 ) <= new Date()
         ).length;
 
-
     const pending =
         allPayments.filter(
             payment =>
@@ -1605,24 +1771,20 @@ function updateStats() {
                 "pending"
         ).length;
 
-
     document.getElementById(
         "totalUsers"
     ).textContent =
         allAccounts.length;
-
 
     document.getElementById(
         "activeSubs"
     ).textContent =
         active;
 
-
     document.getElementById(
         "expiredSubs"
     ).textContent =
         expired;
-
 
     document.getElementById(
         "pendingPayments"
@@ -1645,8 +1807,8 @@ async function approvePayment(id) {
         return;
     }
 
-
     const {
+        data,
         error
     } =
         await supabaseClient
@@ -1657,10 +1819,14 @@ async function approvePayment(id) {
                 }
             );
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "APPROVE ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
             error.message ||
@@ -1671,11 +1837,14 @@ async function approvePayment(id) {
         return;
     }
 
+    console.log(
+        "APPROVE RESULT:",
+        data
+    );
 
     showMessage(
         "تمت الموافقة وتفعيل الاشتراك بنجاح"
     );
-
 
     await loadAll();
 }
@@ -1695,8 +1864,8 @@ async function rejectPayment(id) {
         return;
     }
 
-
     const {
+        data,
         error
     } =
         await supabaseClient
@@ -1707,10 +1876,14 @@ async function rejectPayment(id) {
                 }
             );
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "REJECT ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
             error.message ||
@@ -1721,11 +1894,14 @@ async function rejectPayment(id) {
         return;
     }
 
+    console.log(
+        "REJECT RESULT:",
+        data
+    );
 
     showMessage(
         "تم رفض طلب الدفع"
     );
-
 
     await loadAll();
 }
@@ -1742,7 +1918,6 @@ function openSubscriptionModal(id) {
             x => x.id === id
         );
 
-
     if (!sub) {
 
         showMessage(
@@ -1753,10 +1928,8 @@ function openSubscriptionModal(id) {
         return;
     }
 
-
     currentSubscription =
         sub;
-
 
     const account =
         allAccounts.find(
@@ -1765,19 +1938,16 @@ function openSubscriptionModal(id) {
                 sub.user_id
         );
 
-
     document.getElementById(
         "modalEmail"
     ).textContent =
         account?.email ||
         sub.user_id;
 
-
     document.getElementById(
         "modalPlan"
     ).textContent =
         sub.plan;
-
 
     document.getElementById(
         "modalExpiry"
@@ -1786,17 +1956,14 @@ function openSubscriptionModal(id) {
             sub.expires_at
         );
 
-
     document.getElementById(
         "durationAmount"
     ).value = "";
-
 
     document.getElementById(
         "newPlan"
     ).value =
         sub.plan;
-
 
     document.getElementById(
         "subscriptionModal"
@@ -1829,20 +1996,18 @@ async function extendSubscription() {
         return;
     }
 
-
     const amount =
         parseInt(
             document.getElementById(
                 "durationAmount"
-            ).value
+            ).value,
+            10
         );
-
 
     const unit =
         document.getElementById(
             "durationUnit"
         ).value;
-
 
     if (
         !amount ||
@@ -1857,12 +2022,10 @@ async function extendSubscription() {
         return;
     }
 
-
     const unitText =
         unit === "days"
         ? "يوم"
         : "دقيقة";
-
 
     if (
         !confirm(
@@ -1872,8 +2035,8 @@ async function extendSubscription() {
         return;
     }
 
-
     const {
+        data,
         error
     } =
         await supabaseClient
@@ -1891,10 +2054,14 @@ async function extendSubscription() {
                 }
             );
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "EXTEND ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
             error.message ||
@@ -1905,11 +2072,14 @@ async function extendSubscription() {
         return;
     }
 
+    console.log(
+        "EXTEND RESULT:",
+        data
+    );
 
     showMessage(
         "تمت إضافة المدة بنجاح"
     );
-
 
     closeSubscriptionModal();
 
@@ -1927,12 +2097,10 @@ async function changePlan() {
         return;
     }
 
-
     const newPlan =
         document.getElementById(
             "newPlan"
         ).value;
-
 
     if (
         !confirm(
@@ -1942,8 +2110,8 @@ async function changePlan() {
         return;
     }
 
-
     const {
+        data,
         error
     } =
         await supabaseClient
@@ -1958,10 +2126,14 @@ async function changePlan() {
                 }
             );
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "CHANGE PLAN ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
             error.message ||
@@ -1972,11 +2144,14 @@ async function changePlan() {
         return;
     }
 
+    console.log(
+        "CHANGE PLAN RESULT:",
+        data
+    );
 
     showMessage(
         "تم تغيير الباقة بنجاح"
     );
-
 
     closeSubscriptionModal();
 
@@ -1994,7 +2169,6 @@ async function cancelSubscription() {
         return;
     }
 
-
     if (
         !confirm(
             "هل أنت متأكد من إلغاء هذا الاشتراك؟"
@@ -2003,8 +2177,8 @@ async function cancelSubscription() {
         return;
     }
 
-
     const {
+        data,
         error
     } =
         await supabaseClient
@@ -2016,10 +2190,14 @@ async function cancelSubscription() {
                 }
             );
 
-
     if (error) {
 
-        console.error(error);
+        console.error(
+            "CANCEL ERROR:",
+            error
+        );
+
+        showError(error);
 
         showMessage(
             error.message ||
@@ -2030,11 +2208,14 @@ async function cancelSubscription() {
         return;
     }
 
+    console.log(
+        "CANCEL RESULT:",
+        data
+    );
 
     showMessage(
         "تم إلغاء الاشتراك"
     );
-
 
     closeSubscriptionModal();
 
@@ -2061,23 +2242,39 @@ async function logout() {
 
 function escapeHtml(value) {
 
-    if (value === null ||
-        value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
-
     return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 }
 
 
 // ==========================================
-// CLOSE MODAL WHEN CLICK OUTSIDE
+// CLOSE MODAL OUTSIDE
 // ==========================================
 
 document
@@ -2109,11 +2306,9 @@ document
     const isAdmin =
         await checkAdmin();
 
-
     if (!isAdmin) {
         return;
     }
-
 
     await loadAll();
 
