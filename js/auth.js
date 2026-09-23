@@ -25,7 +25,14 @@ const PUBLIC_PAGES = [
 
     "plans.html",
 
-    "payment.html"
+    "payment.html",
+
+    /*
+        صفحة الحساب مسموحة حتى لو الاشتراك
+        منتهي، عشان المستخدم يقدر يشوف
+        بياناته ويجدد الاشتراك.
+    */
+    "account.html"
 
 ];
 
@@ -48,7 +55,9 @@ function goTo(page) {
     if (
         getCurrentPage() !== page
     ) {
+
         window.location.href = page;
+
     }
 
 }
@@ -78,6 +87,7 @@ async function isAdmin(userId) {
         );
 
         return false;
+
     }
 
 
@@ -129,10 +139,12 @@ async function getActiveSubscription(userId) {
         );
 
         return null;
+
     }
 
 
     return data;
+
 }
 
 
@@ -143,8 +155,7 @@ async function protectBizFlow() {
 
 
     /*
-        صفحات تسجيل الدخول والتسجيل
-        والباقات والدفع لا نمنعها.
+        الصفحات العامة.
     */
 
     if (
@@ -153,17 +164,49 @@ async function protectBizFlow() {
         )
     ) {
 
-        /*
-            لو عنده Session بالفعل
-            وهو داخل login/register
-            نرسله للباقات أو الداشبورد.
-        */
-
         const {
             data
         } =
             await supabaseClient.auth.getUser();
 
+
+        /*
+            لو المستخدم مش مسجل دخول،
+            صفحة الحساب لا تفتح.
+        */
+
+        if (
+            currentPage ===
+            "account.html"
+        ) {
+
+            if (
+                !data ||
+                !data.user
+            ) {
+
+                goTo("login.html");
+
+                return;
+
+            }
+
+            /*
+                المستخدم المسجل يقدر يدخل
+                account.html حتى لو اشتراكه
+                منتهي.
+            */
+
+            return;
+
+        }
+
+
+        /*
+            لو عنده Session بالفعل
+            وهو داخل login/register
+            نرسله للباقات أو الداشبورد.
+        */
 
         if (
             data &&
@@ -193,6 +236,7 @@ async function protectBizFlow() {
                     goTo("index.html");
 
                     return;
+
                 }
 
 
@@ -216,7 +260,9 @@ async function protectBizFlow() {
 
         }
 
+
         return;
+
     }
 
 
@@ -241,6 +287,7 @@ async function protectBizFlow() {
         goTo("login.html");
 
         return;
+
     }
 
 
@@ -261,6 +308,7 @@ async function protectBizFlow() {
     if (admin) {
 
         return;
+
     }
 
 
@@ -277,13 +325,24 @@ async function protectBizFlow() {
 
     if (!subscription) {
 
+        /*
+            الاشتراك منتهي أو غير موجود.
+            نسمح له فقط بصفحات
+            plans/payment/account.
+        */
+
         goTo("plans.html");
 
         return;
+
     }
 
 }
 
+
+/*
+    تسجيل الخروج.
+*/
 
 async function logout() {
 
