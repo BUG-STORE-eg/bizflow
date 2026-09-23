@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         "https://oklabfxjcekfwirnqlji.supabase.co";
 
     const SUPABASE_KEY =
-        "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlgp";
+        "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
 
     const supabaseClient =
         window.supabase.createClient(
@@ -76,6 +76,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 minute: "2-digit"
             }
         ).format(new Date(date));
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 
     }
 
@@ -217,18 +229,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    function escapeHtml(value) {
-
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
-    }
-
-
     // ==========================================
     // تحميل Dashboard
     // ==========================================
@@ -295,7 +295,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==========================================
-        // تحديد بداية ونهاية الشهر الحالي
+        // بداية ونهاية الشهر الحالي
         // ==========================================
 
         const now =
@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==========================================
-        // العملاء
+        // عدد العملاء
         // ==========================================
 
         const {
@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==========================================
-        // المنتجات
+        // عدد المنتجات
         // ==========================================
 
         const {
@@ -602,7 +602,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         // ==========================================
-        // جلب خطة المستخدم
+        // الخطة الحالية
         // ==========================================
 
         const {
@@ -650,11 +650,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
 
-        if (salesContainer) {
-
-            showSalesError();
-
-        }
+        showSalesError();
 
     }
 
@@ -671,7 +667,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 try {
 
-                    logoutBtn.disabled = true;
+                    logoutBtn.disabled =
+                        true;
 
                     logoutBtn.textContent =
                         "جاري تسجيل الخروج...";
@@ -696,10 +693,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                         logoutBtn.disabled =
                             false;
 
-
                         logoutBtn.textContent =
                             "تسجيل الخروج";
-
 
                         return;
 
@@ -720,7 +715,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     logoutBtn.disabled =
                         false;
-
 
                     logoutBtn.textContent =
                         "تسجيل الخروج";
