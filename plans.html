@@ -2,257 +2,457 @@
 <html lang="ar" dir="rtl">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>BizFlow - اختر باقتك</title>
+    <meta charset="UTF-8">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Tahoma, sans-serif;
-      background: #0b1020;
-      color: #eef2ff;
-    }
+    <title>BizFlow - الباقات</title>
 
-    .container {
-      width: min(1100px, 92%);
-      margin: auto;
-      padding: 60px 0;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    .header {
-      text-align: center;
-      margin-bottom: 45px;
-    }
+    <script src="js/auth.js"></script>
 
-    .logo {
-      font-size: 34px;
-      font-weight: 800;
-      margin-bottom: 15px;
-    }
+    <style>
 
-    .logo span {
-      color: #5b8cff;
-    }
+        * {
+            box-sizing: border-box;
+        }
 
-    .header h1 {
-      margin: 0 0 10px;
-      font-size: 32px;
-    }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #fff;
+            padding: 30px;
+        }
 
-    .header p {
-      color: #8794b3;
-      margin: 0;
-    }
+        .container {
+            max-width: 1150px;
+            margin: auto;
+        }
 
-    .plans {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-    }
+        .top {
+            text-align: center;
+            margin-bottom: 45px;
+        }
 
-    .plan {
-      background: #11182b;
-      border: 1px solid #202a42;
-      border-radius: 18px;
-      padding: 30px;
-      text-align: center;
-    }
+        .logo {
+            font-size: 34px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
-    .plan h2 {
-      margin: 0 0 15px;
-    }
+        .logo span {
+            color: #4f8cff;
+        }
 
-    .price {
-      font-size: 34px;
-      font-weight: 800;
-      margin: 20px 0;
-    }
+        .top p {
+            color: #8f97a8;
+        }
 
-    .price small {
-      font-size: 14px;
-      color: #8794b3;
-      font-weight: normal;
-    }
+        .status {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #191f2b;
+            border: 1px solid #293142;
+            text-align: center;
+            color: #b8c0cf;
+        }
 
-    .features {
-      list-style: none;
-      padding: 0;
-      margin: 25px 0;
-      text-align: right;
-    }
+        .plans {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
 
-    .features li {
-      padding: 9px 0;
-      color: #cbd5ef;
-    }
+            gap: 20px;
+        }
 
-    .choose {
-      width: 100%;
-      border: 0;
-      border-radius: 10px;
-      padding: 13px;
-      background: #5b8cff;
-      color: white;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+        .plan {
+            background: #151923;
+            border: 1px solid #292f3d;
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            transition: .2s;
+        }
 
-    .choose:hover {
-      opacity: .9;
-    }
+        .plan:hover {
+            transform: translateY(-4px);
+            border-color: #4f8cff;
+        }
 
-    @media (max-width: 800px) {
-      .plans {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+        .plan h2 {
+            margin-top: 0;
+        }
+
+        .price {
+            font-size: 38px;
+            font-weight: bold;
+            margin: 20px 0 5px;
+        }
+
+        .price small {
+            font-size: 15px;
+            color: #8f97a8;
+        }
+
+        .period {
+            color: #8f97a8;
+            margin-bottom: 25px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px;
+            text-align: right;
+        }
+
+        li {
+            padding: 9px 0;
+            color: #b8beca;
+        }
+
+        li::before {
+            content: "✓";
+            color: #4f8cff;
+            margin-left: 8px;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            padding: 14px;
+            border-radius: 10px;
+            background: #4f8cff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .logout {
+            display: block;
+            width: auto;
+            margin: 30px auto 0;
+            padding: 10px 25px;
+            background: #272c38;
+        }
+
+        @media(max-width:850px) {
+
+            .plans {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="header">
+    <div class="top">
 
-      <div class="logo">
-        Biz<span>Flow</span>
-      </div>
+        <div class="logo">
+            Biz<span>Flow</span>
+        </div>
 
-      <h1>
-        اختر الباقة المناسبة لك
-      </h1>
+        <h1>
+            اختر باقتك
+        </h1>
 
-      <p>
-        اختر الباقة ثم انتقل إلى الدفع لتفعيل حسابك.
-      </p>
+        <p>
+            اختر الخطة المناسبة لإدارة نشاطك التجاري.
+        </p>
 
     </div>
+
+
+    <div
+        id="statusBox"
+        class="status"
+    ></div>
 
 
     <div class="plans">
 
-      <!-- BASIC -->
+        <div class="plan">
 
-      <div class="plan">
+            <h2>
+                Basic
+            </h2>
 
-        <h2>
-          Basic
-        </h2>
+            <div class="price">
+                99
+                <small>ج.م</small>
+            </div>
 
-        <div class="price">
-          99 ج.م
-          <small>/ شهر</small>
+            <div class="period">
+                شهريًا
+            </div>
+
+            <ul>
+
+                <li>
+                    العملاء
+                </li>
+
+                <li>
+                    المنتجات
+                </li>
+
+                <li>
+                    المبيعات
+                </li>
+
+                <li>
+                    المصروفات
+                </li>
+
+                <li>
+                    التقارير الأساسية
+                </li>
+
+            </ul>
+
+            <button
+                onclick="selectPlan('Basic', 99)"
+            >
+                اختيار Basic
+            </button>
+
         </div>
 
-        <ul class="features">
-          <li>✓ إدارة العملاء</li>
-          <li>✓ إدارة المنتجات</li>
-          <li>✓ تسجيل المبيعات</li>
-          <li>✓ المصروفات</li>
-        </ul>
 
-        <button
-          class="choose"
-          onclick="choosePlan('basic')"
-        >
-          اختيار الباقة
-        </button>
+        <div class="plan">
 
-      </div>
+            <h2>
+                Pro
+            </h2>
 
+            <div class="price">
+                199
+                <small>ج.م</small>
+            </div>
 
-      <!-- PRO -->
+            <div class="period">
+                شهريًا
+            </div>
 
-      <div class="plan">
+            <ul>
 
-        <h2>
-          Pro
-        </h2>
+                <li>
+                    كل مميزات Basic
+                </li>
 
-        <div class="price">
-          199 ج.م
-          <small>/ شهر</small>
+                <li>
+                    تقارير متقدمة
+                </li>
+
+                <li>
+                    حدود أكبر
+                </li>
+
+                <li>
+                    أدوات متقدمة
+                </li>
+
+            </ul>
+
+            <button
+                onclick="selectPlan('Pro', 199)"
+            >
+                اختيار Pro
+            </button>
+
         </div>
 
-        <ul class="features">
-          <li>✓ كل مميزات Basic</li>
-          <li>✓ التقارير</li>
-          <li>✓ إحصائيات متقدمة</li>
-          <li>✓ إدارة أفضل للمبيعات</li>
-        </ul>
 
-        <button
-          class="choose"
-          onclick="choosePlan('pro')"
-        >
-          اختيار الباقة
-        </button>
+        <div class="plan">
 
-      </div>
+            <h2>
+                Business
+            </h2>
 
+            <div class="price">
+                399
+                <small>ج.م</small>
+            </div>
 
-      <!-- BUSINESS -->
+            <div class="period">
+                شهريًا
+            </div>
 
-      <div class="plan">
+            <ul>
 
-        <h2>
-          Business
-        </h2>
+                <li>
+                    كل مميزات Pro
+                </li>
 
-        <div class="price">
-          399 ج.م
-          <small>/ شهر</small>
+                <li>
+                    حدود أكبر
+                </li>
+
+                <li>
+                    مميزات Business
+                </li>
+
+                <li>
+                    إدارة متقدمة
+                </li>
+
+            </ul>
+
+            <button
+                onclick="selectPlan('Business', 399)"
+            >
+                اختيار Business
+            </button>
+
         </div>
-
-        <ul class="features">
-          <li>✓ كل مميزات Pro</li>
-          <li>✓ إدارة متقدمة</li>
-          <li>✓ مزايا للشركات</li>
-          <li>✓ أولوية الدعم</li>
-        </ul>
-
-        <button
-          class="choose"
-          onclick="choosePlan('business')"
-        >
-          اختيار الباقة
-        </button>
-
-      </div>
 
     </div>
 
-  </div>
+
+    <button
+        class="logout"
+        onclick="BizFlowAuth.logout()"
+    >
+        تسجيل الخروج
+    </button>
+
+</div>
 
 
-  <script>
+<script>
 
-    function choosePlan(plan) {
+async function initPlans() {
 
-      localStorage.setItem(
-        "bizflow_selected_plan",
-        plan
-      );
+    const {
+        data,
+        error
+    } =
+        await BizFlowAuth
+            .supabaseClient
+            .auth
+            .getUser();
 
-      alert(
-        "تم اختيار الباقة: " +
-        plan +
-        "\n\nالخطوة التالية ستكون الدفع."
-      );
 
+    if (
+        error ||
+        !data ||
+        !data.user
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return;
     }
 
-  </script>
+
+    const user =
+        data.user;
+
+
+    const admin =
+        await BizFlowAuth
+            .isAdmin(
+                user.id
+            );
+
+
+    if (admin) {
+
+        document.getElementById(
+            "statusBox"
+        ).style.display = "block";
+
+        document.getElementById(
+            "statusBox"
+        ).textContent =
+            "أنت تستخدم حساب الأدمن.";
+
+        return;
+    }
+
+
+    const subscription =
+        await BizFlowAuth
+            .getActiveSubscription(
+                user.id
+            );
+
+
+    if (subscription) {
+
+        const date =
+            new Date(
+                subscription.expires_at
+            );
+
+
+        const box =
+            document.getElementById(
+                "statusBox"
+            );
+
+
+        box.style.display =
+            "block";
+
+
+        box.innerHTML =
+            "لديك اشتراك فعال في باقة " +
+            "<b>" +
+            subscription.plan +
+            "</b>" +
+            " حتى " +
+            date.toLocaleString(
+                "ar-EG"
+            ) +
+            ".";
+    }
+
+}
+
+
+function selectPlan(
+    plan,
+    amount
+) {
+
+    localStorage.setItem(
+        "bizflow_selected_plan",
+        plan
+    );
+
+    localStorage.setItem(
+        "bizflow_selected_amount",
+        String(amount)
+    );
+
+
+    window.location.href =
+        "payment.html";
+
+}
+
+
+initPlans();
+
+</script>
 
 </body>
-
 </html>
