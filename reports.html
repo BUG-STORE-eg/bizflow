@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>BizFlow - التقارير</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #e8eaf0;
+        }
+
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #151923;
+            border-left: 1px solid #252a36;
+            padding: 25px 15px;
+        }
+
+        .brand {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        .brand span {
+            color: #4f8cff;
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: #aeb4c0;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background: #202636;
+            color: #fff;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            right: 15px;
+            width: calc(100% - 30px);
+            padding: 12px;
+            border: 0;
+            border-radius: 10px;
+            background: #272c38;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .main {
+            margin-right: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .welcome {
+            color: #8f97a8;
+            margin-bottom: 7px;
+        }
+
+        .user {
+            background: #181d28;
+            border: 1px solid #272d3b;
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: #aeb4c0;
+            direction: ltr;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background: #151923;
+            border: 1px solid #252a36;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .card span {
+            color: #8f97a8;
+        }
+
+        .card strong {
+            display: block;
+            font-size: 25px;
+            margin: 12px 0;
+        }
+
+        .panel {
+            background: #151923;
+            border: 1px solid #252a36;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        .report-row {
+            margin: 25px 0;
+        }
+
+        .report-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #aeb4c0;
+        }
+
+        .bar {
+            height: 13px;
+            background: #252a36;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: #4f8cff;
+            width: 0%;
+            transition: width .4s;
+        }
+
+        .error {
+            display: none;
+            background: #3b2024;
+            color: #ff9ca5;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        @media(max-width:900px) {
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media(max-width:600px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: static;
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .main {
+                margin-right: 0;
+                padding: 20px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="brand">
+        Biz<span>Flow</span>
+    </div>
+
+    <nav>
+
+        <a href="index.html">
+            📊 الرئيسية
+        </a>
+
+        <a href="customers.html">
+            👥 العملاء
+        </a>
+
+        <a href="products.html">
+            📦 المنتجات
+        </a>
+
+        <a href="sales.html">
+            🧾 المبيعات
+        </a>
+
+        <a href="expenses.html">
+            💸 المصروفات
+        </a>
+
+        <a
+            class="active"
+            href="reports.html"
+        >
+            📈 التقارير
+        </a>
+
+    </nav>
+
+    <button
+        class="logout"
+        id="logoutBtn"
+    >
+        تسجيل الخروج
+    </button>
+
+</aside>
+
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div>
+
+            <p class="welcome">
+                تحليل نشاط الحساب
+            </p>
+
+            <h1>
+                التقارير
+            </h1>
+
+        </div>
+
+        <div
+            class="user"
+            id="userEmail"
+        >
+            جاري التحميل...
+        </div>
+
+    </header>
+
+
+    <div
+        class="error"
+        id="errorBox"
+    ></div>
+
+
+    <section class="cards">
+
+        <div class="card">
+
+            <span>
+                إجمالي المبيعات
+            </span>
+
+            <strong id="totalSales">
+                0
+            </strong>
+
+            <small>
+                ج.م
+            </small>
+
+        </div>
+
+
+        <div class="card">
+
+            <span>
+                إجمالي المصروفات
+            </span>
+
+            <strong id="totalExpenses">
+                0
+            </strong>
+
+            <small>
+                ج.م
+            </small>
+
+        </div>
+
+
+        <div class="card">
+
+            <span>
+                صافي الربح
+            </span>
+
+            <strong id="netProfit">
+                0
+            </strong>
+
+            <small>
+                ج.م
+            </small>
+
+        </div>
+
+
+        <div class="card">
+
+            <span>
+                عمليات البيع
+            </span>
+
+            <strong id="salesCount">
+                0
+            </strong>
+
+            <small>
+                عملية
+            </small>
+
+        </div>
+
+    </section>
+
+
+    <section class="panel">
+
+        <h2>
+            ملخص الحساب
+        </h2>
+
+
+        <div class="report-row">
+
+            <div class="report-title">
+
+                <span>
+                    المبيعات
+                </span>
+
+                <b id="salesLabel">
+                    0 ج.م
+                </b>
+
+            </div>
+
+            <div class="bar">
+
+                <div
+                    class="bar-fill"
+                    id="salesBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-row">
+
+            <div class="report-title">
+
+                <span>
+                    المصروفات
+                </span>
+
+                <b id="expensesLabel">
+                    0 ج.م
+                </b>
+
+            </div>
+
+            <div class="bar">
+
+                <div
+                    class="bar-fill"
+                    id="expensesBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+const SUPABASE_URL =
+    "https://oklabfxjcekfwirnqlji.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+let currentUser = null;
+
+
+const $ = id =>
+    document.getElementById(id);
+
+
+function showError(message) {
+
+    $("errorBox").textContent =
+        message;
+
+    $("errorBox").style.display =
+        "block";
+
+}
+
+
+async function init() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
+
+
+    if (error || !data.user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    $("userEmail").textContent =
+        currentUser.email;
+
+
+    await loadReports();
+
+}
+
+
+async function loadReports() {
+
+    const [
+        salesResult,
+        expensesResult
+    ] =
+        await Promise.all([
+
+            supabaseClient
+                .from("sales")
+                .select("total")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                ),
+
+            supabaseClient
+                .from("expenses")
+                .select("amount")
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+
+        ]);
+
+
+    if (
+        salesResult.error ||
+        expensesResult.error
+    ) {
+
+        const error =
+            salesResult.error ||
+            expensesResult.error;
+
+        showError(
+            "حدث خطأ أثناء تحميل التقرير: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    const sales =
+        salesResult.data || [];
+
+    const expenses =
+        expensesResult.data || [];
+
+
+    const totalSales =
+        sales.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.total || 0),
+            0
+        );
+
+
+    const totalExpenses =
+        expenses.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.amount || 0),
+            0
+        );
+
+
+    const netProfit =
+        totalSales -
+        totalExpenses;
+
+
+    $("totalSales").textContent =
+        totalSales.toFixed(2);
+
+
+    $("totalExpenses").textContent =
+        totalExpenses.toFixed(2);
+
+
+    $("netProfit").textContent =
+        netProfit.toFixed(2);
+
+
+    $("salesCount").textContent =
+        sales.length;
+
+
+    $("salesLabel").textContent =
+        totalSales.toFixed(2) +
+        " ج.م";
+
+
+    $("expensesLabel").textContent =
+        totalExpenses.toFixed(2) +
+        " ج.م";
+
+
+    const max =
+        Math.max(
+            totalSales,
+            totalExpenses,
+            1
+        );
+
+
+    $("salesBar").style.width =
+        (
+            totalSales /
+            max *
+            100
+        ) + "%";
+
+
+    $("expensesBar").style.width =
+        (
+            totalExpenses /
+            max *
+            100
+        ) + "%";
+
+}
+
+
+$("logoutBtn")
+    .addEventListener(
+        "click",
+        async () => {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+init();
+
+</script>
+
+</body>
+</html>
