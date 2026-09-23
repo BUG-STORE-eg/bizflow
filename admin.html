@@ -247,6 +247,14 @@
             font-size: 12px;
         }
 
+        .delete-payment-btn {
+            background: #991b1b;
+        }
+
+        .delete-payment-btn:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
         .empty,
         .loading {
             padding: 30px;
@@ -422,6 +430,7 @@
         }
 
         @media (max-width: 900px) {
+
             .stats {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -432,6 +441,7 @@
         }
 
         @media (max-width: 550px) {
+
             .stats {
                 grid-template-columns: 1fr;
             }
@@ -450,13 +460,16 @@
 <body>
 
 <header>
+
     <div class="container header-content">
 
         <div class="logo">
             Biz<span>Flow</span> Admin
         </div>
 
-        <div class="admin-email" id="adminEmail">
+        <div
+            class="admin-email"
+            id="adminEmail">
             جاري التحقق...
         </div>
 
@@ -478,7 +491,9 @@
         </div>
 
     </div>
+
 </header>
+
 
 <main>
 
@@ -496,10 +511,12 @@
 
         </div>
 
+
         <div
             class="error-box"
             id="errorBox">
         </div>
+
 
         <!-- STATS -->
 
@@ -519,6 +536,7 @@
 
             </div>
 
+
             <div class="stat">
 
                 <div class="stat-title">
@@ -533,6 +551,7 @@
 
             </div>
 
+
             <div class="stat">
 
                 <div class="stat-title">
@@ -546,6 +565,7 @@
                 </div>
 
             </div>
+
 
             <div class="stat">
 
@@ -562,6 +582,7 @@
             </div>
 
         </div>
+
 
         <!-- PAYMENT REQUESTS -->
 
@@ -580,6 +601,7 @@
                 </button>
 
             </div>
+
 
             <div class="table-wrap">
 
@@ -603,6 +625,7 @@
 
                     </thead>
 
+
                     <tbody id="paymentsBody">
 
                         <tr>
@@ -625,6 +648,7 @@
 
         </section>
 
+
         <!-- SUBSCRIPTIONS -->
 
         <section class="section">
@@ -642,6 +666,7 @@
                 </button>
 
             </div>
+
 
             <div class="table-wrap">
 
@@ -662,6 +687,7 @@
                         </tr>
 
                     </thead>
+
 
                     <tbody id="subscriptionsBody">
 
@@ -685,6 +711,7 @@
 
         </section>
 
+
         <!-- USERS -->
 
         <section class="section">
@@ -696,6 +723,7 @@
                 </h2>
 
             </div>
+
 
             <div class="table-wrap">
 
@@ -714,6 +742,7 @@
                         </tr>
 
                     </thead>
+
 
                     <tbody id="usersBody">
 
@@ -741,6 +770,7 @@
 
 </main>
 
+
 <!-- SUBSCRIPTION MODAL -->
 
 <div
@@ -763,6 +793,7 @@
 
         </div>
 
+
         <div class="modal-body">
 
             <div class="user-info">
@@ -779,6 +810,7 @@
 
                 </div>
 
+
                 <div>
 
                     <span class="label">
@@ -790,6 +822,7 @@
                     </strong>
 
                 </div>
+
 
                 <div>
 
@@ -804,6 +837,7 @@
                 </div>
 
             </div>
+
 
             <div class="form-group">
 
@@ -835,6 +869,7 @@
 
             </div>
 
+
             <button
                 class="btn-green"
                 style="width:100%;"
@@ -843,6 +878,7 @@
                 ➕ إضافة المدة
 
             </button>
+
 
             <div
                 class="form-group"
@@ -870,6 +906,7 @@
 
             </div>
 
+
             <button
                 class="btn-blue"
                 style="width:100%;"
@@ -878,6 +915,7 @@
                 🔧 تغيير الباقة
 
             </button>
+
 
             <div class="danger-zone">
 
@@ -898,10 +936,12 @@
 
 </div>
 
+
 <div
     class="message"
     id="message">
 </div>
+
 
 <script>
 
@@ -1319,8 +1359,6 @@ async function checkAdmin() {
             currentUser.email || "-";
 
 
-        /* CHECK ADMIN TABLE */
-
         const {
             data: adminData,
             error: adminError
@@ -1410,12 +1448,6 @@ async function loadAll() {
     }
 
     try {
-
-        /*
-         * Accounts first because
-         * subscriptions/payments
-         * use account emails.
-         */
 
         await loadAccounts();
 
@@ -1784,6 +1816,9 @@ async function renderPayments() {
 
                     let actions = "-";
 
+
+                    /* الطلب المعلق */
+
                     if (
                         payment.status ===
                         "pending"
@@ -1807,6 +1842,44 @@ async function renderPayments() {
                             </div>
                         `;
                     }
+
+
+                    /* الطلب المرفوض */
+
+                    else if (
+                        payment.status ===
+                        "rejected"
+                    ) {
+
+                        actions = `
+                            <div class="actions">
+
+                                <button
+                                    class="delete-payment-btn"
+                                    onclick="deletePaymentRequest('${payment.id}')">
+                                    🗑️ حذف
+                                </button>
+
+                            </div>
+                        `;
+                    }
+
+
+                    /* الطلب المقبول */
+
+                    else if (
+                        payment.status ===
+                        "approved"
+                    ) {
+
+                        actions = `
+                            <span
+                                style="color:#64748b;font-size:12px;">
+                                تمت الموافقة
+                            </span>
+                        `;
+                    }
+
 
                     return `
                         <tr>
@@ -1883,8 +1956,236 @@ async function renderPayments() {
             )
         );
 
+
     body.innerHTML =
         rows.join("");
+}
+
+
+/* =========================================================
+   APPROVE PAYMENT
+========================================================= */
+
+async function approvePayment(
+    id
+) {
+
+    if (
+        !confirm(
+            "هل تريد الموافقة على طلب الدفع وتفعيل الاشتراك لمدة 30 يوم؟"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "approve_payment_request",
+                {
+                    request_id: id
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "APPROVE ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء الموافقة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "APPROVE RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تمت الموافقة وتفعيل الاشتراك بنجاح"
+    );
+
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   REJECT PAYMENT
+========================================================= */
+
+async function rejectPayment(
+    id
+) {
+
+    if (
+        !confirm(
+            "هل تريد رفض طلب الدفع؟"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "reject_payment_request",
+                {
+                    request_id: id
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "REJECT ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء الرفض",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "REJECT RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تم رفض طلب الدفع. يمكنك حذفه الآن."
+    );
+
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   DELETE REJECTED PAYMENT REQUEST
+========================================================= */
+
+async function deletePaymentRequest(
+    id
+) {
+
+    if (
+        !confirm(
+            "⚠️ هل أنت متأكد أنك تريد حذف طلب الدفع المرفوض نهائيًا؟\n\nلا يمكن التراجع عن عملية الحذف."
+        )
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .rpc(
+                    "delete_payment_request",
+                    {
+                        request_id: id
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "DELETE PAYMENT ERROR:",
+                error
+            );
+
+            showError(error);
+
+            showMessage(
+                error.message ||
+                "حدث خطأ أثناء حذف الطلب",
+                "error"
+            );
+
+            return;
+        }
+
+
+        console.log(
+            "DELETE PAYMENT RESULT:",
+            data
+        );
+
+
+        /* إزالة الطلب من البيانات الحالية */
+
+        allPayments =
+            allPayments.filter(
+                payment =>
+                    payment.id !== id
+            );
+
+
+        /* إعادة رسم الجدول */
+
+        await renderPayments();
+
+        updateStats();
+
+
+        showMessage(
+            "تم حذف طلب الدفع نهائيًا"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE PAYMENT EXCEPTION:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            "حدث خطأ أثناء حذف الطلب",
+            "error"
+        );
+
+    }
 }
 
 
@@ -2175,136 +2476,6 @@ function updateStats() {
         "pendingPayments"
     ).textContent =
         pending;
-}
-
-
-/* =========================================================
-   APPROVE PAYMENT
-========================================================= */
-
-async function approvePayment(
-    id
-) {
-
-    if (
-        !confirm(
-            "هل تريد الموافقة على طلب الدفع وتفعيل الاشتراك لمدة 30 يوم؟"
-        )
-    ) {
-
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "approve_payment_request",
-                {
-                    request_id: id
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "APPROVE ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء الموافقة",
-            "error"
-        );
-
-        return;
-    }
-
-
-    console.log(
-        "APPROVE RESULT:",
-        data
-    );
-
-
-    showMessage(
-        "تمت الموافقة وتفعيل الاشتراك بنجاح"
-    );
-
-
-    await loadAll();
-}
-
-
-/* =========================================================
-   REJECT PAYMENT
-========================================================= */
-
-async function rejectPayment(
-    id
-) {
-
-    if (
-        !confirm(
-            "هل تريد رفض طلب الدفع؟"
-        )
-    ) {
-
-        return;
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "reject_payment_request",
-                {
-                    request_id: id
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "REJECT ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء الرفض",
-            "error"
-        );
-
-        return;
-    }
-
-
-    console.log(
-        "REJECT RESULT:",
-        data
-    );
-
-
-    showMessage(
-        "تم رفض طلب الدفع"
-    );
-
-
-    await loadAll();
 }
 
 
