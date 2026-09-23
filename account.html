@@ -1,1 +1,1013 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>BizFlow - حسابي</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <style>
+
+    .account-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .account-card {
+      background: #11182b;
+      border: 1px solid #202a42;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .account-card.full {
+      grid-column: 1 / -1;
+    }
+
+    .account-title {
+      margin: 0 0 18px;
+      font-size: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 14px 0;
+      border-bottom: 1px solid #202a42;
+    }
+
+    .info-row:last-child {
+      border-bottom: 0;
+    }
+
+    .info-label {
+      color: #8f9bb7;
+    }
+
+    .info-value {
+      color: #eef2ff;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: #1b2742;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .status.active {
+      background: #153524;
+      color: #69e6a5;
+    }
+
+    .status.expired {
+      background: #392027;
+      color: #ff9eaa;
+    }
+
+    .status.pending {
+      background: #382f17;
+      color: #ffd56a;
+    }
+
+    .usage-box {
+      margin-top: 15px;
+    }
+
+    .usage-head {
+      display: flex;
+      justify-content: space-between;
+      color: #cbd5ef;
+      margin-bottom: 9px;
+    }
+
+    .usage-bar {
+      width: 100%;
+      height: 10px;
+      background: #202a42;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .usage-fill {
+      height: 100%;
+      width: 0;
+      background: #5b8cff;
+      border-radius: 999px;
+      transition: width .3s ease;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .action-primary {
+      background: #5b8cff;
+    }
+
+    .action-secondary {
+      background: #1b2742;
+      border: 1px solid #263452;
+    }
+
+    .notice {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+      line-height: 1.7;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    .notice.warning {
+      background: #382f17;
+      border: 1px solid #66531e;
+      color: #ffe08a;
+    }
+
+    .notice.success {
+      background: #153524;
+      border: 1px solid #245d3e;
+      color: #83efb5;
+    }
+
+    .loading {
+      color: #8f9bb7;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    .error {
+      color: #ff9eaa;
+      text-align: center;
+      padding: 30px;
+    }
+
+    @media(max-width:850px) {
+
+      .account-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .account-card.full {
+        grid-column: auto;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      Biz<span>Flow</span>
+    </div>
+
+
+    <nav>
+
+      <a href="index.html">
+        📊 الرئيسية
+      </a>
+
+      <a href="customers.html">
+        👥 العملاء
+      </a>
+
+      <a href="products.html">
+        📦 المنتجات
+      </a>
+
+      <a href="sales.html">
+        🧾 المبيعات
+      </a>
+
+      <a href="expenses.html">
+        💸 المصروفات
+      </a>
+
+      <a href="reports.html">
+        📈 التقارير
+      </a>
+
+      <a class="active" href="account.html">
+        👤 حسابي
+      </a>
+
+    </nav>
+
+
+    <button
+      id="logoutBtn"
+      class="logout"
+      type="button"
+    >
+      تسجيل الخروج
+    </button>
+
+  </aside>
+
+
+  <main class="main">
+
+
+    <header class="topbar">
+
+      <div>
+
+        <p class="welcome">
+          إدارة الحساب 👋
+        </p>
+
+        <h1>
+          حسابي
+        </h1>
+
+      </div>
+
+
+      <div
+        class="user"
+        id="userEmail"
+      >
+        جاري التحميل...
+      </div>
+
+    </header>
+
+
+    <div
+      id="notice"
+      class="notice"
+    ></div>
+
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      جاري تحميل بيانات الحساب...
+    </div>
+
+
+    <div
+      id="accountContent"
+      style="display:none;"
+    >
+
+
+      <section class="account-grid">
+
+
+        <div class="account-card">
+
+          <h2 class="account-title">
+            معلومات الحساب
+          </h2>
+
+
+          <div class="info-row">
+
+            <span class="info-label">
+              البريد الإلكتروني
+            </span>
+
+            <span
+              class="info-value"
+              id="accountEmail"
+            >
+              -
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span class="info-label">
+              الباقة الحالية
+            </span>
+
+            <span
+              class="plan-badge"
+              id="planName"
+            >
+              -
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span class="info-label">
+              حالة الاشتراك
+            </span>
+
+            <span
+              id="subscriptionStatus"
+            >
+              -
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="account-card">
+
+          <h2 class="account-title">
+            مدة الاشتراك
+          </h2>
+
+
+          <div class="info-row">
+
+            <span class="info-label">
+              تاريخ البداية
+            </span>
+
+            <span
+              class="info-value"
+              id="startDate"
+            >
+              -
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span class="info-label">
+              تاريخ الانتهاء
+            </span>
+
+            <span
+              class="info-value"
+              id="expiryDate"
+            >
+              -
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span class="info-label">
+              المتبقي
+            </span>
+
+            <span
+              class="info-value"
+              id="remaining"
+            >
+              -
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div class="account-card full">
+
+          <h2 class="account-title">
+            استخدام الحساب
+          </h2>
+
+
+          <div class="usage-box">
+
+            <div class="usage-head">
+
+              <span>
+                👥 العملاء
+              </span>
+
+              <strong id="customersUsage">
+                -
+              </strong>
+
+            </div>
+
+
+            <div class="usage-bar">
+
+              <div
+                class="usage-fill"
+                id="customersBar"
+              ></div>
+
+            </div>
+
+          </div>
+
+
+          <div class="usage-box">
+
+            <div class="usage-head">
+
+              <span>
+                📦 المنتجات
+              </span>
+
+              <strong id="productsUsage">
+                -
+              </strong>
+
+            </div>
+
+
+            <div class="usage-bar">
+
+              <div
+                class="usage-fill"
+                id="productsBar"
+              ></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="account-card full">
+
+          <h2 class="account-title">
+            إدارة الاشتراك
+          </h2>
+
+
+          <p
+            id="subscriptionMessage"
+            style="color:#8f9bb7;line-height:1.8;margin:0;"
+          >
+            يمكنك إدارة وتجديد اشتراكك من هنا.
+          </p>
+
+
+          <div class="actions">
+
+            <a
+              href="plans.html"
+              class="action-btn action-primary"
+            >
+              🔄 تجديد / تغيير الباقة
+            </a>
+
+
+            <a
+              href="index.html"
+              class="action-btn action-secondary"
+            >
+              ← العودة للرئيسية
+            </a>
+
+          </div>
+
+        </div>
+
+
+      </section>
+
+
+    </div>
+
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/auth.js"></script>
+
+
+  <script>
+
+    document.addEventListener("DOMContentLoaded", async () => {
+
+      const SUPABASE_URL =
+        "https://oklabfxjcekfwirnqlji.supabase.co";
+
+      const SUPABASE_KEY =
+        "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+      const supabaseClient =
+        window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+
+      const loading =
+        document.getElementById("loading");
+
+      const content =
+        document.getElementById("accountContent");
+
+      const notice =
+        document.getElementById("notice");
+
+
+      function formatDate(date) {
+
+        if (!date) return "-";
+
+        return new Intl.DateTimeFormat(
+          "ar-EG",
+          {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          }
+        ).format(new Date(date));
+
+      }
+
+
+      function showNotice(message, type) {
+
+        notice.textContent = message;
+
+        notice.className =
+          "notice show " + type;
+
+      }
+
+
+      function setUsage(
+        count,
+        max,
+        textElement,
+        barElement
+      ) {
+
+        if (max === null || max === undefined) {
+
+          textElement.textContent =
+            count + " / غير محدود";
+
+          barElement.style.width = "100%";
+
+          return;
+
+        }
+
+
+        const percentage =
+          Math.min(
+            100,
+            Math.round((count / max) * 100)
+          );
+
+
+        textElement.textContent =
+          count + " / " + max;
+
+
+        barElement.style.width =
+          percentage + "%";
+
+      }
+
+
+      try {
+
+        const {
+          data: { user },
+          error: userError
+        } =
+          await supabaseClient.auth.getUser();
+
+
+        if (userError || !user) {
+
+          window.location.href = "login.html";
+
+          return;
+
+        }
+
+
+        document.getElementById("userEmail")
+          .textContent =
+          user.email || "بدون بريد إلكتروني";
+
+
+        document.getElementById("accountEmail")
+          .textContent =
+          user.email || "بدون بريد إلكتروني";
+
+
+        /*
+          تحميل الاشتراك الحالي
+        */
+
+        const {
+          data: subscription,
+          error: subscriptionError
+        } =
+          await supabaseClient
+            .from("subscriptions")
+            .select("*")
+            .eq("user_id", user.id)
+            .in("status", ["active", "expired"])
+            .order("expires_at", {
+              ascending: false
+            })
+            .limit(1)
+            .maybeSingle();
+
+
+        if (subscriptionError) {
+
+          throw subscriptionError;
+
+        }
+
+
+        /*
+          تحميل بيانات الباقة
+        */
+
+        let planData = null;
+
+
+        if (subscription) {
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient
+              .from("plan_limits")
+              .select("*")
+              .eq("plan", subscription.plan)
+              .maybeSingle();
+
+
+          if (!error) {
+
+            planData = data;
+
+          }
+
+        }
+
+
+        /*
+          حساب عدد العملاء
+        */
+
+        const {
+          count: customersCount,
+          error: customersError
+        } =
+          await supabaseClient
+            .from("customers")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("user_id", user.id);
+
+
+        if (customersError) {
+
+          throw customersError;
+
+        }
+
+
+        /*
+          حساب عدد المنتجات
+        */
+
+        const {
+          count: productsCount,
+          error: productsError
+        } =
+          await supabaseClient
+            .from("products")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("user_id", user.id);
+
+
+        if (productsError) {
+
+          throw productsError;
+
+        }
+
+
+        if (!subscription) {
+
+          loading.style.display = "none";
+
+          content.style.display = "block";
+
+
+          document.getElementById("planName")
+            .textContent = "لا توجد باقة";
+
+
+          document.getElementById("subscriptionStatus")
+            .innerHTML =
+            '<span class="status expired">🔴 لا يوجد اشتراك نشط</span>';
+
+
+          document.getElementById("subscriptionMessage")
+            .textContent =
+            "حسابك وبياناتك محفوظة، لكن تحتاج إلى تفعيل اشتراك لاستخدام BizFlow.";
+
+
+          setUsage(
+            customersCount || 0,
+            null,
+            document.getElementById("customersUsage"),
+            document.getElementById("customersBar")
+          );
+
+
+          setUsage(
+            productsCount || 0,
+            null,
+            document.getElementById("productsUsage"),
+            document.getElementById("productsBar")
+          );
+
+
+          showNotice(
+            "لا يوجد اشتراك نشط حاليًا. بيانات حسابك محفوظة.",
+            "warning"
+          );
+
+
+          return;
+
+        }
+
+
+        document.getElementById("planName")
+          .textContent =
+          subscription.plan;
+
+
+        document.getElementById("startDate")
+          .textContent =
+          formatDate(subscription.started_at);
+
+
+        document.getElementById("expiryDate")
+          .textContent =
+          formatDate(subscription.expires_at);
+
+
+        const expiry =
+          new Date(subscription.expires_at);
+
+        const now =
+          new Date();
+
+
+        const diff =
+          expiry.getTime() -
+          now.getTime();
+
+
+        const daysLeft =
+          Math.ceil(
+            diff / (1000 * 60 * 60 * 24)
+          );
+
+
+        if (
+          subscription.status === "active" &&
+          diff > 0
+        ) {
+
+          document.getElementById("subscriptionStatus")
+            .innerHTML =
+            '<span class="status active">🟢 نشط</span>';
+
+
+          if (daysLeft <= 7) {
+
+            showNotice(
+              "⚠️ اشتراكك سينتهي خلال " +
+              daysLeft +
+              " يوم. يمكنك تجديده من هنا.",
+              "warning"
+            );
+
+          }
+
+          document.getElementById("remaining")
+            .textContent =
+            daysLeft +
+            " يوم";
+
+
+          document.getElementById("subscriptionMessage")
+            .textContent =
+            "اشتراكك نشط حاليًا ويمكنك استخدام جميع المزايا المتاحة لباقة " +
+            subscription.plan +
+            ".";
+
+        } else {
+
+          document.getElementById("subscriptionStatus")
+            .innerHTML =
+            '<span class="status expired">🔴 منتهي</span>';
+
+
+          document.getElementById("remaining")
+            .textContent =
+            "انتهى الاشتراك";
+
+
+          document.getElementById("subscriptionMessage")
+            .textContent =
+            "انتهى اشتراكك، لكن حسابك وبياناتك محفوظة بالكامل. يمكنك التجديد للعودة لاستخدام BizFlow.";
+
+
+          showNotice(
+            "اشتراكك منتهي. بياناتك محفوظة ولن يتم حذفها.",
+            "warning"
+          );
+
+        }
+
+
+        setUsage(
+          customersCount || 0,
+          planData?.max_customers,
+          document.getElementById("customersUsage"),
+          document.getElementById("customersBar")
+        );
+
+
+        setUsage(
+          productsCount || 0,
+          planData?.max_products,
+          document.getElementById("productsUsage"),
+          document.getElementById("productsBar")
+        );
+
+
+        loading.style.display = "none";
+
+        content.style.display = "block";
+
+
+      } catch (error) {
+
+        console.error(
+          "ACCOUNT ERROR:",
+          error
+        );
+
+
+        loading.style.display = "none";
+
+
+        content.innerHTML = `
+          <div class="account-card">
+            <div class="error">
+              حدث خطأ أثناء تحميل بيانات الحساب.
+              <br>
+              حاول تحديث الصفحة.
+            </div>
+          </div>
+        `;
+
+
+        content.style.display = "block";
+
+      }
+
+
+      /*
+        تسجيل الخروج
+      */
+
+      const logoutBtn =
+        document.getElementById("logoutBtn");
+
+
+      if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+          "click",
+          async () => {
+
+            logoutBtn.disabled = true;
+
+            logoutBtn.textContent =
+              "جاري تسجيل الخروج...";
+
+
+            const {
+              error
+            } =
+              await supabaseClient.auth.signOut();
+
+
+            if (error) {
+
+              console.error(
+                "LOGOUT ERROR:",
+                error
+              );
+
+              logoutBtn.disabled = false;
+
+              logoutBtn.textContent =
+                "تسجيل الخروج";
+
+              return;
+
+            }
+
+
+            window.location.href =
+              "login.html";
+
+          }
+        );
+
+      }
+
+    });
+
+  </script>
+
+
+</body>
+
+</html>
