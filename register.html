@@ -1,73 +1,422 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>BizFlow - إنشاء حساب</title>
-  <link rel="stylesheet" href="css/auth.css">
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b1020;
+      color: #eef2ff;
+      font-family: Arial, Tahoma, sans-serif;
+    }
+
+    .box {
+      width: min(430px, 92%);
+      background: #11182b;
+      border: 1px solid #202a42;
+      border-radius: 18px;
+      padding: 30px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .logo span {
+      color: #5b8cff;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #8794b3;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 7px;
+      color: #cbd5ef;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #293652;
+      background: #0b1020;
+      color: white;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #5b8cff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #5b8cff;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 18px;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #ff7f91;
+    }
+
+    .success {
+      color: #63e6a5;
+    }
+
+    .login {
+      text-align: center;
+      margin-top: 20px;
+      color: #8794b3;
+    }
+
+    .login a {
+      color: #5b8cff;
+      text-decoration: none;
+    }
+
+  </style>
+
 </head>
+
 
 <body>
 
-  <div class="auth-container">
-    <div class="auth-card">
+  <div class="box">
 
-      <div class="logo">
-        Biz<span>Flow</span>
-      </div>
+    <div class="logo">
+      Biz<span>Flow</span>
+    </div>
 
-      <h1>إنشاء حساب</h1>
-      <p class="subtitle">ابدأ بإدارة مشروعك مع BizFlow</p>
+    <div class="subtitle">
+      إنشاء حساب جديد
+    </div>
 
-      <form id="registerForm">
 
-        <label for="email">البريد الإلكتروني</label>
+    <form id="registerForm">
 
-        <input
-          type="email"
-          id="email"
-          placeholder="example@email.com"
-          required
-        >
 
-        <label for="password">كلمة المرور</label>
+      <label for="email">
+        البريد الإلكتروني
+      </label>
 
-        <input
-          type="password"
-          id="password"
-          placeholder="6 أحرف على الأقل"
-          minlength="6"
-          required
-        >
+      <input
+        type="email"
+        id="email"
+        placeholder="example@email.com"
+        required
+      >
 
-        <label for="confirmPassword">تأكيد كلمة المرور</label>
 
-        <input
-          type="password"
-          id="confirmPassword"
-          placeholder="أعد كتابة كلمة المرور"
-          minlength="6"
-          required
-        >
+      <label for="password">
+        كلمة المرور
+      </label>
 
-        <button type="submit" id="registerBtn">
-          إنشاء الحساب
-        </button>
+      <input
+        type="password"
+        id="password"
+        placeholder="••••••••"
+        minlength="6"
+        required
+      >
 
-        <p id="message" class="message"></p>
 
-      </form>
+      <label for="confirmPassword">
+        تأكيد كلمة المرور
+      </label>
 
-      <div class="switch">
-        لديك حساب بالفعل؟
-        <a href="login.html">تسجيل الدخول</a>
-      </div>
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="••••••••"
+        minlength="6"
+        required
+      >
+
+
+      <button
+        type="submit"
+        id="registerBtn"
+      >
+        إنشاء الحساب
+      </button>
+
+
+    </form>
+
+
+    <div
+      id="message"
+      class="message"
+    ></div>
+
+
+    <div class="login">
+
+      لديك حساب بالفعل؟
+
+      <a href="login.html">
+        تسجيل الدخول
+      </a>
 
     </div>
+
   </div>
 
+
+  <!-- Supabase -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/auth.js"></script>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://oklabfxjcekfwirnqlji.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
+
+
+    const { createClient } = supabase;
+
+
+    const supabaseClient =
+      createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+
+    const form =
+      document.getElementById(
+        "registerForm"
+      );
+
+    const button =
+      document.getElementById(
+        "registerBtn"
+      );
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+
+    form.addEventListener(
+      "submit",
+      async (e) => {
+
+        e.preventDefault();
+
+
+        message.textContent = "";
+        message.className = "message";
+
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+        const password =
+          document
+            .getElementById("password")
+            .value;
+
+
+        const confirmPassword =
+          document
+            .getElementById(
+              "confirmPassword"
+            )
+            .value;
+
+
+        // تأكيد كلمة المرور
+
+        if (
+          password !==
+          confirmPassword
+        ) {
+
+          message.textContent =
+            "كلمتا المرور غير متطابقتين.";
+
+          message.className =
+            "message error";
+
+          return;
+
+        }
+
+
+        // أقل من 6 حروف
+
+        if (
+          password.length < 6
+        ) {
+
+          message.textContent =
+            "كلمة المرور يجب أن تكون 6 أحرف أو أكثر.";
+
+          message.className =
+            "message error";
+
+          return;
+
+        }
+
+
+        button.disabled = true;
+
+        button.textContent =
+          "جاري إنشاء الحساب...";
+
+
+        try {
+
+          const {
+            data,
+            error
+          } =
+            await supabaseClient.auth.signUp({
+
+              email: email,
+
+              password: password,
+
+              options: {
+
+                emailRedirectTo:
+                  window.location.origin +
+                  "/bizflow/login.html"
+
+              }
+
+            });
+
+
+          if (error) {
+
+            throw error;
+
+          }
+
+
+          message.textContent =
+            "تم إنشاء الحساب بنجاح. راجع بريدك الإلكتروني لتأكيد الحساب، وبعدها سجل الدخول.";
+
+          message.className =
+            "message success";
+
+
+          form.reset();
+
+
+          button.textContent =
+            "تم إنشاء الحساب";
+
+
+        } catch (error) {
+
+          console.error(error);
+
+
+          let text =
+            "حدث خطأ أثناء إنشاء الحساب.";
+
+
+          if (
+            error.message
+              .toLowerCase()
+              .includes("already registered")
+          ) {
+
+            text =
+              "هذا البريد الإلكتروني مسجل بالفعل.";
+
+          }
+
+
+          if (
+            error.message
+              .toLowerCase()
+              .includes("password")
+          ) {
+
+            text =
+              "كلمة المرور غير صالحة.";
+
+          }
+
+
+          message.textContent =
+            text;
+
+          message.className =
+            "message error";
+
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            "إنشاء الحساب";
+
+        }
+
+      }
+    );
+
+  </script>
 
 </body>
+
 </html>
