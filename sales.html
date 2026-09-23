@@ -128,6 +128,11 @@
             cursor: pointer;
         }
 
+        .primary:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
         .table-wrap {
             overflow-x: auto;
         }
@@ -160,6 +165,11 @@
             cursor: pointer;
         }
 
+        .delete:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
         .empty {
             text-align: center;
             padding: 60px 20px;
@@ -175,7 +185,14 @@
             margin-bottom: 20px;
         }
 
-        /* Modal */
+        .success {
+            display: none;
+            background: #123523;
+            color: #6ee7a1;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
 
         .modal {
             display: none;
@@ -240,6 +257,17 @@
             outline: none;
         }
 
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: #4f8cff;
+        }
+
+        .stock-info {
+            margin-top: 8px;
+            color: #8f97a8;
+            font-size: 13px;
+        }
+
         .total {
             font-size: 18px;
             margin: 18px 0;
@@ -261,6 +289,11 @@
         .save {
             background: #4f8cff;
             color: white;
+        }
+
+        .save:disabled {
+            opacity: .6;
+            cursor: not-allowed;
         }
 
         .cancel {
@@ -302,6 +335,16 @@
                 flex-direction: column;
                 gap: 15px;
             }
+
+            .panel-head {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .primary {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -323,7 +366,7 @@
         <a href="reports.html">📈 التقارير</a>
     </nav>
 
-    <button class="logout" id="logoutBtn">
+    <button class="logout" id="logoutBtn" type="button">
         تسجيل الخروج
     </button>
 
@@ -376,6 +419,12 @@
         ></div>
 
 
+        <div
+            id="successBox"
+            class="success"
+        ></div>
+
+
         <div id="tableContainer">
             <div class="empty">
                 جاري تحميل المبيعات...
@@ -387,7 +436,9 @@
 </main>
 
 
-<!-- Modal -->
+<!-- =========================
+     Modal
+========================= -->
 
 <div
     class="modal"
@@ -452,6 +503,13 @@
 
                 </select>
 
+                <div
+                    class="stock-info"
+                    id="stockInfo"
+                >
+                    اختر منتجًا لعرض المخزون
+                </div>
+
             </div>
 
 
@@ -485,6 +543,7 @@
 
                 <button
                     class="save"
+                    id="saveSaleBtn"
                     type="submit"
                 >
                     حفظ البيع
@@ -523,13 +582,19 @@ const supabaseClient =
 
 
 let currentUser = null;
+
 let customers = [];
+
 let products = [];
 
 
 const $ = id =>
     document.getElementById(id);
 
+
+/* ==========================================
+   الرسائل
+========================================== */
 
 function showError(message) {
 
@@ -550,6 +615,28 @@ function hideError() {
 }
 
 
+function showSuccess(message) {
+
+    $("successBox").textContent =
+        message;
+
+    $("successBox").style.display =
+        "block";
+
+    setTimeout(() => {
+
+        $("successBox").style.display =
+            "none";
+
+    }, 3500);
+
+}
+
+
+/* ==========================================
+   حماية HTML
+========================================== */
+
 function escapeHtml(value) {
 
     return String(value)
@@ -561,6 +648,10 @@ function escapeHtml(value) {
 
 }
 
+
+/* ==========================================
+   المستخدم
+========================================== */
 
 async function checkUser() {
 
@@ -593,6 +684,10 @@ async function checkUser() {
 
 }
 
+
+/* ==========================================
+   تحميل البيانات
+========================================== */
 
 async function loadData() {
 
@@ -655,7 +750,7 @@ async function loadData() {
         console.error(error);
 
         showError(
-            "حدث خطأ: " +
+            "حدث خطأ أثناء تحميل البيانات: " +
             error.message
         );
 
@@ -667,11 +762,13 @@ async function loadData() {
     customers =
         customersResult.data || [];
 
+
     products =
         productsResult.data || [];
 
 
     fillSelects();
+
 
     renderSales(
         salesResult.data || []
@@ -679,6 +776,10 @@ async function loadData() {
 
 }
 
+
+/* ==========================================
+   القوائم
+========================================== */
 
 function fillSelects() {
 
@@ -702,6 +803,7 @@ function fillSelects() {
                 <option
                     value="${product.id}"
                     data-price="${product.price}"
+                    data-stock="${product.stock}"
                 >
                     ${escapeHtml(product.name)}
                     — ${Number(product.price).toFixed(2)} ج.م
@@ -711,10 +813,57 @@ function fillSelects() {
             .join("");
 
 
+    updateProductInfo();
+
+}
+
+
+/* ==========================================
+   معلومات المنتج
+========================================== */
+
+function updateProductInfo() {
+
+    const option =
+        $("productSelect")
+            .selectedOptions[0];
+
+
+    if (!option || !option.value) {
+
+        $("stockInfo").textContent =
+            "اختر منتجًا لعرض المخزون";
+
+        updateTotal();
+
+        return;
+
+    }
+
+
+    const stock =
+        Number(
+            option.dataset.stock
+        ) || 0;
+
+
+    $("stockInfo").textContent =
+        "المخزون الحالي: " +
+        stock;
+
+
+    $("quantity").max =
+        stock;
+
+
     updateTotal();
 
 }
 
+
+/* ==========================================
+   عرض المبيعات
+========================================== */
 
 function renderSales(sales) {
 
@@ -829,11 +978,16 @@ function renderSales(sales) {
 }
 
 
+/* ==========================================
+   حساب الإجمالي
+========================================== */
+
 function updateTotal() {
 
     const option =
         $("productSelect")
             .selectedOptions[0];
+
 
     const quantity =
         Number(
@@ -853,12 +1007,20 @@ function updateTotal() {
 }
 
 
+/* ==========================================
+   تغيير المنتج
+========================================== */
+
 $("productSelect")
     .addEventListener(
         "change",
-        updateTotal
+        updateProductInfo
     );
 
+
+/* ==========================================
+   تغيير الكمية
+========================================== */
 
 $("quantity")
     .addEventListener(
@@ -867,14 +1029,24 @@ $("quantity")
     );
 
 
+/* ==========================================
+   فتح المودال
+========================================== */
+
 $("addSaleBtn")
     .addEventListener(
         "click",
         () => {
 
+            hideError();
+
             $("saleForm").reset();
 
-            $("quantity").value = 1;
+            $("quantity").value =
+                1;
+
+            $("stockInfo").textContent =
+                "اختر منتجًا لعرض المخزون";
 
             $("saleModal")
                 .classList
@@ -885,6 +1057,10 @@ $("addSaleBtn")
         }
     );
 
+
+/* ==========================================
+   إغلاق المودال
+========================================== */
 
 function closeModal() {
 
@@ -909,6 +1085,10 @@ $("cancelModal")
     );
 
 
+/* ==========================================
+   إنشاء البيع
+========================================== */
+
 $("saleForm")
     .addEventListener(
         "submit",
@@ -920,15 +1100,43 @@ $("saleForm")
 
 
             const customerId =
-                $("customerSelect").value;
+                $("customerSelect").value ||
+                null;
+
 
             const productId =
                 $("productSelect").value;
+
 
             const quantity =
                 Number(
                     $("quantity").value
                 );
+
+
+            if (!productId) {
+
+                showError(
+                    "اختر المنتج أولًا."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !Number.isInteger(quantity) ||
+                quantity <= 0
+            ) {
+
+                showError(
+                    "أدخل كمية صحيحة."
+                );
+
+                return;
+
+            }
 
 
             const product =
@@ -940,8 +1148,8 @@ $("saleForm")
 
             if (!product) {
 
-                alert(
-                    "اختر المنتج."
+                showError(
+                    "المنتج غير موجود."
                 );
 
                 return;
@@ -949,10 +1157,195 @@ $("saleForm")
             }
 
 
-            if (quantity < 1) {
+            /*
+                فحص سريع في الواجهة.
+                الفحص الحقيقي موجود داخل RPC
+                في قاعدة البيانات.
+            */
 
-                alert(
-                    "الكمية غير صحيحة."
+            if (
+                Number(product.stock) <
+                quantity
+            ) {
+
+                showError(
+                    "الكمية المطلوبة أكبر من المخزون الحالي."
+                );
+
+                return;
+
+            }
+
+
+            const saveButton =
+                $("saveSaleBtn");
+
+
+            saveButton.disabled =
+                true;
+
+
+            saveButton.textContent =
+                "جاري حفظ البيع...";
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.rpc(
+                        "create_sale",
+                        {
+                            p_customer_id:
+                                customerId,
+
+                            p_product_id:
+                                productId,
+
+                            p_quantity:
+                                quantity
+                        }
+                    );
+
+
+                if (error) {
+
+                    console.error(
+                        "CREATE SALE ERROR:",
+                        error
+                    );
+
+                    let message =
+                        error.message ||
+                        "حدث خطأ أثناء حفظ البيع.";
+
+
+                    if (
+                        message.includes(
+                            "Not enough stock"
+                        )
+                    ) {
+
+                        message =
+                            "الكمية المطلوبة أكبر من المخزون الحالي.";
+
+                    }
+
+
+                    if (
+                        message.includes(
+                            "Product not found"
+                        )
+                    ) {
+
+                        message =
+                            "المنتج غير موجود أو لم يعد متاحًا.";
+
+                    }
+
+
+                    showError(message);
+
+                    return;
+
+                }
+
+
+                if (
+                    !data ||
+                    data.success !== true
+                ) {
+
+                    showError(
+                        "تعذر إتمام عملية البيع."
+                    );
+
+                    return;
+
+                }
+
+
+                closeModal();
+
+
+                showSuccess(
+                    "تم تسجيل عملية البيع وتحديث المخزون بنجاح."
+                );
+
+
+                await loadData();
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "حدث خطأ غير متوقع أثناء حفظ البيع."
+                );
+
+            }
+            finally {
+
+                saveButton.disabled =
+                    false;
+
+                saveButton.textContent =
+                    "حفظ البيع";
+
+            }
+
+        }
+    );
+
+
+/* ==========================================
+   حذف البيع + إرجاع المخزون
+========================================== */
+
+window.deleteSale =
+    async function(id) {
+
+        const confirmed =
+            confirm(
+                "هل أنت متأكد من حذف عملية البيع؟\n\nسيتم أيضًا إرجاع الكمية إلى المخزون."
+            );
+
+
+        if (!confirmed)
+            return;
+
+
+        hideError();
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.rpc(
+                    "delete_sale",
+                    {
+                        p_sale_id:
+                            id
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "DELETE SALE ERROR:",
+                    error
+                );
+
+                showError(
+                    "حدث خطأ أثناء حذف البيع: " +
+                    error.message
                 );
 
                 return;
@@ -961,49 +1354,12 @@ $("saleForm")
 
 
             if (
-                Number(product.stock) <
-                quantity
+                !data ||
+                data.success !== true
             ) {
 
-                alert(
-                    "الكمية المطلوبة أكبر من المخزون."
-                );
-
-                return;
-
-            }
-
-
-            const total =
-                Number(product.price) *
-                quantity;
-
-
-            const {
-                data: sale,
-                error: saleError
-            } =
-                await supabaseClient
-                    .from("sales")
-                    .insert({
-                        user_id:
-                            currentUser.id,
-
-                        customer_id:
-                            customerId || null,
-
-                        total:
-                            total
-                    })
-                    .select()
-                    .single();
-
-
-            if (saleError) {
-
                 showError(
-                    "حدث خطأ أثناء إنشاء البيع: " +
-                    saleError.message
+                    "تعذر حذف عملية البيع."
                 );
 
                 return;
@@ -1011,145 +1367,47 @@ $("saleForm")
             }
 
 
-            const {
-                error: itemError
-            } =
-                await supabaseClient
-                    .from("sale_items")
-                    .insert({
-                        sale_id:
-                            sale.id,
+            showSuccess(
+                "تم حذف البيع وإرجاع الكمية إلى المخزون."
+            );
 
-                        product_id:
-                            productId,
-
-                        quantity:
-                            quantity,
-
-                        price:
-                            product.price
-                    });
-
-
-            if (itemError) {
-
-                await supabaseClient
-                    .from("sales")
-                    .delete()
-                    .eq(
-                        "id",
-                        sale.id
-                    )
-                    .eq(
-                        "user_id",
-                        currentUser.id
-                    );
-
-
-                showError(
-                    "حدث خطأ أثناء حفظ تفاصيل البيع: " +
-                    itemError.message
-                );
-
-                return;
-
-            }
-
-
-            const {
-                error: stockError
-            } =
-                await supabaseClient
-                    .from("products")
-                    .update({
-                        stock:
-                            Number(product.stock) -
-                            quantity
-                    })
-                    .eq(
-                        "id",
-                        productId
-                    )
-                    .eq(
-                        "user_id",
-                        currentUser.id
-                    );
-
-
-            if (stockError) {
-
-                showError(
-                    "تم تسجيل البيع لكن حدث خطأ في تحديث المخزون: " +
-                    stockError.message
-                );
-
-                return;
-
-            }
-
-
-            closeModal();
 
             await loadData();
 
         }
-    );
+        catch (error) {
 
-
-window.deleteSale =
-    async function(id) {
-
-        const confirmed =
-            confirm(
-                "هل أنت متأكد من حذف عملية البيع؟"
-            );
-
-
-        if (!confirmed)
-            return;
-
-
-        const {
-            error
-        } =
-            await supabaseClient
-                .from("sales")
-                .delete()
-                .eq(
-                    "id",
-                    id
-                )
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
-
-
-        if (error) {
+            console.error(error);
 
             showError(
-                "حدث خطأ أثناء حذف البيع: " +
-                error.message
+                "حدث خطأ غير متوقع أثناء حذف البيع."
             );
-
-            return;
 
         }
 
-
-        await loadData();
-
     };
 
+
+/* ==========================================
+   تسجيل الخروج
+========================================== */
 
 $("logoutBtn")
     .addEventListener(
         "click",
         async () => {
 
+            $("logoutBtn").disabled =
+                true;
+
+            $("logoutBtn").textContent =
+                "جاري تسجيل الخروج...";
+
+
             await supabaseClient
                 .auth
                 .signOut();
+
 
             window.location.href =
                 "login.html";
@@ -1157,6 +1415,10 @@ $("logoutBtn")
         }
     );
 
+
+/* ==========================================
+   التشغيل
+========================================== */
 
 async function init() {
 
