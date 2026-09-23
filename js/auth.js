@@ -1,380 +1,332 @@
 const SUPABASE_URL =
-  "https://oklabfxjcekfwirnqlji.supabase.co";
+    "https://oklabfxjcekfwirnqlji.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
-
-const { createClient } = supabase;
-
-const supabaseClient = createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+const SUPABASE_KEY =
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
 
 
-// ==============================
-// LOGIN
-// ==============================
-
-const loginForm = document.getElementById("loginForm");
-
-if (loginForm) {
-
-  loginForm.addEventListener("submit", async (event) => {
-
-    event.preventDefault();
-
-    const email =
-      document.getElementById("email").value.trim();
-
-    const password =
-      document.getElementById("password").value;
-
-    const button =
-      document.getElementById("loginBtn");
-
-    const message =
-      document.getElementById("message");
-
-    button.disabled = true;
-    button.textContent = "جاري تسجيل الدخول...";
-    message.textContent = "";
-    message.className = "message";
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-    const { error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
+/*
+    الصفحات التي يستطيع المستخدم فتحها
+    بدون اشتراك Active.
+*/
+
+const PUBLIC_PAGES = [
+
+    "login.html",
+
+    "register.html",
+
+    "plans.html",
+
+    "payment.html"
+
+];
+
+
+function getCurrentPage() {
+
+    const path =
+        window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+    return path || "index.html";
+
+}
+
+
+function goTo(page) {
+
+    if (
+        getCurrentPage() !== page
+    ) {
+        window.location.href = page;
+    }
+
+}
+
+
+async function isAdmin(userId) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq(
+                "user_id",
+                userId
+            )
+            .maybeSingle();
 
 
     if (error) {
 
-      message.textContent =
-        getArabicError(error.message);
+        console.error(
+            "Admin check error:",
+            error
+        );
 
-      message.className =
-        "message error";
-
-      button.disabled = false;
-      button.textContent = "تسجيل الدخول";
-
-      return;
+        return false;
     }
 
 
-    message.textContent =
-      "تم تسجيل الدخول بنجاح...";
-
-    message.className =
-      "message success";
-
-
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 500);
-
-  });
+    return !!data;
 
 }
 
 
-// ==============================
-// REGISTER
-// ==============================
+async function getActiveSubscription(userId) {
 
-const registerForm =
-  document.getElementById("registerForm");
-
-if (registerForm) {
-
-  registerForm.addEventListener("submit", async (event) => {
-
-    event.preventDefault();
-
-    const email =
-      document.getElementById("email").value.trim();
-
-    const password =
-      document.getElementById("password").value;
-
-    const confirmPassword =
-      document.getElementById("confirmPassword").value;
-
-    const button =
-      document.getElementById("registerBtn");
-
-    const message =
-      document.getElementById("message");
+    const now =
+        new Date().toISOString();
 
 
-    message.textContent = "";
-    message.className = "message";
-
-
-    if (password !== confirmPassword) {
-
-      message.textContent =
-        "كلمتا المرور غير متطابقتين.";
-
-      message.className =
-        "message error";
-
-      return;
-    }
-
-
-    if (password.length < 6) {
-
-      message.textContent =
-        "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
-
-      message.className =
-        "message error";
-
-      return;
-    }
-
-
-    button.disabled = true;
-    button.textContent =
-      "جاري إنشاء الحساب...";
-
-
-    const { data, error } =
-      await supabaseClient.auth.signUp({
-        email,
-        password
-      });
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("subscriptions")
+            .select("*")
+            .eq(
+                "user_id",
+                userId
+            )
+            .eq(
+                "status",
+                "active"
+            )
+            .gt(
+                "expires_at",
+                now
+            )
+            .order(
+                "expires_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(1)
+            .maybeSingle();
 
 
     if (error) {
 
-      message.textContent =
-        getArabicError(error.message);
+        console.error(
+            "Subscription check error:",
+            error
+        );
 
-      message.className =
-        "message error";
-
-      button.disabled = false;
-      button.textContent =
-        "إنشاء الحساب";
-
-      return;
+        return null;
     }
 
 
-    if (data.session) {
-
-      message.textContent =
-        "تم إنشاء الحساب بنجاح...";
-
-      message.className =
-        "message success";
-
-
-      setTimeout(() => {
-        window.location.href =
-          "index.html";
-      }, 800);
-
-      return;
-    }
-
-
-    message.textContent =
-      "تم إنشاء الحساب. راجع بريدك الإلكتروني لتأكيد الحساب ثم سجل الدخول.";
-
-    message.className =
-      "message success";
-
-    button.disabled = false;
-    button.textContent =
-      "إنشاء الحساب";
-
-  });
-
+    return data;
 }
 
 
-// ==============================
-// DASHBOARD SESSION
-// ==============================
+async function protectBizFlow() {
 
-async function checkDashboardSession() {
-
-  const {
-    data,
-    error
-  } = await supabaseClient.auth.getSession();
+    const currentPage =
+        getCurrentPage();
 
 
-  if (error || !data.session) {
+    /*
+        صفحات تسجيل الدخول والتسجيل
+        والباقات والدفع لا نمنعها.
+    */
 
-    window.location.href =
-      "login.html";
+    if (
+        PUBLIC_PAGES.includes(
+            currentPage
+        )
+    ) {
 
-    return;
+        /*
+            لو عنده Session بالفعل
+            وهو داخل login/register
+            نرسله للباقات أو الداشبورد.
+        */
 
-  }
-
-
-  const userEmail =
-    document.getElementById("userEmail");
-
-
-  if (userEmail && data.session.user) {
-
-    userEmail.textContent =
-      data.session.user.email;
-
-  }
-
-}
-
-
-// ==============================
-// LOGOUT
-// ==============================
-
-async function logout() {
-
-  const logoutBtn =
-    document.getElementById("logoutBtn");
+        const {
+            data
+        } =
+            await supabaseClient.auth.getUser();
 
 
-  if (logoutBtn) {
+        if (
+            data &&
+            data.user
+        ) {
 
-    logoutBtn.disabled = true;
-    logoutBtn.textContent =
-      "جاري تسجيل الخروج...";
-
-  }
-
-
-  const {
-    error
-  } = await supabaseClient.auth.signOut();
+            const user =
+                data.user;
 
 
-  if (error) {
+            if (
+                currentPage ===
+                    "login.html" ||
 
-    console.error(
-      "Logout error:",
-      error
-    );
+                currentPage ===
+                    "register.html"
+            ) {
+
+                const admin =
+                    await isAdmin(
+                        user.id
+                    );
 
 
-    if (logoutBtn) {
+                if (admin) {
 
-      logoutBtn.disabled = false;
-      logoutBtn.textContent =
-        "تسجيل الخروج";
+                    goTo("index.html");
 
+                    return;
+                }
+
+
+                const subscription =
+                    await getActiveSubscription(
+                        user.id
+                    );
+
+
+                if (subscription) {
+
+                    goTo("index.html");
+
+                } else {
+
+                    goTo("plans.html");
+
+                }
+
+            }
+
+        }
+
+        return;
     }
 
-    alert(
-      "حدث خطأ أثناء تسجيل الخروج. افتح Console لمعرفة الخطأ."
-    );
 
-    return;
+    /*
+        أي صفحة من صفحات النظام
+        تحتاج مستخدم مسجل.
+    */
 
-  }
-
-
-  window.location.replace("login.html");
-
-}
-
-
-// ==============================
-// START
-// ==============================
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    const logoutBtn =
-      document.getElementById("logoutBtn");
-
-
-    if (logoutBtn) {
-
-      logoutBtn.addEventListener(
-        "click",
-        logout
-      );
-
-    }
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getUser();
 
 
     if (
-      window.location.pathname.endsWith("/index.html") ||
-      window.location.pathname.endsWith("/bizflow/") ||
-      window.location.pathname === "/"
+        error ||
+        !data ||
+        !data.user
     ) {
 
-      checkDashboardSession();
+        goTo("login.html");
 
+        return;
     }
 
-  }
+
+    const user =
+        data.user;
+
+
+    /*
+        الأدمن يدخل النظام مباشرة.
+    */
+
+    const admin =
+        await isAdmin(
+            user.id
+        );
+
+
+    if (admin) {
+
+        return;
+    }
+
+
+    /*
+        المستخدم العادي لازم يكون عنده
+        Subscription Active وغير منتهي.
+    */
+
+    const subscription =
+        await getActiveSubscription(
+            user.id
+        );
+
+
+    if (!subscription) {
+
+        goTo("plans.html");
+
+        return;
+    }
+
+}
+
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/*
+    تشغيل الحماية تلقائيًا
+    بعد تحميل الصفحة.
+*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        protectBizFlow();
+
+    }
 );
 
 
-// ==============================
-// ERROR TRANSLATION
-// ==============================
+/*
+    متاح لباقي ملفات الموقع.
+*/
 
-function getArabicError(error) {
+window.BizFlowAuth = {
 
-  if (!error) {
-    return "حدث خطأ غير معروف.";
-  }
+    supabaseClient,
 
+    protectBizFlow,
 
-  const text =
-    error.toLowerCase();
+    getActiveSubscription,
 
+    isAdmin,
 
-  if (
-    text.includes("invalid login credentials")
-  ) {
+    logout
 
-    return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
-
-  }
-
-
-  if (
-    text.includes("user already registered")
-  ) {
-
-    return "هذا البريد الإلكتروني مسجل بالفعل.";
-
-  }
-
-
-  if (
-    text.includes("password should be at least")
-  ) {
-
-    return "كلمة المرور قصيرة جدًا.";
-
-  }
-
-
-  if (
-    text.includes("invalid email")
-  ) {
-
-    return "البريد الإلكتروني غير صحيح.";
-
-  }
-
-
-  return "حدث خطأ. حاول مرة أخرى.";
-
-}
+};
