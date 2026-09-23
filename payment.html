@@ -2,19 +2,27 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>BizFlow - الدفع</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="js/auth.js"></script>
+
 
     <style>
 
         * {
             box-sizing: border-box;
         }
+
 
         body {
             margin: 0;
@@ -24,11 +32,13 @@
             color: #fff;
         }
 
+
         .container {
             width: min(650px, 92%);
             margin: auto;
             padding: 45px 0;
         }
+
 
         .logo {
             text-align: center;
@@ -37,9 +47,11 @@
             margin-bottom: 30px;
         }
 
+
         .logo span {
             color: #38bdf8;
         }
+
 
         .card {
             background: #111827;
@@ -48,11 +60,13 @@
             padding: 25px;
         }
 
+
         .card h1 {
             margin: 0 0 25px;
             text-align: center;
             font-size: 26px;
         }
+
 
         .selected-plan {
             background: #0b1220;
@@ -62,6 +76,7 @@
             margin-bottom: 22px;
         }
 
+
         .selected-row {
             display: flex;
             justify-content: space-between;
@@ -70,18 +85,22 @@
             padding: 8px 0;
         }
 
+
         .selected-row:not(:last-child) {
             border-bottom: 1px solid #202b3d;
         }
+
 
         .selected-label {
             color: #94a3b8;
         }
 
+
         .selected-value {
             font-weight: 800;
             color: #38bdf8;
         }
+
 
         .payment-info {
             background: #0f172a;
@@ -91,9 +110,11 @@
             margin-bottom: 22px;
         }
 
+
         .payment-info h3 {
             margin: 0 0 15px;
         }
+
 
         .phone {
             font-size: 25px;
@@ -104,6 +125,7 @@
             margin: 12px 0;
         }
 
+
         .methods {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -111,18 +133,17 @@
             margin-top: 15px;
         }
 
-        .method {
-            appearance: none;
-            -webkit-appearance: none;
 
+        .method {
             width: 100%;
+            min-height: 48px;
 
             border: 1px solid #334155;
             background: #111827;
             color: #cbd5e1;
 
             border-radius: 10px;
-            padding: 14px;
+            padding: 13px;
 
             cursor: pointer;
 
@@ -130,18 +151,25 @@
             font-weight: 700;
             font-size: 15px;
 
-            transition: .15s;
-
             outline: none;
+
+            transition:
+                border-color .15s,
+                background .15s,
+                color .15s,
+                transform .08s;
         }
+
 
         .method:hover {
             border-color: #38bdf8;
         }
 
+
         .method:active {
             transform: scale(.98);
         }
+
 
         .method.active {
             border-color: #38bdf8;
@@ -150,15 +178,18 @@
             box-shadow: 0 0 0 1px #38bdf8;
         }
 
+
         .form-group {
             margin-bottom: 17px;
         }
+
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: #cbd5e1;
         }
+
 
         input[type="text"],
         input[type="file"] {
@@ -171,70 +202,97 @@
             outline: none;
         }
 
+
         input[type="text"]:focus,
         input[type="file"]:focus {
             border-color: #38bdf8;
         }
 
+
         input[type="file"] {
             cursor: pointer;
         }
 
+
         .submit-btn {
             width: 100%;
             padding: 14px;
+
             border: 0;
             border-radius: 10px;
+
             background: #2563eb;
             color: white;
+
             font-size: 16px;
             font-weight: 800;
+
             cursor: pointer;
         }
+
 
         .submit-btn:hover {
             background: #1d4ed8;
         }
+
 
         .submit-btn:disabled {
             opacity: .6;
             cursor: not-allowed;
         }
 
+
         .back-btn {
             width: 100%;
             padding: 12px;
             margin-top: 10px;
+
             border: 0;
             border-radius: 10px;
+
             background: #334155;
             color: white;
+
             font-weight: 700;
             cursor: pointer;
         }
 
+
+        .back-btn:hover {
+            background: #475569;
+        }
+
+
         .message {
             margin-top: 15px;
             padding: 13px;
+
             border-radius: 10px;
+
             text-align: center;
+
             display: none;
+
             line-height: 1.7;
         }
+
 
         .message.show {
             display: block;
         }
+
 
         .message.success {
             background: #064e3b;
             color: #a7f3d0;
         }
 
+
         .message.error {
             background: #7f1d1d;
             color: #fecaca;
         }
+
 
         .note {
             color: #94a3b8;
@@ -243,26 +301,42 @@
             margin-top: 10px;
         }
 
+
         .method-info {
             margin-top: 12px;
+
             padding: 10px;
+
             border-radius: 8px;
+
             background: #0b1220;
+
             color: #94a3b8;
+
             font-size: 13px;
+
             text-align: center;
         }
 
+
         .security-note {
             margin-top: 20px;
+
             padding: 13px;
+
             border-radius: 10px;
+
             background: #0b1220;
+
             border: 1px solid #202b3d;
+
             color: #94a3b8;
+
             font-size: 13px;
+
             line-height: 1.7;
         }
+
 
         @media (max-width: 500px) {
 
@@ -278,27 +352,35 @@
         }
 
     </style>
+
 </head>
 
 
 <body>
 
+
 <div class="container">
+
 
     <div class="logo">
         Biz<span>Flow</span>
     </div>
 
+
     <div class="card">
+
 
         <h1>
             إتمام الاشتراك
         </h1>
 
 
-        <!-- الباقة -->
+        <!-- =========================
+             الباقة
+        ========================== -->
 
         <div class="selected-plan">
+
 
             <div class="selected-row">
 
@@ -331,24 +413,31 @@
 
             </div>
 
+
         </div>
 
 
-        <!-- الدفع -->
+        <!-- =========================
+             بيانات الدفع
+        ========================== -->
 
         <div class="payment-info">
+
 
             <h3>
                 بيانات التحويل
             </h3>
 
+
             <div>
                 قم بتحويل قيمة الباقة إلى الرقم التالي:
             </div>
 
+
             <div class="phone">
                 01125035655
             </div>
+
 
             <div class="note">
                 يمكنك الدفع عن طريق Etisalat Cash
@@ -357,13 +446,15 @@
             </div>
 
 
+            <!-- طرق الدفع -->
+
             <div class="methods">
+
 
                 <button
                     type="button"
                     class="method active"
                     id="etisalatMethod"
-                    onclick="selectPaymentMethod('etisalat_cash')"
                 >
                     Etisalat Cash
                 </button>
@@ -373,10 +464,10 @@
                     type="button"
                     class="method"
                     id="instapayMethod"
-                    onclick="selectPaymentMethod('instapay')"
                 >
                     InstaPay
                 </button>
+
 
             </div>
 
@@ -388,24 +479,30 @@
                 طريقة الدفع المختارة: Etisalat Cash
             </div>
 
+
         </div>
 
 
-        <!-- الفورم -->
+        <!-- =========================
+             نموذج الدفع
+        ========================== -->
 
-        <form
-            id="paymentForm"
-            onsubmit="submitPayment(event)"
-        >
+        <form id="paymentForm">
+
 
             <div class="form-group">
 
+
                 <label>
+
                     رقم العملية
+
                     <span style="color:#64748b;">
                         (اختياري)
                     </span>
+
                 </label>
+
 
                 <input
                     type="text"
@@ -414,14 +511,17 @@
                     placeholder="اكتب رقم العملية إذا كان موجودًا"
                 >
 
+
             </div>
 
 
             <div class="form-group">
 
+
                 <label>
                     صورة إثبات الدفع
                 </label>
+
 
                 <input
                     type="file"
@@ -430,9 +530,12 @@
                     required
                 >
 
+
                 <div class="note">
-                    ارفع صورة واضحة للتحويل. الحد الأقصى 5MB.
+                    ارفع صورة واضحة للتحويل.
+                    الحد الأقصى 5MB.
                 </div>
+
 
             </div>
 
@@ -445,13 +548,14 @@
                 إرسال طلب الدفع
             </button>
 
+
         </form>
 
 
         <button
             class="back-btn"
             type="button"
-            onclick="window.location.href='plans.html'"
+            id="backBtn"
         >
             ← تغيير الباقة
         </button>
@@ -470,57 +574,126 @@
 
         </div>
 
+
     </div>
+
 
 </div>
 
 
 <script>
 
-/* =====================================================
-   SUPABASE
-===================================================== */
+/*
+=========================================================
+مهم جدًا
+=========================================================
 
-const supabaseClient =
-    window.BizFlowAuth &&
-    window.BizFlowAuth.supabaseClient;
+auth.js عنده متغير اسمه supabaseClient.
+
+لذلك هنا لن نستخدم نفس الاسم.
+
+نستخدم:
+paymentSupabase
+
+=========================================================
+*/
 
 
-/* =====================================================
-   الأسعار
-===================================================== */
+const paymentSupabase =
+    window.BizFlowAuth?.supabaseClient;
+
+
+/*
+=========================================================
+الأسعار
+=========================================================
+*/
 
 const PLAN_PRICES = {
+
     Basic: 99,
+
     Pro: 199,
+
     Business: 399
+
 };
 
 
-/* =====================================================
-   بيانات الباقة
-===================================================== */
-
-const selectedPlan =
-    localStorage.getItem("selectedPlan");
-
-let selectedMethod =
-    "etisalat_cash";
-
-let actualAmount =
-    null;
-
-
-/* =====================================================
-   عرض الباقة
-===================================================== */
+/*
+=========================================================
+العناصر
+=========================================================
+*/
 
 const planElement =
-    document.getElementById("selectedPlan");
+    document.getElementById(
+        "selectedPlan"
+    );
+
 
 const amountElement =
-    document.getElementById("selectedAmount");
+    document.getElementById(
+        "selectedAmount"
+    );
 
+
+const etisalatButton =
+    document.getElementById(
+        "etisalatMethod"
+    );
+
+
+const instapayButton =
+    document.getElementById(
+        "instapayMethod"
+    );
+
+
+const methodInfo =
+    document.getElementById(
+        "methodInfo"
+    );
+
+
+const paymentForm =
+    document.getElementById(
+        "paymentForm"
+    );
+
+
+const submitButton =
+    document.getElementById(
+        "submitBtn"
+    );
+
+
+const messageElement =
+    document.getElementById(
+        "message"
+    );
+
+
+/*
+=========================================================
+الباقة
+=========================================================
+*/
+
+const selectedPlan =
+    localStorage.getItem(
+        "selectedPlan"
+    );
+
+
+let actualAmount = null;
+
+
+/*
+=========================================================
+عرض الباقة
+=========================================================
+*/
 
 if (
     selectedPlan &&
@@ -533,64 +706,75 @@ if (
     actualAmount =
         PLAN_PRICES[selectedPlan];
 
+
     planElement.textContent =
         selectedPlan;
 
+
     amountElement.textContent =
-        actualAmount.toFixed(2) + " EGP";
+        actualAmount.toFixed(2) +
+        " EGP";
 
 } else {
 
     planElement.textContent =
         "لم يتم اختيار باقة";
 
+
     amountElement.textContent =
         "-";
+
 }
 
 
-/* =====================================================
-   اختيار طريقة الدفع
-===================================================== */
+/*
+=========================================================
+طريقة الدفع
+=========================================================
+*/
 
-function selectPaymentMethod(method) {
+let selectedMethod =
+    "etisalat_cash";
+
+
+function selectPaymentMethod(
+    method
+) {
 
     selectedMethod =
         method;
 
 
-    const etisalat =
-        document.getElementById(
-            "etisalatMethod"
-        );
-
-    const instapay =
-        document.getElementById(
-            "instapayMethod"
-        );
-
-    const methodInfo =
-        document.getElementById(
-            "methodInfo"
-        );
+    etisalatButton.classList.remove(
+        "active"
+    );
 
 
-    etisalat.classList.remove("active");
-    instapay.classList.remove("active");
+    instapayButton.classList.remove(
+        "active"
+    );
 
 
     if (
-        method === "instapay"
+        method ===
+        "instapay"
     ) {
 
-        instapay.classList.add("active");
+        instapayButton.classList.add(
+            "active"
+        );
+
 
         methodInfo.textContent =
             "طريقة الدفع المختارة: InstaPay";
 
+
     } else {
 
-        etisalat.classList.add("active");
+        etisalatButton.classList.add(
+            "active"
+        );
+
 
         methodInfo.textContent =
             "طريقة الدفع المختارة: Etisalat Cash";
@@ -600,352 +784,490 @@ function selectPaymentMethod(method) {
 }
 
 
-/* =====================================================
-   الرسائل
-===================================================== */
+/*
+=========================================================
+ربط الأزرار
+=========================================================
+*/
+
+etisalatButton.onclick =
+    function() {
+
+        selectPaymentMethod(
+            "etisalat_cash"
+        );
+
+    };
+
+
+instapayButton.onclick =
+    function() {
+
+        selectPaymentMethod(
+            "instapay"
+        );
+
+    };
+
+
+/*
+=========================================================
+الرسائل
+=========================================================
+*/
 
 function showMessage(
     text,
     type
 ) {
 
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-    message.textContent =
+    messageElement.textContent =
         text;
 
-    message.className =
-        "message show " + type;
+
+    messageElement.className =
+        "message show " +
+        type;
 
 }
 
 
-/* =====================================================
-   إرسال طلب الدفع
-===================================================== */
+/*
+=========================================================
+إرسال الطلب
+=========================================================
+*/
 
-async function submitPayment(event) {
+paymentForm.onsubmit =
+    async function(event) {
 
-    event.preventDefault();
-
-
-    const submitBtn =
-        document.getElementById(
-            "submitBtn"
-        );
+        event.preventDefault();
 
 
-    try {
-
-        /* ---------------------------------------------
-           فحص Supabase
-        --------------------------------------------- */
-
-        if (!supabaseClient) {
-
-            throw new Error(
-                "لم يتم تحميل اتصال Supabase."
-            );
-
-        }
+        try {
 
 
-        /* ---------------------------------------------
-           فحص الباقة
-        --------------------------------------------- */
+            /*
+            =============================================
+            فحص اتصال Supabase
+            =============================================
+            */
 
-        if (
-            !selectedPlan ||
-            !Object.prototype.hasOwnProperty.call(
-                PLAN_PRICES,
-                selectedPlan
-            )
-        ) {
+            if (!paymentSupabase) {
 
-            throw new Error(
-                "لم يتم اختيار باقة صحيحة."
-            );
+                throw new Error(
+                    "اتصال Supabase غير موجود. تأكد من تحميل js/auth.js."
+                );
 
-        }
+            }
 
 
-        actualAmount =
-            PLAN_PRICES[selectedPlan];
+            /*
+            =============================================
+            فحص الباقة
+            =============================================
+            */
+
+            if (
+                !selectedPlan ||
+                !Object.prototype.hasOwnProperty.call(
+                    PLAN_PRICES,
+                    selectedPlan
+                )
+            ) {
+
+                throw new Error(
+                    "لم يتم اختيار باقة صحيحة."
+                );
+
+            }
 
 
-        /* ---------------------------------------------
-           المستخدم
-        --------------------------------------------- */
-
-        const {
-            data: userData,
-            error: userError
-        } =
-            await supabaseClient.auth.getUser();
+            actualAmount =
+                PLAN_PRICES[selectedPlan];
 
 
-        if (userError) {
+            /*
+            =============================================
+            المستخدم
+            =============================================
+            */
 
-            throw userError;
-
-        }
-
-
-        const user =
-            userData?.user;
-
-
-        if (!user) {
-
-            window.location.href =
-                "login.html";
-
-            return;
-
-        }
+            const {
+                data: userData,
+                error: userError
+            } =
+                await paymentSupabase
+                    .auth
+                    .getUser();
 
 
-        /* ---------------------------------------------
-           صورة إثبات الدفع
-        --------------------------------------------- */
+            if (userError) {
 
-        const file =
-            document.getElementById(
-                "proofFile"
-            ).files[0];
+                throw userError;
+
+            }
 
 
-        if (!file) {
-
-            throw new Error(
-                "ارفع صورة إثبات الدفع أولاً."
-            );
-
-        }
+            const user =
+                userData?.user;
 
 
-        const allowedTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/webp"
-        ];
+            if (!user) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
 
 
-        if (
-            !allowedTypes.includes(
-                file.type
-            )
-        ) {
+            /*
+            =============================================
+            ملف إثبات الدفع
+            =============================================
+            */
 
-            throw new Error(
-                "نوع الصورة غير مدعوم. استخدم JPG أو PNG أو WEBP."
-            );
-
-        }
-
-
-        if (
-            file.size >
-            5 * 1024 * 1024
-        ) {
-
-            throw new Error(
-                "حجم الصورة أكبر من 5MB."
-            );
-
-        }
+            const file =
+                document
+                    .getElementById(
+                        "proofFile"
+                    )
+                    .files[0];
 
 
-        /* ---------------------------------------------
-           تعطيل الزر
-        --------------------------------------------- */
+            if (!file) {
 
-        submitBtn.disabled =
-            true;
+                throw new Error(
+                    "ارفع صورة إثبات الدفع أولاً."
+                );
 
-        submitBtn.textContent =
-            "جاري رفع إثبات الدفع...";
+            }
 
 
-        /* ---------------------------------------------
-           مسار الصورة
-        --------------------------------------------- */
+            /*
+            =============================================
+            نوع الملف
+            =============================================
+            */
 
-        const safeName =
-            file.name.replace(
-                /[^a-zA-Z0-9._-]/g,
-                "_"
-            );
+            const allowedTypes = [
 
+                "image/jpeg",
+                "image/png",
+                "image/webp"
 
-        const filePath =
-            user.id +
-            "/" +
-            Date.now() +
-            "-" +
-            safeName;
+            ];
 
 
-        /* ---------------------------------------------
-           Upload
-        --------------------------------------------- */
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
 
-        const {
-            error: uploadError
-        } =
-            await supabaseClient
-                .storage
-                .from("payment-proofs")
-                .upload(
-                    filePath,
-                    file,
-                    {
-                        upsert: false,
-                        contentType: file.type
-                    }
+                throw new Error(
+                    "نوع الصورة غير مدعوم. استخدم JPG أو PNG أو WEBP."
+                );
+
+            }
+
+
+            /*
+            =============================================
+            حجم الملف
+            =============================================
+            */
+
+            if (
+                file.size >
+                5 * 1024 * 1024
+            ) {
+
+                throw new Error(
+                    "حجم الصورة أكبر من 5MB."
+                );
+
+            }
+
+
+            /*
+            =============================================
+            تعطيل الزر
+            =============================================
+            */
+
+            submitButton.disabled =
+                true;
+
+
+            submitButton.textContent =
+                "جاري رفع إثبات الدفع...";
+
+
+            /*
+            =============================================
+            اسم الملف
+            =============================================
+            */
+
+            const safeName =
+                file.name.replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
                 );
 
 
-        if (uploadError) {
-
-            throw uploadError;
-
-        }
-
-
-        /* ---------------------------------------------
-           إنشاء الطلب
-        --------------------------------------------- */
-
-        submitBtn.textContent =
-            "جاري إنشاء طلب الدفع...";
+            const filePath =
+                user.id +
+                "/" +
+                Date.now() +
+                "-" +
+                safeName;
 
 
-        const transaction =
-            document
-                .getElementById(
-                    "transactionId"
+            /*
+            =============================================
+            رفع الصورة
+            =============================================
+            */
+
+            const {
+                error: uploadError
+            } =
+                await paymentSupabase
+                    .storage
+                    .from(
+                        "payment-proofs"
+                    )
+                    .upload(
+                        filePath,
+                        file,
+                        {
+                            upsert: false,
+                            contentType:
+                                file.type
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                throw uploadError;
+
+            }
+
+
+            /*
+            =============================================
+            إنشاء الطلب
+            =============================================
+            */
+
+            submitButton.textContent =
+                "جاري إنشاء طلب الدفع...";
+
+
+            const transactionId =
+                document
+                    .getElementById(
+                        "transactionId"
+                    )
+                    .value
+                    .trim();
+
+
+            const {
+                data: requestData,
+                error: requestError
+            } =
+                await paymentSupabase
+                    .rpc(
+                        "submit_payment_request",
+                        {
+
+                            p_plan:
+                                selectedPlan,
+
+                            p_amount:
+                                actualAmount,
+
+                            p_payment_method:
+                                selectedMethod,
+
+                            p_transaction_id:
+                                transactionId ||
+                                null,
+
+                            p_proof_path:
+                                filePath
+
+                        }
+                    );
+
+
+            if (requestError) {
+
+                throw requestError;
+
+            }
+
+
+            /*
+            =============================================
+            نجاح
+            =============================================
+            */
+
+            if (
+                !requestData ||
+                requestData.success !== true
+            ) {
+
+                throw new Error(
+                    "لم يتم إنشاء طلب الدفع."
+                );
+
+            }
+
+
+            showMessage(
+                "✅ تم إرسال طلب الدفع بنجاح. سيتم مراجعته من الإدارة.",
+                "success"
+            );
+
+
+            submitButton.textContent =
+                "تم إرسال الطلب ✓";
+
+
+            submitButton.disabled =
+                true;
+
+
+            localStorage.removeItem(
+                "selectedPlan"
+            );
+
+
+            localStorage.removeItem(
+                "selectedAmount"
+            );
+
+
+        } catch (error) {
+
+
+            console.error(
+                "PAYMENT ERROR:",
+                error
+            );
+
+
+            let errorMessage =
+                error?.message ||
+                "حدث خطأ أثناء إرسال طلب الدفع.";
+
+
+            if (
+                errorMessage.includes(
+                    "pending payment request"
                 )
-                .value
-                .trim();
+            ) {
+
+                errorMessage =
+                    "لديك بالفعل طلب دفع قيد المراجعة. انتظر رد الإدارة.";
+
+            }
 
 
-        const {
-            data: requestData,
-            error: requestError
-        } =
-            await supabaseClient.rpc(
-                "submit_payment_request",
-                {
-                    p_plan:
-                        selectedPlan,
+            if (
+                errorMessage.includes(
+                    "Invalid plan"
+                )
+            ) {
 
-                    p_amount:
-                        actualAmount,
+                errorMessage =
+                    "الباقة المختارة غير صحيحة.";
 
-                    p_payment_method:
-                        selectedMethod,
+            }
 
-                    p_transaction_id:
-                        transaction || null,
 
-                    p_proof_path:
-                        filePath
-                }
+            if (
+                errorMessage.includes(
+                    "Invalid plan amount"
+                )
+            ) {
+
+                errorMessage =
+                    "قيمة الباقة غير صحيحة.";
+
+            }
+
+
+            if (
+                errorMessage.includes(
+                    "Authentication required"
+                )
+            ) {
+
+                errorMessage =
+                    "انتهت جلسة تسجيل الدخول. سجل الدخول مرة أخرى.";
+
+            }
+
+
+            showMessage(
+                errorMessage,
+                "error"
             );
 
 
-        if (requestError) {
-
-            throw requestError;
-
-        }
+            submitButton.disabled =
+                false;
 
 
-        if (
-            !requestData ||
-            requestData.success !== true
-        ) {
-
-            throw new Error(
-                "لم يتم إنشاء طلب الدفع."
-            );
+            submitButton.textContent =
+                "إرسال طلب الدفع";
 
         }
 
-
-        /* ---------------------------------------------
-           نجاح
-        --------------------------------------------- */
-
-        showMessage(
-            "✅ تم إرسال طلب الدفع بنجاح. سيتم مراجعته من الإدارة.",
-            "success"
-        );
+    };
 
 
-        submitBtn.textContent =
-            "تم إرسال الطلب ✓";
+/*
+=========================================================
+زر تغيير الباقة
+=========================================================
+*/
+
+document
+    .getElementById(
+        "backBtn"
+    )
+    .onclick =
+    function() {
+
+        window.location.href =
+            "plans.html";
+
+    };
 
 
-        submitBtn.disabled =
-            true;
+/*
+=========================================================
+الوضع الافتراضي
+=========================================================
+*/
 
-
-        localStorage.removeItem(
-            "selectedPlan"
-        );
-
-        localStorage.removeItem(
-            "selectedAmount"
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "PAYMENT ERROR:",
-            error
-        );
-
-
-        let msg =
-            error?.message ||
-            "حدث خطأ أثناء إرسال طلب الدفع.";
-
-
-        if (
-            msg.includes(
-                "pending payment request"
-            )
-        ) {
-
-            msg =
-                "لديك بالفعل طلب دفع قيد المراجعة. انتظر رد الإدارة.";
-
-        }
-
-
-        showMessage(
-            msg,
-            "error"
-        );
-
-
-        submitBtn.disabled =
-            false;
-
-        submitBtn.textContent =
-            "إرسال طلب الدفع";
-
-    }
-
-}
+selectPaymentMethod(
+    "etisalat_cash"
+);
 
 </script>
 
+
 </body>
+
 </html>
