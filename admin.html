@@ -686,7 +686,7 @@
             <div class="section-header">
 
                 <h2>
-                    إدارة الاشتراكات
+                    إدارة العميل / الاشتراكات
                 </h2>
 
                 <button
@@ -768,6 +768,7 @@
                             <th>الباقة</th>
                             <th>الحالة</th>
                             <th>الانتهاء</th>
+                            <th>التحكم</th>
 
                         </tr>
 
@@ -778,7 +779,7 @@
 
                         <tr>
 
-                            <td colspan="5">
+                            <td colspan="6">
 
                                 <div class="loading">
                                     جاري التحميل...
@@ -893,8 +894,8 @@
 
                 <br>
 
-                ملاحظة: إضافة المدة تضيف على تاريخ الانتهاء الحالي،
-                بينما تفعيل الاشتراك يبدأ 30 يومًا جديدة من وقت التفعيل.
+                ملاحظة: أدوات الاشتراك تعمل عندما يكون للعميل اشتراك نشط.
+                زر التحكم الموجود عند كل إيميل يسمح لك بإدارة العميل.
 
             </div>
 
@@ -1066,6 +1067,32 @@
 
             </div>
 
+            <!-- DELETE CUSTOMER -->
+
+            <div
+                class="danger-zone"
+                id="deleteCustomerZone">
+
+                <button
+                    class="delete-payment-btn"
+                    id="deleteCustomerButton"
+                    style="width:100%;"
+                    onclick="deleteCustomer()">
+
+                    🗑️ حذف العميل من قائمة العملاء
+
+                </button>
+
+                <div
+                    style="margin-top:8px;color:#94a3b8;font-size:12px;text-align:center;line-height:1.6;">
+
+                    الحذف هنا يزيل العميل من قائمة BizFlow فقط،
+                    ولا يحذف حساب تسجيل الدخول من Supabase Auth.
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
@@ -1103,6 +1130,8 @@ const supabaseClient =
 ========================================================= */
 
 let currentUser = null;
+
+let currentAccount = null;
 
 let currentSubscription = null;
 
@@ -2450,7 +2479,7 @@ function renderUsers() {
         body.innerHTML = `
             <tr>
 
-                <td colspan="5">
+                <td colspan="6">
 
                     <div class="empty">
                         لا يوجد عملاء
@@ -2531,6 +2560,22 @@ function renderUsers() {
 
                         </td>
 
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="btn-blue"
+                                    onclick="openCustomerControl('${account.user_id}')">
+
+                                    ⚙️ تحكم
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
                     </tr>
                 `;
             }
@@ -2603,6 +2648,113 @@ function updateStats() {
    OPEN SUBSCRIPTION MODAL
 ========================================================= */
 
+function fillCustomerModal(
+    account,
+    sub
+) {
+
+    currentAccount = account || null;
+    currentSubscription = sub || null;
+
+    document.getElementById(
+        "modalEmail"
+    ).textContent =
+        account?.email ||
+        sub?.user_id ||
+        "-";
+
+    document.getElementById(
+        "modalPlan"
+    ).textContent =
+        sub?.plan || "-";
+
+    const status =
+        subscriptionStatus(sub);
+
+    document.getElementById(
+        "modalStatus"
+    ).textContent =
+        status.text;
+
+    document.getElementById(
+        "modalExpiry"
+    ).textContent =
+        sub?.expires_at
+            ? formatDate(sub.expires_at)
+            : "-";
+
+    document.getElementById(
+        "modalRemaining"
+    ).textContent =
+        sub?.expires_at
+            ? remainingTime(sub.expires_at)
+            : "-";
+
+    document.getElementById(
+        "durationAmount"
+    ).value = "";
+
+    document.getElementById(
+        "reduceAmount"
+    ).value = "";
+
+    document.getElementById(
+        "newPlan"
+    ).value =
+        sub?.plan || "Basic";
+
+    const isActive =
+        !!sub &&
+        sub.status === "active" &&
+        sub.expires_at &&
+        new Date(
+            sub.expires_at
+        ) > new Date();
+
+    const hasSubscription =
+        !!sub;
+
+    document.getElementById(
+        "cancelZone"
+    ).style.display =
+        isActive
+            ? "block"
+            : "none";
+
+    document.getElementById(
+        "activateZone"
+    ).style.display =
+        hasSubscription && !isActive
+            ? "block"
+            : "none";
+
+    document.getElementById(
+        "extendButton"
+    ).disabled =
+        !isActive;
+
+    document.getElementById(
+        "reduceButton"
+    ).disabled =
+        !isActive;
+
+    document.getElementById(
+        "changePlanButton"
+    ).disabled =
+        !isActive;
+
+    document.getElementById(
+        "subscriptionModal"
+    ).classList.add(
+        "show"
+    );
+}
+
+
+/* =========================================================
+   OPEN SUBSCRIPTION MODAL
+========================================================= */
+
 function openSubscriptionModal(
     id
 ) {
@@ -2612,7 +2764,6 @@ function openSubscriptionModal(
             x =>
                 x.id === id
         );
-
 
     if (!sub) {
 
@@ -2624,118 +2775,49 @@ function openSubscriptionModal(
         return;
     }
 
-
-    currentSubscription =
-        sub;
-
-
     const account =
         getAccountByUserId(
             sub.user_id
         );
 
-
-    document.getElementById(
-        "modalEmail"
-    ).textContent =
-        account?.email ||
-        sub.user_id;
-
-
-    document.getElementById(
-        "modalPlan"
-    ).textContent =
-        sub.plan;
+    fillCustomerModal(
+        account,
+        sub
+    );
+}
 
 
-    const status =
-        subscriptionStatus(sub);
+/* =========================================================
+   OPEN CUSTOMER CONTROL
+========================================================= */
 
+function openCustomerControl(
+    userId
+) {
 
-    document.getElementById(
-        "modalStatus"
-    ).textContent =
-        status.text;
-
-
-    document.getElementById(
-        "modalExpiry"
-    ).textContent =
-        formatDate(
-            sub.expires_at
+    const account =
+        getAccountByUserId(
+            userId
         );
 
+    if (!account) {
 
-    document.getElementById(
-        "modalRemaining"
-    ).textContent =
-        remainingTime(
-            sub.expires_at
+        showMessage(
+            "العميل غير موجود",
+            "error"
         );
 
+        return;
+    }
 
-    document.getElementById(
-        "durationAmount"
-    ).value = "";
+    const sub =
+        getUserSubscription(
+            userId
+        );
 
-
-    document.getElementById(
-        "reduceAmount"
-    ).value = "";
-
-
-    document.getElementById(
-        "newPlan"
-    ).value =
-        sub.plan;
-
-
-    const isActive =
-        sub.status === "active" &&
-        sub.expires_at &&
-        new Date(
-            sub.expires_at
-        ) > new Date();
-
-
-    document.getElementById(
-        "cancelZone"
-    ).style.display =
-        isActive
-            ? "block"
-            : "none";
-
-
-    document.getElementById(
-        "activateZone"
-    ).style.display =
-        isActive
-            ? "none"
-            : "block";
-
-
-    document.getElementById(
-        "extendButton"
-    ).disabled =
-        !isActive;
-
-
-    document.getElementById(
-        "reduceButton"
-    ).disabled =
-        !isActive;
-
-
-    document.getElementById(
-        "changePlanButton"
-    ).disabled =
-        !isActive;
-
-
-    document.getElementById(
-        "subscriptionModal"
-    ).classList.add(
-        "show"
+    fillCustomerModal(
+        account,
+        sub
     );
 }
 
@@ -3271,6 +3353,117 @@ async function cancelSubscription() {
     closeSubscriptionModal();
 
     await loadAll();
+}
+
+
+/* =========================================================
+   DELETE CUSTOMER FROM BIZFLOW ACCOUNTS
+========================================================= */
+
+async function deleteCustomer() {
+
+    if (!currentAccount?.user_id) {
+
+        showMessage(
+            "العميل غير محدد",
+            "error"
+        );
+
+        return;
+    }
+
+    const email =
+        currentAccount.email ||
+        currentAccount.user_id;
+
+    if (
+        email === "islampepo99@gmail.com"
+    ) {
+
+        showMessage(
+            "لا يمكن حذف حساب الأدمن",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        !confirm(
+            `⚠️ هل أنت متأكد أنك تريد حذف العميل؟\n\n${email}\n\nسيتم حذفه من قائمة عملاء BizFlow. لا يمكن التراجع عن هذه العملية.`
+        )
+    ) {
+
+        return;
+    }
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "delete_customer_account",
+                {
+                    customer_user_id:
+                        currentAccount.user_id
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "DELETE CUSTOMER ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء حذف العميل",
+            "error"
+        );
+
+        return;
+    }
+
+    console.log(
+        "DELETE CUSTOMER RESULT:",
+        data
+    );
+
+    allAccounts =
+        allAccounts.filter(
+            account =>
+                account.user_id !==
+                currentAccount.user_id
+        );
+
+    allSubscriptions =
+        allSubscriptions.filter(
+            sub =>
+                sub.user_id !==
+                currentAccount.user_id
+        );
+
+    allPayments =
+        allPayments.filter(
+            payment =>
+                payment.user_id !==
+                currentAccount.user_id
+        );
+
+    closeSubscriptionModal();
+
+    renderUsers();
+    renderSubscriptions();
+    await renderPayments();
+    updateStats();
+
+    showMessage(
+        `تم حذف ${email} من قائمة العملاء`
+    );
 }
 
 
