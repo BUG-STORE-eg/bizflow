@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>BizFlow - المنتجات</title>
@@ -28,6 +27,12 @@
       font-weight: bold;
     }
 
+    .primary:disabled {
+      background: #475569;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
     .secondary {
       background: #334155;
       color: white;
@@ -50,6 +55,51 @@
       color: white;
       outline: none;
       font-size: 15px;
+    }
+
+    /* =========================
+       معلومات الباقة
+    ========================= */
+
+    .plan-info {
+      background: #111827;
+      border: 1px solid #273244;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .plan-info-title {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .plan-info-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .plan-count {
+      margin-top: 8px;
+      color: #cbd5e1;
+      font-size: 15px;
+    }
+
+    .plan-count strong {
+      color: #6c63ff;
+    }
+
+    .limit-warning {
+      display: none;
+      background: #3b1111;
+      color: #f87171;
+      border: 1px solid #7f1d1d;
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-weight: bold;
     }
 
     .table-scroll {
@@ -182,7 +232,6 @@
   </style>
 </head>
 
-
 <body>
 
   <aside class="sidebar">
@@ -267,6 +316,7 @@
         <div class="page-actions">
 
           <button
+            id="addProductBtn"
             class="primary"
             type="button"
             onclick="openAddModal()"
@@ -276,6 +326,44 @@
 
         </div>
 
+      </div>
+
+
+      <!-- =========================
+           معلومات الباقة
+      ========================= -->
+
+      <div
+        id="planInfo"
+        class="plan-info"
+      >
+
+        <div class="plan-info-title">
+          الباقة الحالية
+        </div>
+
+        <div
+          id="planName"
+          class="plan-info-value"
+        >
+          جاري التحقق...
+        </div>
+
+        <div
+          id="planCount"
+          class="plan-count"
+        >
+          جاري تحميل عدد المنتجات...
+        </div>
+
+      </div>
+
+
+      <div
+        id="limitWarning"
+        class="limit-warning"
+      >
+        وصلت إلى الحد الأقصى من المنتجات في باقتك الحالية.
       </div>
 
 
@@ -432,7 +520,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
   <script>
 
     const SUPABASE_URL =
@@ -454,6 +541,10 @@
     let products = [];
 
     let editingProductId = null;
+
+    let currentPlan = null;
+
+    let maxProducts = null;
 
 
     // ==========================================
@@ -519,6 +610,157 @@
 
 
     // ==========================================
+    // تحميل الباقة
+    // ==========================================
+
+    async function loadPlan() {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.rpc(
+          "get_my_plan"
+        );
+
+
+      if (error) {
+
+        console.error(
+          "Plan error:",
+          error
+        );
+
+        document.getElementById(
+          "planName"
+        ).textContent =
+          "تعذر تحميل الباقة";
+
+        document.getElementById(
+          "planCount"
+        ).textContent =
+          "";
+
+        return false;
+      }
+
+
+      if (!data || !data.active) {
+
+        currentPlan = null;
+
+        maxProducts = 0;
+
+        document.getElementById(
+          "planName"
+        ).textContent =
+          "لا توجد باقة فعالة";
+
+        document.getElementById(
+          "planCount"
+        ).textContent =
+          "لا يمكنك إضافة منتجات حاليًا.";
+
+        document.getElementById(
+          "addProductBtn"
+        ).disabled = true;
+
+        return false;
+      }
+
+
+      currentPlan =
+        data.plan;
+
+      maxProducts =
+        data.max_products;
+
+
+      document.getElementById(
+        "planName"
+      ).textContent =
+        "باقة " + currentPlan;
+
+
+      updateProductLimitDisplay();
+
+      return true;
+    }
+
+
+    // ==========================================
+    // عرض عدد المنتجات وحد الباقة
+    // ==========================================
+
+    function updateProductLimitDisplay() {
+
+      const count =
+        products.length;
+
+
+      const countElement =
+        document.getElementById(
+          "planCount"
+        );
+
+
+      const addButton =
+        document.getElementById(
+          "addProductBtn"
+        );
+
+
+      const warning =
+        document.getElementById(
+          "limitWarning"
+        );
+
+
+      if (
+        maxProducts === null
+      ) {
+
+        countElement.innerHTML =
+          `المنتجات: <strong>${count}</strong> / غير محدود`;
+
+        addButton.disabled = false;
+
+        warning.style.display =
+          "none";
+
+        return;
+      }
+
+
+      countElement.innerHTML =
+        `المنتجات: <strong>${count}</strong> / ${maxProducts}`;
+
+
+      if (
+        count >= maxProducts
+      ) {
+
+        addButton.disabled = true;
+
+        warning.textContent =
+          `وصلت إلى الحد الأقصى (${maxProducts} منتج) في باقة ${currentPlan}.`;
+
+        warning.style.display =
+          "block";
+
+      } else {
+
+        addButton.disabled = false;
+
+        warning.style.display =
+          "none";
+
+      }
+
+    }
+
+
+    // ==========================================
     // تحميل المنتجات
     // ==========================================
 
@@ -531,6 +773,9 @@
       if (!loggedIn) {
         return;
       }
+
+
+      await loadPlan();
 
 
       const {
@@ -586,6 +831,8 @@
       ).style.display =
         "block";
 
+
+      updateProductLimitDisplay();
 
       renderProducts();
     }
@@ -738,6 +985,22 @@
     // ==========================================
 
     function openAddModal() {
+
+      if (
+        maxProducts !== null &&
+        products.length >= maxProducts
+      ) {
+
+        showMessage(
+          `وصلت إلى الحد الأقصى (${maxProducts} منتج) في باقة ${currentPlan}.`,
+          "error"
+        );
+
+        updateProductLimitDisplay();
+
+        return;
+      }
+
 
       editingProductId =
         null;
@@ -925,6 +1188,42 @@
       }
 
 
+      // ==========================================
+      // فحص حد المنتجات قبل الإضافة
+      // ==========================================
+
+      if (!editingProductId) {
+
+        const {
+          data: canAdd,
+          error: limitError
+        } =
+          await supabaseClient.rpc(
+            "can_add_product"
+          );
+
+
+        if (limitError) {
+
+          console.error(
+            "Limit check error:",
+            limitError
+          );
+
+        } else if (!canAdd) {
+
+          showFormMessage(
+            `وصلت إلى الحد الأقصى من المنتجات في باقة ${currentPlan}.`
+          );
+
+          updateProductLimitDisplay();
+
+          return;
+        }
+
+      }
+
+
       const productData = {
 
         name: name,
@@ -979,9 +1278,43 @@
         );
 
 
+        const errorMessage =
+          result.error.message || "";
+
+
+        if (
+          errorMessage.includes(
+            "Product limit reached"
+          )
+        ) {
+
+          showFormMessage(
+            `وصلت إلى الحد الأقصى من المنتجات في باقة ${currentPlan}.`
+          );
+
+          await loadProducts();
+
+          return;
+        }
+
+
+        if (
+          errorMessage.includes(
+            "No active subscription"
+          )
+        ) {
+
+          showFormMessage(
+            "لا توجد باقة فعالة على الحساب."
+          );
+
+          return;
+        }
+
+
         showFormMessage(
           "حدث خطأ: " +
-          result.error.message
+          errorMessage
         );
 
         return;
@@ -1145,8 +1478,10 @@
 
       setTimeout(
         () => {
+
           element.style.display =
             "none";
+
         },
         4000
       );
@@ -1176,7 +1511,9 @@
     }
 
 
+    // ==========================================
     // تشغيل الصفحة
+    // ==========================================
 
     loadProducts();
 
