@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,6 +76,11 @@
             color: white;
         }
 
+        button:disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
         .btn-blue {
             background: #2563eb;
         }
@@ -95,7 +101,7 @@
             background: #334155;
         }
 
-        button:hover {
+        button:hover:not(:disabled) {
             opacity: .88;
         }
 
@@ -171,7 +177,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            min-width: 950px;
         }
 
         th,
@@ -241,12 +247,7 @@
             font-size: 12px;
         }
 
-        .empty {
-            padding: 30px;
-            text-align: center;
-            color: #94a3b8;
-        }
-
+        .empty,
         .loading {
             padding: 30px;
             text-align: center;
@@ -303,7 +304,7 @@
             background: #111827;
             border: 1px solid #334155;
             border-radius: 16px;
-            box-shadow: 0 25px 80px rgba(0,0,0,.45);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, .45);
             overflow: hidden;
         }
 
@@ -460,70 +461,104 @@
         </div>
 
         <div class="header-actions">
-            <button class="btn-blue" onclick="loadAll()">
+
+            <button
+                class="btn-blue"
+                id="refreshButton"
+                onclick="loadAll()">
                 تحديث
             </button>
 
-            <button class="btn-gray" onclick="logout()">
+            <button
+                class="btn-gray"
+                onclick="logout()">
                 تسجيل خروج
             </button>
+
         </div>
 
     </div>
 </header>
 
 <main>
+
     <div class="container">
 
         <div class="title">
-            <h1>لوحة الإدارة</h1>
-            <p>إدارة العملاء والاشتراكات وطلبات الدفع</p>
+
+            <h1>
+                لوحة الإدارة
+            </h1>
+
+            <p>
+                إدارة العملاء والاشتراكات وطلبات الدفع
+            </p>
+
         </div>
 
-        <div class="error-box" id="errorBox"></div>
+        <div
+            class="error-box"
+            id="errorBox">
+        </div>
 
         <!-- STATS -->
 
         <div class="stats">
 
             <div class="stat">
+
                 <div class="stat-title">
                     إجمالي العملاء
                 </div>
 
-                <div class="stat-value" id="totalUsers">
+                <div
+                    class="stat-value"
+                    id="totalUsers">
                     0
                 </div>
+
             </div>
 
             <div class="stat">
+
                 <div class="stat-title">
                     الاشتراكات النشطة
                 </div>
 
-                <div class="stat-value" id="activeSubs">
+                <div
+                    class="stat-value"
+                    id="activeSubs">
                     0
                 </div>
+
             </div>
 
             <div class="stat">
+
                 <div class="stat-title">
                     طلبات الدفع المعلقة
                 </div>
 
-                <div class="stat-value" id="pendingPayments">
+                <div
+                    class="stat-value"
+                    id="pendingPayments">
                     0
                 </div>
+
             </div>
 
             <div class="stat">
+
                 <div class="stat-title">
                     الاشتراكات المنتهية
                 </div>
 
-                <div class="stat-value" id="expiredSubs">
+                <div
+                    class="stat-value"
+                    id="expiredSubs">
                     0
                 </div>
+
             </div>
 
         </div>
@@ -533,11 +568,17 @@
         <section class="section">
 
             <div class="section-header">
-                <h2>طلبات الدفع</h2>
 
-                <button class="btn-blue" onclick="loadPayments()">
+                <h2>
+                    طلبات الدفع
+                </h2>
+
+                <button
+                    class="btn-blue"
+                    onclick="loadPayments()">
                     تحديث
                 </button>
+
             </div>
 
             <div class="table-wrap">
@@ -545,7 +586,9 @@
                 <table>
 
                     <thead>
+
                         <tr>
+
                             <th>الإيميل</th>
                             <th>الباقة</th>
                             <th>المبلغ</th>
@@ -555,12 +598,15 @@
                             <th>الحالة</th>
                             <th>التاريخ</th>
                             <th>الإجراء</th>
+
                         </tr>
+
                     </thead>
 
                     <tbody id="paymentsBody">
 
                         <tr>
+
                             <td colspan="9">
 
                                 <div class="loading">
@@ -568,6 +614,7 @@
                                 </div>
 
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -583,11 +630,17 @@
         <section class="section">
 
             <div class="section-header">
-                <h2>إدارة الاشتراكات</h2>
 
-                <button class="btn-blue" onclick="loadSubscriptions()">
+                <h2>
+                    إدارة الاشتراكات
+                </h2>
+
+                <button
+                    class="btn-blue"
+                    onclick="loadSubscriptions()">
                     تحديث
                 </button>
+
             </div>
 
             <div class="table-wrap">
@@ -597,6 +650,7 @@
                     <thead>
 
                         <tr>
+
                             <th>الإيميل</th>
                             <th>الباقة</th>
                             <th>الحالة</th>
@@ -604,6 +658,7 @@
                             <th>وقت الانتهاء</th>
                             <th>الوقت المتبقي</th>
                             <th>الإجراءات</th>
+
                         </tr>
 
                     </thead>
@@ -611,6 +666,7 @@
                     <tbody id="subscriptionsBody">
 
                         <tr>
+
                             <td colspan="7">
 
                                 <div class="loading">
@@ -618,6 +674,7 @@
                                 </div>
 
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -633,7 +690,11 @@
         <section class="section">
 
             <div class="section-header">
-                <h2>العملاء</h2>
+
+                <h2>
+                    العملاء
+                </h2>
+
             </div>
 
             <div class="table-wrap">
@@ -643,11 +704,13 @@
                     <thead>
 
                         <tr>
+
                             <th>الإيميل</th>
                             <th>تاريخ التسجيل</th>
                             <th>الباقة</th>
                             <th>الحالة</th>
                             <th>الانتهاء</th>
+
                         </tr>
 
                     </thead>
@@ -655,6 +718,7 @@
                     <tbody id="usersBody">
 
                         <tr>
+
                             <td colspan="5">
 
                                 <div class="loading">
@@ -662,6 +726,7 @@
                                 </div>
 
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -673,11 +738,14 @@
         </section>
 
     </div>
+
 </main>
 
 <!-- SUBSCRIPTION MODAL -->
 
-<div class="modal-overlay" id="subscriptionModal">
+<div
+    class="modal-overlay"
+    id="subscriptionModal">
 
     <div class="modal">
 
@@ -700,18 +768,39 @@
             <div class="user-info">
 
                 <div>
-                    <span class="label">الإيميل:</span>
-                    <strong id="modalEmail">-</strong>
+
+                    <span class="label">
+                        الإيميل:
+                    </span>
+
+                    <strong id="modalEmail">
+                        -
+                    </strong>
+
                 </div>
 
                 <div>
-                    <span class="label">الباقة الحالية:</span>
-                    <strong id="modalPlan">-</strong>
+
+                    <span class="label">
+                        الباقة الحالية:
+                    </span>
+
+                    <strong id="modalPlan">
+                        -
+                    </strong>
+
                 </div>
 
                 <div>
-                    <span class="label">الانتهاء:</span>
-                    <strong id="modalExpiry">-</strong>
+
+                    <span class="label">
+                        الانتهاء:
+                    </span>
+
+                    <strong id="modalExpiry">
+                        -
+                    </strong>
+
                 </div>
 
             </div>
@@ -755,7 +844,9 @@
 
             </button>
 
-            <div class="form-group" style="margin-top:20px;">
+            <div
+                class="form-group"
+                style="margin-top:20px;">
 
                 <label>
                     تغيير الباقة
@@ -807,15 +898,22 @@
 
 </div>
 
-<div class="message" id="message"></div>
+<div
+    class="message"
+    id="message">
+</div>
 
 <script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
     "https://oklabfxjcekfwirnqlji.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlug5ug_9_Lqlug5";
+    "sb_publishable_V-_AIpoZ2IZActUyhDQ5ug_9_Lqlugp";
 
 const supabaseClient =
     window.supabase.createClient(
@@ -823,22 +921,35 @@ const supabaseClient =
         SUPABASE_KEY
     );
 
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
 let currentUser = null;
+
 let currentSubscription = null;
 
 let allAccounts = [];
+
 let allSubscriptions = [];
+
 let allPayments = [];
 
 
-// ==========================================
-// MESSAGE
-// ==========================================
+/* =========================================================
+   MESSAGE
+========================================================= */
 
-function showMessage(text, type = "success") {
+function showMessage(
+    text,
+    type = "success"
+) {
 
     const box =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
 
     box.textContent = text;
 
@@ -846,25 +957,30 @@ function showMessage(text, type = "success") {
         "message show " + type;
 
     setTimeout(() => {
-        box.className = "message";
+
+        box.className =
+            "message";
+
     }, 3500);
 }
 
 
-// ==========================================
-// ERROR BOX
-// ==========================================
+/* =========================================================
+   ERROR
+========================================================= */
 
 function showError(error) {
 
     const box =
-        document.getElementById("errorBox");
+        document.getElementById(
+            "errorBox"
+        );
 
     if (!box) {
         return;
     }
 
-    let message =
+    const message =
         error?.message ||
         String(error) ||
         "Unknown error";
@@ -874,24 +990,34 @@ function showError(error) {
 
     box.classList.add("show");
 
-    console.error("SUPABASE ERROR:", error);
+    console.error(
+        "SUPABASE ERROR:",
+        error
+    );
 }
+
 
 function clearError() {
 
     const box =
-        document.getElementById("errorBox");
+        document.getElementById(
+            "errorBox"
+        );
 
     if (box) {
+
         box.textContent = "";
-        box.classList.remove("show");
+
+        box.classList.remove(
+            "show"
+        );
     }
 }
 
 
-// ==========================================
-// FORMAT DATE
-// ==========================================
+/* =========================================================
+   FORMAT DATE
+========================================================= */
 
 function formatDate(date) {
 
@@ -899,9 +1025,14 @@ function formatDate(date) {
         return "-";
     }
 
-    const d = new Date(date);
+    const d =
+        new Date(date);
 
-    if (isNaN(d.getTime())) {
+    if (
+        isNaN(
+            d.getTime()
+        )
+    ) {
         return "-";
     }
 
@@ -915,29 +1046,37 @@ function formatDate(date) {
 }
 
 
-// ==========================================
-// REMAINING TIME
-// ==========================================
+/* =========================================================
+   REMAINING TIME
+========================================================= */
 
-function remainingTime(expiresAt) {
+function remainingTime(
+    expiresAt
+) {
 
     if (!expiresAt) {
         return "-";
     }
 
     const diff =
-        new Date(expiresAt).getTime()
-        - Date.now();
+        new Date(
+            expiresAt
+        ).getTime() -
+        Date.now();
 
     if (diff <= 0) {
         return "منتهي";
     }
 
     const totalMinutes =
-        Math.floor(diff / 60000);
+        Math.floor(
+            diff / 60000
+        );
 
     const days =
-        Math.floor(totalMinutes / 1440);
+        Math.floor(
+            totalMinutes / 1440
+        );
 
     const hours =
         Math.floor(
@@ -948,22 +1087,28 @@ function remainingTime(expiresAt) {
         totalMinutes % 60;
 
     if (days > 0) {
+
         return `${days} يوم ${hours} ساعة`;
+
     }
 
     if (hours > 0) {
+
         return `${hours} ساعة ${minutes} دقيقة`;
+
     }
 
     return `${minutes} دقيقة`;
 }
 
 
-// ==========================================
-// STATUS
-// ==========================================
+/* =========================================================
+   STATUS
+========================================================= */
 
-function subscriptionStatus(sub) {
+function subscriptionStatus(
+    sub
+) {
 
     if (!sub) {
 
@@ -977,7 +1122,9 @@ function subscriptionStatus(sub) {
     if (
         sub.status === "active" &&
         sub.expires_at &&
-        new Date(sub.expires_at) > new Date()
+        new Date(
+            sub.expires_at
+        ) > new Date()
     ) {
 
         return {
@@ -990,7 +1137,9 @@ function subscriptionStatus(sub) {
     if (
         sub.status === "active" &&
         sub.expires_at &&
-        new Date(sub.expires_at) <= new Date()
+        new Date(
+            sub.expires_at
+        ) <= new Date()
     ) {
 
         return {
@@ -1000,7 +1149,9 @@ function subscriptionStatus(sub) {
 
     }
 
-    if (sub.status === "cancelled") {
+    if (
+        sub.status === "cancelled"
+    ) {
 
         return {
             text: "ملغي",
@@ -1009,7 +1160,9 @@ function subscriptionStatus(sub) {
 
     }
 
-    if (sub.status === "pending") {
+    if (
+        sub.status === "pending"
+    ) {
 
         return {
             text: "معلق",
@@ -1018,7 +1171,9 @@ function subscriptionStatus(sub) {
 
     }
 
-    if (sub.status === "expired") {
+    if (
+        sub.status === "expired"
+    ) {
 
         return {
             text: "منتهي",
@@ -1034,1213 +1189,13 @@ function subscriptionStatus(sub) {
 }
 
 
-// ==========================================
-// AUTH / ADMIN CHECK
-// ==========================================
-
-async function checkAdmin() {
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.getSession();
-
-        if (error) {
-
-            console.error(
-                "SESSION ERROR:",
-                error
-            );
-
-            showError(error);
-
-            return false;
-        }
-
-        const session =
-            data?.session;
-
-        if (!session) {
-
-            window.location.href =
-                "login.html";
-
-            return false;
-        }
-
-        currentUser =
-            session.user;
-
-        document.getElementById(
-            "adminEmail"
-        ).textContent =
-            currentUser.email || "-";
-
-        const {
-            data: adminData,
-            error: adminError
-        } =
-            await supabaseClient
-                .from("admin_users")
-                .select("user_id,email")
-                .eq(
-                    "user_id",
-                    currentUser.id
-                )
-                .maybeSingle();
-
-        if (adminError) {
-
-            console.error(
-                "ADMIN CHECK ERROR:",
-                adminError
-            );
-
-            showError(adminError);
-
-            return false;
-        }
-
-        if (!adminData) {
-
-            alert(
-                "ليس لديك صلاحية الدخول إلى لوحة الإدارة."
-            );
-
-            await supabaseClient.auth.signOut();
-
-            window.location.href =
-                "index.html";
-
-            return false;
-        }
-
-        document.getElementById(
-            "adminEmail"
-        ).textContent =
-            adminData.email ||
-            currentUser.email;
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "CHECK ADMIN ERROR:",
-            error
-        );
-
-        showError(error);
-
-        return false;
-    }
-}
-
-
-// ==========================================
-// LOAD ALL
-// ==========================================
-
-async function loadAll() {
-
-    clearError();
-
-    try {
-
-        await loadAccounts();
-
-        await loadSubscriptions();
-
-        await loadPayments();
-
-        updateStats();
-
-    } catch (error) {
-
-        console.error(
-            "LOAD ALL ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء تحميل لوحة الإدارة",
-            "error"
-        );
-    }
-}
-
-
-// ==========================================
-// ACCOUNTS
-// ==========================================
-
-async function loadAccounts() {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("bizflow_accounts")
-            .select(
-                "user_id,email,created_at"
-            )
-            .order("created_at", {
-                ascending: false
-            });
-
-    if (error) {
-
-        console.error(
-            "ACCOUNTS ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            "خطأ العملاء: " +
-            error.message,
-            "error"
-        );
-
-        return;
-    }
-
-    allAccounts =
-        data || [];
-
-    console.log(
-        "ACCOUNTS:",
-        allAccounts
-    );
-
-    renderUsers();
-}
-
-
-// ==========================================
-// SUBSCRIPTIONS
-// ==========================================
-
-async function loadSubscriptions() {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("subscriptions")
-            .select("*")
-            .order("created_at", {
-                ascending: false
-            });
-
-    if (error) {
-
-        console.error(
-            "SUBSCRIPTIONS ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            "خطأ الاشتراكات: " +
-            error.message,
-            "error"
-        );
-
-        return;
-    }
-
-    allSubscriptions =
-        data || [];
-
-    console.log(
-        "SUBSCRIPTIONS:",
-        allSubscriptions
-    );
-
-    renderSubscriptions();
-    renderUsers();
-}
-
-
-// ==========================================
-// PAYMENTS
-// ==========================================
-
-async function loadPayments() {
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .from("payment_requests")
-            .select("*")
-            .order("created_at", {
-                ascending: false
-            });
-
-    if (error) {
-
-        console.error(
-            "PAYMENTS ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            "خطأ طلبات الدفع: " +
-            error.message,
-            "error"
-        );
-
-        return;
-    }
-
-    allPayments =
-        data || [];
-
-    console.log(
-        "PAYMENTS:",
-        allPayments
-    );
-
-    await renderPayments();
-
-    updateStats();
-}
-
-
-// ==========================================
-// RENDER PAYMENTS
-// ==========================================
-
-async function renderPayments() {
-
-    const body =
-        document.getElementById(
-            "paymentsBody"
-        );
-
-    if (!allPayments.length) {
-
-        body.innerHTML = `
-            <tr>
-                <td colspan="9">
-                    <div class="empty">
-                        لا توجد طلبات دفع
-                    </div>
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    const rows =
-        await Promise.all(
-            allPayments.map(
-                async payment => {
-
-                    const account =
-                        allAccounts.find(
-                            x =>
-                                x.user_id ===
-                                payment.user_id
-                        );
-
-                    let proofHtml = "-";
-
-                    if (payment.proof_path) {
-
-                        try {
-
-                            const {
-                                data,
-                                error
-                            } =
-                                await supabaseClient
-                                    .storage
-                                    .from(
-                                        "payment-proofs"
-                                    )
-                                    .createSignedUrl(
-                                        payment.proof_path,
-                                        3600
-                                    );
-
-                            if (
-                                !error &&
-                                data?.signedUrl
-                            ) {
-
-                                proofHtml = `
-                                    <a
-                                        class="proof-link"
-                                        href="${data.signedUrl}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        عرض الإثبات
-                                    </a>
-                                `;
-
-                            } else if (error) {
-
-                                console.error(
-                                    "PROOF ERROR:",
-                                    error
-                                );
-
-                                proofHtml = "تعذر فتح الإثبات";
-                            }
-
-                        } catch (e) {
-
-                            console.error(
-                                "PROOF EXCEPTION:",
-                                e
-                            );
-
-                            proofHtml =
-                                "تعذر فتح الإثبات";
-                        }
-                    }
-
-                    let statusClass =
-                        "badge-pending";
-
-                    if (
-                        payment.status ===
-                        "approved"
-                    ) {
-
-                        statusClass =
-                            "badge-approved";
-
-                    } else if (
-                        payment.status ===
-                        "rejected"
-                    ) {
-
-                        statusClass =
-                            "badge-rejected";
-                    }
-
-                    let actions = "-";
-
-                    if (
-                        payment.status ===
-                        "pending"
-                    ) {
-
-                        actions = `
-                            <div class="actions">
-
-                                <button
-                                    class="btn-green"
-                                    onclick="approvePayment('${payment.id}')"
-                                >
-                                    موافقة
-                                </button>
-
-                                <button
-                                    class="btn-red"
-                                    onclick="rejectPayment('${payment.id}')"
-                                >
-                                    رفض
-                                </button>
-
-                            </div>
-                        `;
-                    }
-
-                    return `
-                        <tr>
-
-                            <td>
-                                ${escapeHtml(
-                                    account?.email ||
-                                    payment.user_id
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    payment.plan
-                                )}
-                            </td>
-
-                            <td>
-                                ${Number(
-                                    payment.amount || 0
-                                ).toFixed(2)}
-                                EGP
-                            </td>
-
-                            <td>
-                                ${
-                                    payment.payment_method ===
-                                    "etisalat_cash"
-                                    ? "Etisalat Cash"
-                                    : payment.payment_method ===
-                                      "instapay"
-                                    ? "InstaPay"
-                                    : escapeHtml(
-                                        payment.payment_method ||
-                                        "-"
-                                      )
-                                }
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    payment.transaction_id ||
-                                    "-"
-                                )}
-                            </td>
-
-                            <td>
-                                ${proofHtml}
-                            </td>
-
-                            <td>
-                                <span class="badge ${statusClass}">
-                                    ${escapeHtml(
-                                        payment.status ||
-                                        "-"
-                                    )}
-                                </span>
-                            </td>
-
-                            <td>
-                                ${formatDate(
-                                    payment.created_at
-                                )}
-                            </td>
-
-                            <td>
-                                ${actions}
-                            </td>
-
-                        </tr>
-                    `;
-                }
-            )
-        );
-
-    body.innerHTML =
-        rows.join("");
-}
-
-
-// ==========================================
-// RENDER SUBSCRIPTIONS
-// ==========================================
-
-function renderSubscriptions() {
-
-    const body =
-        document.getElementById(
-            "subscriptionsBody"
-        );
-
-    if (!allSubscriptions.length) {
-
-        body.innerHTML = `
-            <tr>
-                <td colspan="7">
-                    <div class="empty">
-                        لا توجد اشتراكات حتى الآن
-                    </div>
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    body.innerHTML =
-        allSubscriptions.map(
-            sub => {
-
-                const account =
-                    allAccounts.find(
-                        x =>
-                            x.user_id ===
-                            sub.user_id
-                    );
-
-                const status =
-                    subscriptionStatus(sub);
-
-                return `
-                    <tr>
-
-                        <td>
-                            ${escapeHtml(
-                                account?.email ||
-                                sub.user_id
-                            )}
-                        </td>
-
-                        <td>
-                            <strong>
-                                ${escapeHtml(
-                                    sub.plan
-                                )}
-                            </strong>
-                        </td>
-
-                        <td>
-                            <span class="badge ${status.className}">
-                                ${status.text}
-                            </span>
-                        </td>
-
-                        <td>
-                            ${formatDate(
-                                sub.started_at
-                            )}
-                        </td>
-
-                        <td>
-                            ${formatDate(
-                                sub.expires_at
-                            )}
-                        </td>
-
-                        <td>
-                            <strong>
-                                ${remainingTime(
-                                    sub.expires_at
-                                )}
-                            </strong>
-                        </td>
-
-                        <td>
-
-                            <div class="actions">
-
-                                <button
-                                    class="btn-blue"
-                                    onclick="openSubscriptionModal('${sub.id}')"
-                                >
-                                    إدارة
-                                </button>
-
-                            </div>
-
-                        </td>
-
-                    </tr>
-                `;
-            }
-        ).join("");
-}
-
-
-// ==========================================
-// RENDER USERS
-// ==========================================
-
-function renderUsers() {
-
-    const body =
-        document.getElementById(
-            "usersBody"
-        );
-
-    if (!allAccounts.length) {
-
-        body.innerHTML = `
-            <tr>
-                <td colspan="5">
-                    <div class="empty">
-                        لا يوجد عملاء
-                    </div>
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    body.innerHTML =
-        allAccounts.map(
-            account => {
-
-                const sub =
-                    allSubscriptions.find(
-                        x =>
-                            x.user_id ===
-                            account.user_id
-                    );
-
-                const status =
-                    subscriptionStatus(sub);
-
-                return `
-                    <tr>
-
-                        <td>
-                            ${escapeHtml(
-                                account.email
-                            )}
-                        </td>
-
-                        <td>
-                            ${formatDate(
-                                account.created_at
-                            )}
-                        </td>
-
-                        <td>
-                            ${
-                                sub
-                                ? escapeHtml(
-                                    sub.plan
-                                )
-                                : "-"
-                            }
-                        </td>
-
-                        <td>
-                            <span class="badge ${status.className}">
-                                ${status.text}
-                            </span>
-                        </td>
-
-                        <td>
-                            ${
-                                sub
-                                ? formatDate(
-                                    sub.expires_at
-                                )
-                                : "-"
-                            }
-                        </td>
-
-                    </tr>
-                `;
-            }
-        ).join("");
-}
-
-
-// ==========================================
-// STATS
-// ==========================================
-
-function updateStats() {
-
-    const active =
-        allSubscriptions.filter(
-            sub =>
-                sub.status === "active" &&
-                sub.expires_at &&
-                new Date(
-                    sub.expires_at
-                ) > new Date()
-        ).length;
-
-    const expired =
-        allSubscriptions.filter(
-            sub =>
-                sub.expires_at &&
-                new Date(
-                    sub.expires_at
-                ) <= new Date()
-        ).length;
-
-    const pending =
-        allPayments.filter(
-            payment =>
-                payment.status ===
-                "pending"
-        ).length;
-
-    document.getElementById(
-        "totalUsers"
-    ).textContent =
-        allAccounts.length;
-
-    document.getElementById(
-        "activeSubs"
-    ).textContent =
-        active;
-
-    document.getElementById(
-        "expiredSubs"
-    ).textContent =
-        expired;
-
-    document.getElementById(
-        "pendingPayments"
-    ).textContent =
-        pending;
-}
-
-
-// ==========================================
-// APPROVE PAYMENT
-// ==========================================
-
-async function approvePayment(id) {
-
-    if (
-        !confirm(
-            "هل تريد الموافقة على طلب الدفع وتفعيل الاشتراك لمدة 30 يوم؟"
-        )
-    ) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "approve_payment_request",
-                {
-                    request_id: id
-                }
-            );
-
-    if (error) {
-
-        console.error(
-            "APPROVE ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء الموافقة",
-            "error"
-        );
-
-        return;
-    }
-
-    console.log(
-        "APPROVE RESULT:",
-        data
-    );
-
-    showMessage(
-        "تمت الموافقة وتفعيل الاشتراك بنجاح"
-    );
-
-    await loadAll();
-}
-
-
-// ==========================================
-// REJECT PAYMENT
-// ==========================================
-
-async function rejectPayment(id) {
-
-    if (
-        !confirm(
-            "هل تريد رفض طلب الدفع؟"
-        )
-    ) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "reject_payment_request",
-                {
-                    request_id: id
-                }
-            );
-
-    if (error) {
-
-        console.error(
-            "REJECT ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء الرفض",
-            "error"
-        );
-
-        return;
-    }
-
-    console.log(
-        "REJECT RESULT:",
-        data
-    );
-
-    showMessage(
-        "تم رفض طلب الدفع"
-    );
-
-    await loadAll();
-}
-
-
-// ==========================================
-// OPEN MODAL
-// ==========================================
-
-function openSubscriptionModal(id) {
-
-    const sub =
-        allSubscriptions.find(
-            x => x.id === id
-        );
-
-    if (!sub) {
-
-        showMessage(
-            "الاشتراك غير موجود",
-            "error"
-        );
-
-        return;
-    }
-
-    currentSubscription =
-        sub;
-
-    const account =
-        allAccounts.find(
-            x =>
-                x.user_id ===
-                sub.user_id
-        );
-
-    document.getElementById(
-        "modalEmail"
-    ).textContent =
-        account?.email ||
-        sub.user_id;
-
-    document.getElementById(
-        "modalPlan"
-    ).textContent =
-        sub.plan;
-
-    document.getElementById(
-        "modalExpiry"
-    ).textContent =
-        formatDate(
-            sub.expires_at
-        );
-
-    document.getElementById(
-        "durationAmount"
-    ).value = "";
-
-    document.getElementById(
-        "newPlan"
-    ).value =
-        sub.plan;
-
-    document.getElementById(
-        "subscriptionModal"
-    ).classList.add("show");
-}
-
-
-// ==========================================
-// CLOSE MODAL
-// ==========================================
-
-function closeSubscriptionModal() {
-
-    document.getElementById(
-        "subscriptionModal"
-    ).classList.remove("show");
-
-    currentSubscription =
-        null;
-}
-
-
-// ==========================================
-// EXTEND SUBSCRIPTION
-// ==========================================
-
-async function extendSubscription() {
-
-    if (!currentSubscription) {
-        return;
-    }
-
-    const amount =
-        parseInt(
-            document.getElementById(
-                "durationAmount"
-            ).value,
-            10
-        );
-
-    const unit =
-        document.getElementById(
-            "durationUnit"
-        ).value;
-
-    if (
-        !amount ||
-        amount <= 0
-    ) {
-
-        showMessage(
-            "اكتب مدة صحيحة",
-            "error"
-        );
-
-        return;
-    }
-
-    const unitText =
-        unit === "days"
-        ? "يوم"
-        : "دقيقة";
-
-    if (
-        !confirm(
-            `هل تريد إضافة ${amount} ${unitText} للاشتراك؟`
-        )
-    ) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "admin_extend_subscription",
-                {
-                    subscription_id:
-                        currentSubscription.id,
-
-                    amount:
-                        amount,
-
-                    unit:
-                        unit
-                }
-            );
-
-    if (error) {
-
-        console.error(
-            "EXTEND ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء إضافة المدة",
-            "error"
-        );
-
-        return;
-    }
-
-    console.log(
-        "EXTEND RESULT:",
-        data
-    );
-
-    showMessage(
-        "تمت إضافة المدة بنجاح"
-    );
-
-    closeSubscriptionModal();
-
-    await loadAll();
-}
-
-
-// ==========================================
-// CHANGE PLAN
-// ==========================================
-
-async function changePlan() {
-
-    if (!currentSubscription) {
-        return;
-    }
-
-    const newPlan =
-        document.getElementById(
-            "newPlan"
-        ).value;
-
-    if (
-        !confirm(
-            `هل تريد تغيير الباقة إلى ${newPlan}؟`
-        )
-    ) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "admin_change_plan",
-                {
-                    subscription_id:
-                        currentSubscription.id,
-
-                    new_plan:
-                        newPlan
-                }
-            );
-
-    if (error) {
-
-        console.error(
-            "CHANGE PLAN ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء تغيير الباقة",
-            "error"
-        );
-
-        return;
-    }
-
-    console.log(
-        "CHANGE PLAN RESULT:",
-        data
-    );
-
-    showMessage(
-        "تم تغيير الباقة بنجاح"
-    );
-
-    closeSubscriptionModal();
-
-    await loadAll();
-}
-
-
-// ==========================================
-// CANCEL SUBSCRIPTION
-// ==========================================
-
-async function cancelSubscription() {
-
-    if (!currentSubscription) {
-        return;
-    }
-
-    if (
-        !confirm(
-            "هل أنت متأكد من إلغاء هذا الاشتراك؟"
-        )
-    ) {
-        return;
-    }
-
-    const {
-        data,
-        error
-    } =
-        await supabaseClient
-            .rpc(
-                "cancel_subscription",
-                {
-                    subscription_id:
-                        currentSubscription.id
-                }
-            );
-
-    if (error) {
-
-        console.error(
-            "CANCEL ERROR:",
-            error
-        );
-
-        showError(error);
-
-        showMessage(
-            error.message ||
-            "حدث خطأ أثناء إلغاء الاشتراك",
-            "error"
-        );
-
-        return;
-    }
-
-    console.log(
-        "CANCEL RESULT:",
-        data
-    );
-
-    showMessage(
-        "تم إلغاء الاشتراك"
-    );
-
-    closeSubscriptionModal();
-
-    await loadAll();
-}
-
-
-// ==========================================
-// LOGOUT
-// ==========================================
-
-async function logout() {
-
-    await supabaseClient.auth.signOut();
-
-    window.location.href =
-        "login.html";
-}
-
-
-// ==========================================
-// ESCAPE HTML
-// ==========================================
-
-function escapeHtml(value) {
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+    value
+) {
 
     if (
         value === null ||
@@ -2273,9 +1228,1473 @@ function escapeHtml(value) {
 }
 
 
-// ==========================================
-// CLOSE MODAL OUTSIDE
-// ==========================================
+/* =========================================================
+   GET ACCOUNT
+========================================================= */
+
+function getAccountByUserId(
+    userId
+) {
+
+    return allAccounts.find(
+        account =>
+            account.user_id ===
+            userId
+    );
+}
+
+
+/* =========================================================
+   GET CURRENT USER SUBSCRIPTION
+========================================================= */
+
+function getUserSubscription(
+    userId
+) {
+
+    const userSubs =
+        allSubscriptions.filter(
+            sub =>
+                sub.user_id ===
+                userId
+        );
+
+    if (!userSubs.length) {
+        return null;
+    }
+
+    userSubs.sort(
+        (a, b) =>
+            new Date(
+                b.created_at || 0
+            ) -
+            new Date(
+                a.created_at || 0
+            )
+    );
+
+    return userSubs[0];
+}
+
+
+/* =========================================================
+   ADMIN CHECK
+========================================================= */
+
+async function checkAdmin() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth
+                .getSession();
+
+        if (error) {
+
+            showError(error);
+
+            return false;
+        }
+
+        const session =
+            data?.session;
+
+        if (!session) {
+
+            window.location.href =
+                "login.html";
+
+            return false;
+        }
+
+        currentUser =
+            session.user;
+
+        document.getElementById(
+            "adminEmail"
+        ).textContent =
+            currentUser.email || "-";
+
+
+        /* CHECK ADMIN TABLE */
+
+        const {
+            data: adminData,
+            error: adminError
+        } =
+            await supabaseClient
+                .from("admin_users")
+                .select(
+                    "user_id,email"
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+        if (adminError) {
+
+            console.error(
+                "ADMIN CHECK ERROR:",
+                adminError
+            );
+
+            showError(
+                adminError
+            );
+
+            return false;
+        }
+
+        if (!adminData) {
+
+            alert(
+                "ليس لديك صلاحية الدخول إلى لوحة الإدارة."
+            );
+
+            await supabaseClient.auth
+                .signOut();
+
+            window.location.href =
+                "index.html";
+
+            return false;
+        }
+
+        document.getElementById(
+            "adminEmail"
+        ).textContent =
+            adminData.email ||
+            currentUser.email ||
+            "-";
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "CHECK ADMIN ERROR:",
+            error
+        );
+
+        showError(error);
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   LOAD ALL
+========================================================= */
+
+async function loadAll() {
+
+    clearError();
+
+    const button =
+        document.getElementById(
+            "refreshButton"
+        );
+
+    if (button) {
+
+        button.disabled = true;
+
+        button.textContent =
+            "جاري التحديث...";
+    }
+
+    try {
+
+        /*
+         * Accounts first because
+         * subscriptions/payments
+         * use account emails.
+         */
+
+        await loadAccounts();
+
+        await loadSubscriptions();
+
+        await loadPayments();
+
+        updateStats();
+
+    } catch (error) {
+
+        console.error(
+            "LOAD ALL ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء تحميل لوحة الإدارة",
+            "error"
+        );
+
+    } finally {
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "تحديث";
+        }
+    }
+}
+
+
+/* =========================================================
+   LOAD ACCOUNTS
+========================================================= */
+
+async function loadAccounts() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "bizflow_accounts"
+            )
+            .select(
+                "user_id,email,created_at"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "ACCOUNTS ERROR:",
+            error
+        );
+
+        showError(error);
+
+        throw error;
+    }
+
+    allAccounts =
+        data || [];
+
+    renderUsers();
+}
+
+
+/* =========================================================
+   LOAD SUBSCRIPTIONS
+========================================================= */
+
+async function loadSubscriptions() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "subscriptions"
+            )
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "SUBSCRIPTIONS ERROR:",
+            error
+        );
+
+        showError(error);
+
+        throw error;
+    }
+
+    allSubscriptions =
+        data || [];
+
+    renderSubscriptions();
+
+    renderUsers();
+
+    updateStats();
+}
+
+
+/* =========================================================
+   LOAD PAYMENTS
+========================================================= */
+
+async function loadPayments() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(
+                "payment_requests"
+            )
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "PAYMENTS ERROR:",
+            error
+        );
+
+        showError(error);
+
+        throw error;
+    }
+
+    allPayments =
+        data || [];
+
+    await renderPayments();
+
+    updateStats();
+}
+
+
+/* =========================================================
+   PAYMENT METHOD
+========================================================= */
+
+function paymentMethodText(
+    method
+) {
+
+    if (
+        method ===
+        "etisalat_cash"
+    ) {
+
+        return "Etisalat Cash";
+
+    }
+
+    if (
+        method ===
+        "instapay"
+    ) {
+
+        return "InstaPay";
+    }
+
+    return escapeHtml(
+        method || "-"
+    );
+}
+
+
+/* =========================================================
+   PAYMENT STATUS
+========================================================= */
+
+function paymentStatusClass(
+    status
+) {
+
+    if (
+        status ===
+        "approved"
+    ) {
+
+        return "badge-approved";
+    }
+
+    if (
+        status ===
+        "rejected"
+    ) {
+
+        return "badge-rejected";
+    }
+
+    return "badge-pending";
+}
+
+
+function paymentStatusText(
+    status
+) {
+
+    if (
+        status ===
+        "approved"
+    ) {
+
+        return "مقبول";
+    }
+
+    if (
+        status ===
+        "rejected"
+    ) {
+
+        return "مرفوض";
+    }
+
+    if (
+        status ===
+        "pending"
+    ) {
+
+        return "معلق";
+    }
+
+    return status || "-";
+}
+
+
+/* =========================================================
+   CREATE SIGNED PROOF URL
+========================================================= */
+
+async function getProofLink(
+    proofPath
+) {
+
+    if (!proofPath) {
+
+        return "-";
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .storage
+                .from(
+                    "payment-proofs"
+                )
+                .createSignedUrl(
+                    proofPath,
+                    3600
+                );
+
+        if (
+            error ||
+            !data?.signedUrl
+        ) {
+
+            console.error(
+                "PROOF ERROR:",
+                error
+            );
+
+            return "تعذر فتح الإثبات";
+        }
+
+        return `
+            <a
+                class="proof-link"
+                href="${data.signedUrl}"
+                target="_blank"
+                rel="noopener noreferrer">
+                عرض الإثبات
+            </a>
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "PROOF EXCEPTION:",
+            error
+        );
+
+        return "تعذر فتح الإثبات";
+    }
+}
+
+
+/* =========================================================
+   RENDER PAYMENTS
+========================================================= */
+
+async function renderPayments() {
+
+    const body =
+        document.getElementById(
+            "paymentsBody"
+        );
+
+    if (!allPayments.length) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    <div class="empty">
+                        لا توجد طلبات دفع
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    const rows =
+        await Promise.all(
+            allPayments.map(
+                async payment => {
+
+                    const account =
+                        getAccountByUserId(
+                            payment.user_id
+                        );
+
+                    const proofHtml =
+                        await getProofLink(
+                            payment.proof_path
+                        );
+
+                    let actions = "-";
+
+                    if (
+                        payment.status ===
+                        "pending"
+                    ) {
+
+                        actions = `
+                            <div class="actions">
+
+                                <button
+                                    class="btn-green"
+                                    onclick="approvePayment('${payment.id}')">
+                                    موافقة
+                                </button>
+
+                                <button
+                                    class="btn-red"
+                                    onclick="rejectPayment('${payment.id}')">
+                                    رفض
+                                </button>
+
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(
+                                    account?.email ||
+                                    payment.user_id
+                                )}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        payment.plan
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${Number(
+                                    payment.amount || 0
+                                ).toFixed(2)}
+                                EGP
+                            </td>
+
+                            <td>
+                                ${paymentMethodText(
+                                    payment.payment_method
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    payment.transaction_id ||
+                                    "-"
+                                )}
+                            </td>
+
+                            <td>
+                                ${proofHtml}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="badge ${paymentStatusClass(
+                                        payment.status
+                                    )}">
+
+                                    ${escapeHtml(
+                                        paymentStatusText(
+                                            payment.status
+                                        )
+                                    )}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+                                ${formatDate(
+                                    payment.created_at
+                                )}
+                            </td>
+
+                            <td>
+                                ${actions}
+                            </td>
+
+                        </tr>
+                    `;
+                }
+            )
+        );
+
+    body.innerHTML =
+        rows.join("");
+}
+
+
+/* =========================================================
+   RENDER SUBSCRIPTIONS
+========================================================= */
+
+function renderSubscriptions() {
+
+    const body =
+        document.getElementById(
+            "subscriptionsBody"
+        );
+
+    if (
+        !allSubscriptions.length
+    ) {
+
+        body.innerHTML = `
+            <tr>
+
+                <td colspan="7">
+
+                    <div class="empty">
+                        لا توجد اشتراكات حتى الآن
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    body.innerHTML =
+        allSubscriptions.map(
+            sub => {
+
+                const account =
+                    getAccountByUserId(
+                        sub.user_id
+                    );
+
+                const status =
+                    subscriptionStatus(
+                        sub
+                    );
+
+                return `
+                    <tr>
+
+                        <td>
+                            ${escapeHtml(
+                                account?.email ||
+                                sub.user_id
+                            )}
+                        </td>
+
+                        <td>
+
+                            <strong>
+                                ${escapeHtml(
+                                    sub.plan
+                                )}
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="badge ${status.className}">
+
+                                ${escapeHtml(
+                                    status.text
+                                )}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+                            ${formatDate(
+                                sub.started_at
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatDate(
+                                sub.expires_at
+                            )}
+                        </td>
+
+                        <td>
+
+                            <strong>
+                                ${remainingTime(
+                                    sub.expires_at
+                                )}
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="btn-blue"
+                                    onclick="openSubscriptionModal('${sub.id}')">
+
+                                    إدارة
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                `;
+            }
+        ).join("");
+}
+
+
+/* =========================================================
+   RENDER USERS
+========================================================= */
+
+function renderUsers() {
+
+    const body =
+        document.getElementById(
+            "usersBody"
+        );
+
+    if (!allAccounts.length) {
+
+        body.innerHTML = `
+            <tr>
+
+                <td colspan="5">
+
+                    <div class="empty">
+                        لا يوجد عملاء
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    body.innerHTML =
+        allAccounts.map(
+            account => {
+
+                const sub =
+                    getUserSubscription(
+                        account.user_id
+                    );
+
+                const status =
+                    subscriptionStatus(
+                        sub
+                    );
+
+                return `
+                    <tr>
+
+                        <td>
+                            ${escapeHtml(
+                                account.email
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatDate(
+                                account.created_at
+                            )}
+                        </td>
+
+                        <td>
+
+                            ${
+                                sub
+                                    ? escapeHtml(
+                                        sub.plan
+                                    )
+                                    : "-"
+                            }
+
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="badge ${status.className}">
+
+                                ${escapeHtml(
+                                    status.text
+                                )}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            ${
+                                sub
+                                    ? formatDate(
+                                        sub.expires_at
+                                    )
+                                    : "-"
+                            }
+
+                        </td>
+
+                    </tr>
+                `;
+            }
+        ).join("");
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats() {
+
+    const active =
+        allSubscriptions.filter(
+            sub =>
+                sub.status ===
+                "active" &&
+                sub.expires_at &&
+                new Date(
+                    sub.expires_at
+                ) > new Date()
+        ).length;
+
+
+    const expired =
+        allSubscriptions.filter(
+            sub =>
+                sub.expires_at &&
+                new Date(
+                    sub.expires_at
+                ) <= new Date()
+        ).length;
+
+
+    const pending =
+        allPayments.filter(
+            payment =>
+                payment.status ===
+                "pending"
+        ).length;
+
+
+    document.getElementById(
+        "totalUsers"
+    ).textContent =
+        allAccounts.length;
+
+
+    document.getElementById(
+        "activeSubs"
+    ).textContent =
+        active;
+
+
+    document.getElementById(
+        "expiredSubs"
+    ).textContent =
+        expired;
+
+
+    document.getElementById(
+        "pendingPayments"
+    ).textContent =
+        pending;
+}
+
+
+/* =========================================================
+   APPROVE PAYMENT
+========================================================= */
+
+async function approvePayment(
+    id
+) {
+
+    if (
+        !confirm(
+            "هل تريد الموافقة على طلب الدفع وتفعيل الاشتراك لمدة 30 يوم؟"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "approve_payment_request",
+                {
+                    request_id: id
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "APPROVE ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء الموافقة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "APPROVE RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تمت الموافقة وتفعيل الاشتراك بنجاح"
+    );
+
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   REJECT PAYMENT
+========================================================= */
+
+async function rejectPayment(
+    id
+) {
+
+    if (
+        !confirm(
+            "هل تريد رفض طلب الدفع؟"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "reject_payment_request",
+                {
+                    request_id: id
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "REJECT ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء الرفض",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "REJECT RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تم رفض طلب الدفع"
+    );
+
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   OPEN SUBSCRIPTION MODAL
+========================================================= */
+
+function openSubscriptionModal(
+    id
+) {
+
+    const sub =
+        allSubscriptions.find(
+            x =>
+                x.id === id
+        );
+
+
+    if (!sub) {
+
+        showMessage(
+            "الاشتراك غير موجود",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentSubscription =
+        sub;
+
+
+    const account =
+        getAccountByUserId(
+            sub.user_id
+        );
+
+
+    document.getElementById(
+        "modalEmail"
+    ).textContent =
+        account?.email ||
+        sub.user_id;
+
+
+    document.getElementById(
+        "modalPlan"
+    ).textContent =
+        sub.plan;
+
+
+    document.getElementById(
+        "modalExpiry"
+    ).textContent =
+        formatDate(
+            sub.expires_at
+        );
+
+
+    document.getElementById(
+        "durationAmount"
+    ).value = "";
+
+
+    document.getElementById(
+        "newPlan"
+    ).value =
+        sub.plan;
+
+
+    document.getElementById(
+        "subscriptionModal"
+    ).classList.add(
+        "show"
+    );
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeSubscriptionModal() {
+
+    document.getElementById(
+        "subscriptionModal"
+    ).classList.remove(
+        "show"
+    );
+
+    currentSubscription =
+        null;
+}
+
+
+/* =========================================================
+   EXTEND SUBSCRIPTION
+========================================================= */
+
+async function extendSubscription() {
+
+    if (!currentSubscription) {
+        return;
+    }
+
+
+    const amount =
+        parseInt(
+            document.getElementById(
+                "durationAmount"
+            ).value,
+            10
+        );
+
+
+    const unit =
+        document.getElementById(
+            "durationUnit"
+        ).value;
+
+
+    if (
+        !amount ||
+        amount <= 0
+    ) {
+
+        showMessage(
+            "اكتب مدة صحيحة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const unitText =
+        unit === "days"
+            ? "يوم"
+            : "دقيقة";
+
+
+    if (
+        !confirm(
+            `هل تريد إضافة ${amount} ${unitText} للاشتراك؟`
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "admin_extend_subscription",
+                {
+                    subscription_id:
+                        currentSubscription.id,
+
+                    amount:
+                        amount,
+
+                    unit:
+                        unit
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "EXTEND ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء إضافة المدة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "EXTEND RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تمت إضافة المدة بنجاح"
+    );
+
+
+    closeSubscriptionModal();
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   CHANGE PLAN
+========================================================= */
+
+async function changePlan() {
+
+    if (!currentSubscription) {
+        return;
+    }
+
+
+    const newPlan =
+        document.getElementById(
+            "newPlan"
+        ).value;
+
+
+    if (
+        newPlan ===
+        currentSubscription.plan
+    ) {
+
+        showMessage(
+            "الباقة الحالية هي بالفعل نفس الباقة المحددة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        !confirm(
+            `هل تريد تغيير الباقة إلى ${newPlan}؟`
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "admin_change_plan",
+                {
+                    subscription_id:
+                        currentSubscription.id,
+
+                    new_plan:
+                        newPlan
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "CHANGE PLAN ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء تغيير الباقة",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "CHANGE PLAN RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تم تغيير الباقة بنجاح"
+    );
+
+
+    closeSubscriptionModal();
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   CANCEL SUBSCRIPTION
+========================================================= */
+
+async function cancelSubscription() {
+
+    if (!currentSubscription) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            "هل أنت متأكد من إلغاء هذا الاشتراك؟"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .rpc(
+                "cancel_subscription",
+                {
+                    subscription_id:
+                        currentSubscription.id
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "CANCEL ERROR:",
+            error
+        );
+
+        showError(error);
+
+        showMessage(
+            error.message ||
+            "حدث خطأ أثناء إلغاء الاشتراك",
+            "error"
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "CANCEL RESULT:",
+        data
+    );
+
+
+    showMessage(
+        "تم إلغاء الاشتراك"
+    );
+
+
+    closeSubscriptionModal();
+
+    await loadAll();
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout() {
+
+    await supabaseClient.auth
+        .signOut();
+
+    window.location.href =
+        "login.html";
+}
+
+
+/* =========================================================
+   CLOSE MODAL WHEN CLICK OUTSIDE
+========================================================= */
 
 document
     .getElementById(
@@ -2286,7 +2705,8 @@ document
         function(event) {
 
             if (
-                event.target === this
+                event.target ===
+                this
             ) {
 
                 closeSubscriptionModal();
@@ -2297,9 +2717,9 @@ document
     );
 
 
-// ==========================================
-// START
-// ==========================================
+/* =========================================================
+   START
+========================================================= */
 
 (async function() {
 
@@ -2313,7 +2733,6 @@ document
     await loadAll();
 
 })();
-
 </script>
 
 </body>
