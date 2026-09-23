@@ -1,192 +1,307 @@
-const SUPABASE_URL = "https://oklabfxjcekfwirnqlji.supabase.co";
+const SUPABASE_URL =
+  "https://oklabfxjcekfwirnqlji.supabase.co";
 
-// ضع هنا الـ Publishable key الموجود في Supabase
-const SUPABASE_PUBLISHABLE_KEY = "ضع_الـPUBLISHABLE_KEY_هنا";
+const SUPABASE_PUBLISHABLE_KEY =
+  "ضع_PUBLISHABLE_KEY_هنا";
 
 const { createClient } = supabase;
 
 const supabaseClient = createClient(
-SUPABASE_URL,
-SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
 );
 
-// ===============================
+
+// ==============================
 // LOGIN
-// ===============================
+// ==============================
 
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-loginForm.addEventListener("submit", async (event) => {
-event.preventDefault();
 
-```
-const email = document.getElementById("email").value.trim();
-const password = document.getElementById("password").value;
-const button = document.getElementById("loginBtn");
-const message = document.getElementById("message");
+  loginForm.addEventListener("submit", async (event) => {
 
-button.disabled = true;
-button.textContent = "جاري تسجيل الدخول...";
-message.textContent = "";
-message.className = "message";
+    event.preventDefault();
 
-const { data, error } = await supabaseClient.auth.signInWithPassword({
-  email,
-  password
-});
+    const email =
+      document.getElementById("email").value.trim();
 
-if (error) {
-  message.textContent = getArabicError(error.message);
-  message.className = "message error";
+    const password =
+      document.getElementById("password").value;
 
-  button.disabled = false;
-  button.textContent = "تسجيل الدخول";
-  return;
+    const button =
+      document.getElementById("loginBtn");
+
+    const message =
+      document.getElementById("message");
+
+    button.disabled = true;
+    button.textContent = "جاري تسجيل الدخول...";
+
+    message.textContent = "";
+    message.className = "message";
+
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+
+    if (error) {
+
+      message.textContent =
+        getArabicError(error.message);
+
+      message.className =
+        "message error";
+
+      button.disabled = false;
+      button.textContent = "تسجيل الدخول";
+
+      return;
+    }
+
+
+    message.textContent =
+      "تم تسجيل الدخول بنجاح...";
+
+    message.className =
+      "message success";
+
+
+    window.location.href = "index.html";
+
+  });
+
 }
 
-message.textContent = "تم تسجيل الدخول بنجاح...";
-message.className = "message success";
 
-window.location.href = "index.html";
-```
-
-});
-}
-
-// ===============================
+// ==============================
 // REGISTER
-// ===============================
+// ==============================
 
-const registerForm = document.getElementById("registerForm");
+const registerForm =
+  document.getElementById("registerForm");
 
 if (registerForm) {
-registerForm.addEventListener("submit", async (event) => {
-event.preventDefault();
 
-```
-const email = document.getElementById("email").value.trim();
-const password = document.getElementById("password").value;
-const confirmPassword =
-  document.getElementById("confirmPassword").value;
+  registerForm.addEventListener("submit", async (event) => {
 
-const button = document.getElementById("registerBtn");
-const message = document.getElementById("message");
+    event.preventDefault();
 
-message.textContent = "";
-message.className = "message";
 
-if (password !== confirmPassword) {
-  message.textContent = "كلمتا المرور غير متطابقتين.";
-  message.className = "message error";
-  return;
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const confirmPassword =
+      document.getElementById("confirmPassword").value;
+
+    const button =
+      document.getElementById("registerBtn");
+
+    const message =
+      document.getElementById("message");
+
+
+    message.textContent = "";
+    message.className = "message";
+
+
+    if (password !== confirmPassword) {
+
+      message.textContent =
+        "كلمتا المرور غير متطابقتين.";
+
+      message.className =
+        "message error";
+
+      return;
+    }
+
+
+    if (password.length < 6) {
+
+      message.textContent =
+        "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
+
+      message.className =
+        "message error";
+
+      return;
+    }
+
+
+    button.disabled = true;
+    button.textContent =
+      "جاري إنشاء الحساب...";
+
+
+    const { data, error } =
+      await supabaseClient.auth.signUp({
+        email,
+        password
+      });
+
+
+    if (error) {
+
+      message.textContent =
+        getArabicError(error.message);
+
+      message.className =
+        "message error";
+
+      button.disabled = false;
+      button.textContent =
+        "إنشاء الحساب";
+
+      return;
+    }
+
+
+    if (data.session) {
+
+      message.textContent =
+        "تم إنشاء الحساب بنجاح...";
+
+      message.className =
+        "message success";
+
+
+      setTimeout(() => {
+        window.location.href =
+          "index.html";
+      }, 800);
+
+      return;
+    }
+
+
+    message.textContent =
+      "تم إنشاء الحساب. راجع بريدك الإلكتروني لتأكيد الحساب ثم سجل الدخول.";
+
+    message.className =
+      "message success";
+
+
+    button.disabled = false;
+    button.textContent =
+      "إنشاء الحساب";
+
+  });
+
 }
 
-if (password.length < 6) {
-  message.textContent = "كلمة المرور يجب أن تكون 6 أحرف على الأقل.";
-  message.className = "message error";
-  return;
-}
 
-button.disabled = true;
-button.textContent = "جاري إنشاء الحساب...";
-
-const { data, error } = await supabaseClient.auth.signUp({
-  email,
-  password
-});
-
-if (error) {
-  message.textContent = getArabicError(error.message);
-  message.className = "message error";
-
-  button.disabled = false;
-  button.textContent = "إنشاء الحساب";
-  return;
-}
-
-if (data.session) {
-  message.textContent = "تم إنشاء الحساب بنجاح...";
-  message.className = "message success";
-
-  setTimeout(() => {
-    window.location.href = "index.html";
-  }, 800);
-
-  return;
-}
-
-message.textContent =
-  "تم إنشاء الحساب. راجع بريدك الإلكتروني لتأكيد الحساب ثم سجل الدخول.";
-
-message.className = "message success";
-
-button.disabled = false;
-button.textContent = "إنشاء الحساب";
-```
-
-});
-}
-
-// ===============================
+// ==============================
 // CHECK DASHBOARD SESSION
-// ===============================
+// ==============================
 
 if (
-window.location.pathname.endsWith("/index.html") ||
-window.location.pathname.endsWith("/bizflow/") ||
-window.location.pathname === "/"
+  window.location.pathname.endsWith("/index.html") ||
+  window.location.pathname.endsWith("/bizflow/") ||
+  window.location.pathname === "/"
 ) {
-checkDashboardSession();
+
+  checkDashboardSession();
+
 }
+
 
 async function checkDashboardSession() {
-const { data } = await supabaseClient.auth.getSession();
 
-if (!data.session) {
-window.location.href = "login.html";
-}
+  const { data } =
+    await supabaseClient.auth.getSession();
+
+
+  if (!data.session) {
+
+    window.location.href =
+      "login.html";
+
+  }
+
 }
 
-// ===============================
+
+// ==============================
 // LOGOUT
-// ===============================
+// ==============================
 
-const logoutBtn = document.getElementById("logoutBtn");
+const logoutBtn =
+  document.getElementById("logoutBtn");
 
 if (logoutBtn) {
-logoutBtn.addEventListener("click", async () => {
-await supabaseClient.auth.signOut();
-window.location.href = "login.html";
-});
+
+  logoutBtn.addEventListener("click", async () => {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+      "login.html";
+
+  });
+
 }
 
-// ===============================
+
+// ==============================
 // ERROR TRANSLATION
-// ===============================
+// ==============================
 
 function getArabicError(error) {
-if (!error) {
-return "حدث خطأ غير معروف.";
-}
 
-const text = error.toLowerCase();
+  if (!error) {
+    return "حدث خطأ غير معروف.";
+  }
 
-if (text.includes("invalid login credentials")) {
-return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
-}
 
-if (text.includes("user already registered")) {
-return "هذا البريد الإلكتروني مسجل بالفعل.";
-}
+  const text =
+    error.toLowerCase();
 
-if (text.includes("password should be at least")) {
-return "كلمة المرور قصيرة جدًا.";
-}
 
-if (text.includes("invalid email")) {
-return "البريد الإلكتروني غير صحيح.";
-}
+  if (
+    text.includes("invalid login credentials")
+  ) {
 
-return "حدث خطأ. حاول مرة أخرى.";
+    return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+
+  }
+
+
+  if (
+    text.includes("user already registered")
+  ) {
+
+    return "هذا البريد الإلكتروني مسجل بالفعل.";
+
+  }
+
+
+  if (
+    text.includes("password should be at least")
+  ) {
+
+    return "كلمة المرور قصيرة جدًا.";
+
+  }
+
+
+  if (
+    text.includes("invalid email")
+  ) {
+
+    return "البريد الإلكتروني غير صحيح.";
+
+  }
+
+
+  return "حدث خطأ. حاول مرة أخرى.";
+
 }
